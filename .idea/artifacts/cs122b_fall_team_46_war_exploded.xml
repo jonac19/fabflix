@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="cs122b-fall-team-46:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/cs122b_fall_team_46_war_exploded</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="cs122b-fall-team-46/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="cs122b-fall-team-46" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>
