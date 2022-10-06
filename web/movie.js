@@ -40,7 +40,7 @@ function handleMovieResult(resultData) {
         rowHTML += "<td>" + resultData[i]["movie_director"] + "</td>";
         rowHTML += "<td>" + "Tempory" + "</td>";
         rowHTML += "<td>" + "Tempory" + "</td>";
-        rowHTML += "<td>" + "Tempory" + "</td>";
+        rowHTML += "<td>" + resultData[i]["movie_rating"] + "</td>";
         rowHTML += "</tr>";
 
         // Append the row created to the table body, which will refresh the page

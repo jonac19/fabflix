@@ -49,7 +49,7 @@ public class MovieServlet extends HttpServlet {
 
         // Get a connection from dataSource and let resource manager close the connection after usage.
         try (Connection conn = dataSource.getConnection()) {
-            String query = "SELECT * FROM movies AS m WHERE m.id = ?";
+            String query = "SELECT * FROM movies M, ratings R WHERE M.id = ? AND R.movieId = ?";
 
             // Declare our statement
             PreparedStatement statement = conn.prepareStatement(query);
@@ -57,6 +57,7 @@ public class MovieServlet extends HttpServlet {
             // Set the parameter represented by "?" in the query to the id we get from url,
             // num 1 indicates the first "?" in the query
             statement.setString(1, id);
+            statement.setString(2, id);
 
             // Perform the query
             ResultSet rs = statement.executeQuery();
@@ -69,6 +70,7 @@ public class MovieServlet extends HttpServlet {
                 String movie_title = rs.getString("title");
                 String movie_year = rs.getString("year");
                 String movie_director = rs.getString("director");
+                String movie_rating = rs.getString("rating");
 
                 // Create a JsonObject based on the data we retrieve from rs
                 JsonObject jsonObject = new JsonObject();
@@ -76,6 +78,7 @@ public class MovieServlet extends HttpServlet {
                 jsonObject.addProperty("movie_title", movie_title);
                 jsonObject.addProperty("movie_year", movie_year);
                 jsonObject.addProperty("movie_director", movie_director);
+                jsonObject.addProperty("movie_rating", movie_rating);
 
                 jsonArray.add(jsonObject);
             }
