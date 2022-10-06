@@ -5,11 +5,16 @@
 function handleMovieListResult(resultData) {
     console.log("handleMovieListResult: populating movie list table from resultData");
 
+    // Sort movies by ratings from highest to lowest
+    resultData.sort((a, b) => {
+       return parseFloat(b["movie_rating"]) - parseFloat(a["movie_rating"]);
+    });
+
     // Populate the movie list table
     // Find the empty table body by id "movie_list_table_body"
     let movieListTableBodyElement = jQuery("#movie_list_table_body");
 
-    // Iterate through resultData, no more than 10 entries
+    // Iterate through resultData, no more than 20 entries
     for (let i = 0; i < Math.min(20, resultData.length); i++) {
         // Concatenate the html tags with resultData jsonObject
         let rowHTML = "";

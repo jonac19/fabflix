@@ -48,7 +48,7 @@ public class MovieListServlet extends HttpServlet {
             // Declare our statement
             Statement statement = conn.createStatement();
 
-            String query = "SELECT * FROM movies M, ratings R WHERE M.id = R.movieId ORDER BY R.rating DESC";
+            String query = "SELECT * FROM movies M, ratings R WHERE M.id = R.movieId";
 
             // Perform the query
             ResultSet rs = statement.executeQuery(query);
