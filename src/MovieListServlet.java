@@ -17,7 +17,7 @@ import java.sql.Statement;
 
 
 // Declaring a WebServlet called MovieListServlet, which maps to url "/api/movieList"
-@WebServlet(name = "MovieListServlet", urlPatterns = "/api/movieList")
+@WebServlet(name = "MovieListServlet", urlPatterns = "/api/movie-list")
 public class MovieListServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
@@ -48,7 +48,7 @@ public class MovieListServlet extends HttpServlet {
             // Declare our statement
             Statement statement = conn.createStatement();
 
-            String query = "SELECT * FROM movies";
+            String query = "SELECT * FROM movies M, ratings R WHERE M.id = R.movieId";
 
             // Perform the query
             ResultSet rs = statement.executeQuery(query);
@@ -61,6 +61,7 @@ public class MovieListServlet extends HttpServlet {
                 String movie_title = rs.getString("title");
                 String movie_year = rs.getString("year");
                 String movie_director = rs.getString("director");
+                String movie_rating = rs.getString("rating");
 
                 // Create a JsonObject based on the data we retrieve from rs
                 JsonObject jsonObject = new JsonObject();
@@ -68,6 +69,7 @@ public class MovieListServlet extends HttpServlet {
                 jsonObject.addProperty("movie_title", movie_title);
                 jsonObject.addProperty("movie_year", movie_year);
                 jsonObject.addProperty("movie_director", movie_director);
+                jsonObject.addProperty("movie_rating", movie_rating);
 
                 jsonArray.add(jsonObject);
             }
