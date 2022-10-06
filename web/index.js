@@ -26,7 +26,18 @@ function handleMovieListResult(resultData) {
             "</td>";
         rowHTML += "<td>" + resultData[i]["movie_year"] + "</td>";
         rowHTML += "<td>" + resultData[i]["movie_director"] + "</td>";
-        rowHTML += "<td>" + "Temporary" + "</td>";
+
+        // Concatenate the genres associated with each movie
+        rowHTML += "<td>";
+        for (let j = 0; j < Math.min(3, resultData[i]["movie_genres"].length); j++) {
+            rowHTML += resultData[i]["movie_genres"][j]["genre_name"];
+
+            if (j < Math.min(3, resultData[i]["movie_genres"].length - 1)) {
+                rowHTML += ", ";
+            }
+        }
+        rowHTML += "</td>";
+
         rowHTML += "<td>" + "Temporary" + "</td>";
         rowHTML += "<td>" + resultData[i]["movie_rating"] + "</td>";
         rowHTML += "</tr>";
