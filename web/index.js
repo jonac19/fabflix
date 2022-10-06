@@ -34,6 +34,6 @@ function handleMovieListResult(resultData) {
 jQuery.ajax({
     dataType: "json",
     method: "GET",
-    url: "api/movieList",
+    url: "api/movie-list",
     success: (resultData) => handleMovieListResult(resultData)
 });
