@@ -21,9 +21,9 @@ function handleMovieListResult(resultData) {
             "</td>";
         rowHTML += "<td>" + resultData[i]["movie_year"] + "</td>";
         rowHTML += "<td>" + resultData[i]["movie_director"] + "</td>";
-        rowHTML += "<td>" + "Tempory" + "</td>";
-        rowHTML += "<td>" + "Tempory" + "</td>";
-        rowHTML += "<td>" + "Tempory" + "</td>";
+        rowHTML += "<td>" + "Temporary" + "</td>";
+        rowHTML += "<td>" + "Temporary" + "</td>";
+        rowHTML += "<td>" + resultData[i]["movie_rating"] + "</td>";
         rowHTML += "</tr>";
 
         // Append the row created to the table body, which will refresh the page
