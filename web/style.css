@@ -3,6 +3,11 @@ body {
     color: #FFFFFF;
 }
 
+header {
+    display: flex;
+    align-items: end;
+}
+
 a {
     color: #FFFFFF;
 }
