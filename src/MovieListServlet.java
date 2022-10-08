@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.*;
 
+import static java.lang.Integer.parseInt;
+
 
 // Declaring a WebServlet called MovieListServlet, which maps to url "/api/movieList"
 @WebServlet(name = "MovieListServlet", urlPatterns = "/api/movie-list")
@@ -37,19 +39,31 @@ public class MovieListServlet extends HttpServlet {
 
         response.setContentType("application/json"); // Response mime type
 
+        // Retrieve parameters from url request.
+        String criteria = request.getParameter("criteria");
+        String order = request.getParameter("order");
+        String limit = request.getParameter("limit");
+
+        // The log messages can be found in localhost log
+        request.getServletContext().log("getting criteria: " + criteria);
+        request.getServletContext().log("getting order: " + order);
+        request.getServletContext().log("getting limit: " + limit);
+
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
 
         // Get a connection from dataSource and let resource manager close the connection after usage.
         try (Connection conn = dataSource.getConnection()) {
+            String query = constructQuery(criteria, order);
 
             // Declare our statement
-            Statement statement = conn.createStatement();
+            PreparedStatement statement = conn.prepareStatement(query);
 
-            String query = "SELECT * FROM movies M, ratings R WHERE M.id = R.movieId";
+            // Set the LIMIT parameter
+            statement.setInt(1, parseInt(limit));
 
             // Perform the query
-            ResultSet rs = statement.executeQuery(query);
+            ResultSet rs = statement.executeQuery();
 
             JsonArray jsonArray = new JsonArray();
 
@@ -99,6 +113,42 @@ public class MovieListServlet extends HttpServlet {
         } finally {
             out.close();
         }
+    }
+
+    /**
+     * Constructs the base query with criteria and order options
+     * @param criteria Column name to sort movies by
+     * @param order Sorting order either ascending or descending
+     * @return Query to be processed by MySQL
+     * @throws Exception
+     */
+    private String constructQuery(String criteria, String order) throws Exception {
+        String query = "SELECT * FROM movies M, ratings R WHERE M.id = R.movieId ORDER BY ";
+
+        // Set the parameters in the query
+        if (criteria.equals("rating")) {
+            query += "rating ";
+        } else if (criteria.equals("title")) {
+            query += "title ";
+        } else if (criteria.equals("year")) {
+            query += "year ";
+        } else {
+            throw new Exception("Invalid criteria for sorting");
+        }
+
+        if (order.equals("asc")) {
+            query += "ASC ";
+        } else if (order.equals("desc")) {
+            query += "DESC ";
+        } else {
+            throw new Exception("Invalid order for sorting");
+        }
+
+        query += "LIMIT ?";
+
+        // Query will be structured as
+        // "SELECT * FROM movies M, ratings R WHERE M.id = R.movieId ORDER BY [rating/title/year] [ASC/DESC] LIMIT ?"
+        return query;
     }
 
     /**

@@ -13,6 +13,15 @@
 <body>
     <h1>Movie List</h1>
 
+    <nav>
+        <a class='btn btn-secondary' href='index.html?criteria=year&order=asc&limit=20'>Year Ascending</a>
+        <a class='btn btn-secondary' href='index.html?criteria=year&order=desc&limit=20'>Year Descending</a>
+        <a class='btn btn-secondary' href='index.html?criteria=title&order=asc&limit=20'>Title Ascending</a>
+        <a class='btn btn-secondary' href='index.html?criteria=title&order=desc&limit=20'>Title Descending</a>
+        <a class='btn btn-secondary' href='index.html?criteria=rating&order=asc&limit=20'>Rating Ascending</a>
+        <a class='btn btn-secondary' href='index.html?criteria=rating&order=desc&limit=20'>Rating Descending</a>
+    </nav>
+
     <table id=movie_list_table class="table table-striped">
         <!-- Create a table header -->
         <thead>
