@@ -30,17 +30,38 @@ function handleMovieResult(resultData) {
     // Find the empty table body by id "movie_table_body"
     let movieTableBodyElement = jQuery("#movie_table_body");
 
-    // Iterate through resultData, no more than 10 entries
-    for (let i = 0; i < Math.min(20, resultData.length); i++) {
+    // Iterate through resultData, no more than 1 entries
+    for (let i = 0; i < Math.min(1, resultData.length); i++) {
         // Concatenate the html tags with resultData jsonObject
         let rowHTML = "";
         rowHTML += "<tr>"
         rowHTML += "<td>" + resultData[i]["movie_title"] + "</td>";
         rowHTML += "<td>" + resultData[i]["movie_year"] + "</td>";
         rowHTML += "<td>" + resultData[i]["movie_director"] + "</td>";
-        rowHTML += "<td>" + "Tempory" + "</td>";
-        rowHTML += "<td>" + "Tempory" + "</td>";
-        rowHTML += "<td>" + "Tempory" + "</td>";
+
+        // Concatenate the genres associated with each movie
+        rowHTML += "<td>";
+        for (let j = 0; j < resultData[i]["movie_genres"].length; j++) {
+            rowHTML += resultData[i]["movie_genres"][j]["genre_name"];
+
+            if (j < resultData[i]["movie_genres"].length - 1) {
+                rowHTML += ", ";
+            }
+        }
+        rowHTML += "</td>";
+
+        // Concatenate the stars associated with each movie
+        rowHTML += "<td>";
+        for (let j = 0; j < resultData[i]["movie_stars"].length; j++) {
+            rowHTML += resultData[i]["movie_stars"][j]["star_name"];
+
+            if (j < resultData[i]["movie_stars"].length - 1) {
+                rowHTML += ", ";
+            }
+        }
+        rowHTML += "</td>";
+
+        rowHTML += "<td>" + resultData[i]["movie_rating"] + "</td>";
         rowHTML += "</tr>";
 
         // Append the row created to the table body, which will refresh the page
