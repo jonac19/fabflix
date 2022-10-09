@@ -64,6 +64,8 @@ function handleResult( resultData ) {
     }
 }
 
+// Get id from URL
+let starId = getParameterByName('id');
 
 // Makes the HTTP GET request and registers on success callback function handleResult
 jQuery.ajax({
