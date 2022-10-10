@@ -1,4 +1,4 @@
-<!--From cs122b-fall22-project1-api-example/WebContent/single-star.html-->
+<!--From cs122b-fall22-project1-api-example/WebContent/star.html-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,16 +10,15 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-    <title>Single Star SENDHELP</title>
+    <title>Single Star</title>
 </head>
 <body>
     <h1 style="text-align:center">Single Star Page</h1>
 
     <!-- H3 body is left empty here, will be populated with the data retrieved with single-star.js -->
     <!-- single-star.js will find this html element by its id "star_info" -->
-    <h3 id="star_info"><a href="movie.html">hyperlink test: "movie.html" link</a></h3>
-    <a href="https://www.youtube.com/watch?v=Wi5Dt1vEA_8">link test #2</a>
-    <img src="https://i.kym-cdn.com/entries/icons/original/000/034/537/Laughing_Wolves_Banner.jpg"/>
+    <h3 id="star_info"></h3>
+
     <table id=movie_table class="table table-striped" bgcolor="#f0e68c">    <!-- personal edit -->
         <thead>
         <tr bgcolor="#ffd700">    <!-- personal edit -->
@@ -30,8 +29,8 @@
         </tr>
         </thead>
 
-        <!-- Table body is left empty here, will be populated with the data retrieved with single-star.js -->
-        <!-- single-star.js will find this html element by it's id "movie_table_body" -->
+        <!-- Table body is left empty here, will be populated with the data retrieved with star.js -->
+        <!-- star.js will find this html element by it's id "movie_table_body" -->
         <tbody id=movie_table_body></tbody>
     </table>
 
@@ -41,10 +40,10 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
     <!-- Load our own JS file -->
-    <!-- The path is relative to single-star.html, since these two files are in the same directory -->
+    <!-- The path is relative to star.html, since these two files are in the same directory -->
     <!-- Note the url does not contain a "/" in the beginning, which means the url is relative to current path
          otherwise the url is relative to the root path-->
-    <script src="single-star.js"></script>
+    <script src="star.js"></script>
 
 </body>
 
