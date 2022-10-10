@@ -14,8 +14,8 @@ function handleMovieListResult(resultData) {
     // Find the empty table body by id "movie_list_table_body"
     let movieListTableBodyElement = jQuery("#movie_list_table_body");
 
-    // Iterate through resultData, no more than 20 entries
-    for (let i = 0; i < Math.min(20, resultData.length); i++) {
+    // Iterate through resultData
+    for (let i = 0; i < Math.min(resultData.length); i++) {
         // Concatenate the html tags with resultData jsonObject
         let rowHTML = "";
         rowHTML += "<tr>"
