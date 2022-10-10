@@ -53,6 +53,11 @@ function handleMovieResult(resultData) {
         // Concatenate the stars associated with each movie
         rowHTML += "<td>";
         for (let j = 0; j < resultData[i]["movie_stars"].length; j++) {
+            rowHTML += "<td>" +
+                "<a href='star.html?id=" + resultData[i]["movie_stars"][j]["star_id"] + "'>" +
+                resultData[i]["movie_stars"][j]["star_name"] +
+                "</a>" +
+                "</td>";
             rowHTML += resultData[i]["movie_stars"][j]["star_name"];
 
             if (j < resultData[i]["movie_stars"].length - 1) {
