@@ -1,100 +1,118 @@
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.servlet.ServletConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 
-//Create WebServlet named "StarServlet". Maps to "/api/star"
-@WebServlet(name = "StarServlet", urlPatterns = "/api/star")
+// Declare WebServlet called SingleStarServlet. Maps to url "/api/single-star"
+@WebServlet( name = "StarServlet", urlPatterns = "/api/star" )
 public class StarServlet extends HttpServlet {
+    private static final long SerialVersionUID = 3L;
 
-    private static final long serialVersionUID = 1L;
+    // Create a dataSource which registered in web.xml
+    private DataSource dataSource;
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String loginUser = "mytestuser";
-        String loginPasswd = "My6$Password";
-        String loginUrl = "jdbc:mysql://localhost:3306/cs122b";
-
-        //Set response mime type
-        response.setContentType("text/html");
-
-        //Get PrintWriter for writing response
-        PrintWriter out = response.getWriter();
-
-        out.println("<html>");
-        out.println("<head><title>Fabflix</title></head>");
-
+    public void init(ServletConfig config) {
         try {
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
-            //create database connection
-            Connection connection = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
-            //declare statement
-            Statement statement = connection.createStatement();
-            //prepare query
-            String query = "SELECT * FROM stars LIMIT 10";
-            //execute query
-            ResultSet resultSet = statement.executeQuery(query);
-
-            out.println("<body>");
-            out.println("<h1>MovieDB Stars</h1>");
-
-            out.println("<table border>");  //QUESTION: isn't this supposed to be "<table></table>"?
-
-            //add table header row
-            out.println("<tr>");
-                out.println("<td>id</td>");
-                out.println("<td>name</td>");
-                out.println("<td>birth year</td>");
-            out.println("</tr>");
-
-            //add a row for every star result
-            while (resultSet.next()) {
-                String starID = resultSet.getString("id");
-                String starName = resultSet.getString("name");
-                String birthYear = resultSet.getString("birthyear");
-
-                //assemble and place row
-                out.println("<tr>");
-                    out.println("<td>" + starID + "</td>");
-                    out.println("<td>" + starName + "</td>");
-                    out.println("<td>" + birthYear + "</td>");
-                out.println("</tr>");
-            }
-
-            out.println("</table>");
-            out.println("</body>");
-
-            resultSet.close();
-            statement.close();
-            connection.close();
-        } catch ( Exception e ) {
-            /*
-             * After you deploy the WAR file through tomcat manager webpage,
-             *   there's no console to see the print messages.
-             * Tomcat append all the print messages to the file: tomcat_directory/logs/catalina.out
-             *
-             * To view the last n lines (for example, 100 lines) of messages you can use:
-             *   tail -100 catalina.out
-             * This can help you debug your program after deploying it on AWS.
-             */
-            request.getServletContext().log("Error: ", e);
-
-            out.println("<body>");
-            out.println("<p>");
-            out.println("Exception in doGet: " + e.getMessage());
-            out.println("</p>");
-            out.print("</body>");
+            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/cs122b");
+        } catch (NamingException e) {
+            e.printStackTrace();
         }
-
-        out.println("</html>");
-        out.close();
-
     }
 
+    // @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws IOException {
+        response.setContentType("application/json"); // Response mime type
+
+        // Retrieve parameter id from url request.
+        String id = request.getParameter("id");
+
+        // The log message can be found in localhost log
+        request.getServletContext().log("getting id: " + id );
+
+        //Output stream to STDOUT
+        PrintWriter out = response.getWriter();
+
+        // Get a connection from dataSource and let resource manager close the connection after usage.
+        try ( Connection conn = dataSource.getConnection() ) {
+            // Get a connection from datasource
+
+            // Construct a query with parameter represented by "?"
+            String query = "SELECT * FROM stars AS s, stars_in_movies AS sim, movies AS m " +
+                    "WHERE m.id = sim.movieId AND sim.starId = s.id AND s.id = ?";
+
+            // Declare our statement
+            PreparedStatement statement = conn.prepareStatement( query );
+
+            // Set the parameter represented by "?" in the query to the id we get from url,
+            // num 1 indicates the first "?" in the query
+            statement.setString( 1, id );
+
+            // Perform the query
+            ResultSet rs = statement.executeQuery();
+
+            JsonArray jsonArray = new JsonArray();
+
+            //Iterate through each row of rs
+            while ( rs.next() ) {
+                String starId = rs.getString("starId" );
+                String starName = rs.getString( "name" );
+                String starDob = rs.getString( "birthYear" );
+
+                if (starDob == null) {
+                    starDob = "N/A";
+                }
+
+                String movieId = rs.getString("movieId");
+                String movieTitle = rs.getString("title");
+                String movieYear = rs.getString("year");
+                String movieDirector = rs.getString("director");
+
+                // Create a JsonObject based on the data we retrieve from rs
+
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("star_id", starId);
+                jsonObject.addProperty("star_name", starName);
+                jsonObject.addProperty("star_dob", starDob);
+                jsonObject.addProperty("movie_id", movieId);
+                jsonObject.addProperty("movie_title", movieTitle);
+                jsonObject.addProperty("movie_year", movieYear);
+                jsonObject.addProperty("movie_director", movieDirector);
+
+                jsonArray.add( jsonObject );
+            }
+            rs.close();
+            statement.close();
+
+            // Write JSON string to output
+            out.write( jsonArray.toString() );
+            // Set response status to 200 (OK)
+            response.setStatus( 200 );
+
+        } catch ( Exception e ) {
+            // Write error message JSON object to output
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("errorMessage", e.getMessage());
+            out.write(jsonObject.toString());
+
+            // Log error to localhost log
+            request.getServletContext().log("Error:", e);
+            // Set response status to 500 (Internal Server Error)
+            response.setStatus(500);
+        } finally {
+            out.close();
+        }
+    }
 
 }
