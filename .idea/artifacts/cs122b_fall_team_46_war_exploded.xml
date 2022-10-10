@@ -13,7 +13,16 @@
         <element id="directory" name="classes">
           <element id="module-output" name="cs122b-fall-team-46" />
         </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Maven: mysql:mysql-connector-java:8.0.23" />
+          <element id="library" level="project" name="Maven: com.google.protobuf:protobuf-java:3.11.4" />
+          <element id="library" level="project" name="Maven: com.google.code.gson:gson:2.8.2" />
+        </element>
       </element>
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/target/cs122b-fall22-team-46/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="javaee-facet-resources" facet="cs122b-fall-team-46/web/Web" />
     </root>
   </artifact>
 </component>
