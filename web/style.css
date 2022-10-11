@@ -1,0 +1,19 @@
+body {
+    background-color: #000000;
+    color: #FFFFFF;
+    padding: 24px;
+}
+
+header {
+    display: flex;
+    align-items: end;
+}
+
+a {
+    color: #FFFFFF;
+}
+
+a:hover {
+    text-decoration: none;
+    color: #fba92c;
+}
