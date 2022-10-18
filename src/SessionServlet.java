@@ -71,7 +71,7 @@ public class SessionServlet extends HttpServlet {
 //                // Test out func found online. Yields some other SessionID
 //                "  <tr>\n" +
 //                "    <td>Client Session ID\n" +
-                "    <td>" + request.getRequestedSessionId() + "\n" +
+//                "    <td>" + request.getRequestedSessionId() + "\n" +
 
                 "  </tr>" +
                 "</table>\n");
