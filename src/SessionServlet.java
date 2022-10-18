@@ -38,7 +38,7 @@ public class SessionServlet extends HttpServlet {
         // Update their Session's accessCount information
         session.setAttribute( "accessCount", accessCount );
 
-        out.println( "<html><head><title>" + title + "<title><head>" +
+        out.println( "<html lang=\"en\"><head><title>" + title + "</title></head>" +
 
                 "<body bgcolor=\"#FDF5E6\">\n" +
                 "<h1 ALIGN=\"center\">" + heading + "</h1>\n" +  // Set the greeting heading generated before
@@ -66,16 +66,24 @@ public class SessionServlet extends HttpServlet {
                 "  <tr>\n" +
                 "    <td>Number of Previous Accesses\n" +
                 "    <td>" + accessCount + "\n" +
+
+//                //Sean's add-in
+//                // Test out func found online. Yields some other SessionID
+//                "  <tr>\n" +
+//                "    <td>Client Session ID\n" +
+                "    <td>" + request.getRequestedSessionId() + "\n" +
+
                 "  </tr>" +
                 "</table>\n");
 
         // The following two statements show how to retrieve parameters in the request. The URL format is something like:
-        // http://localhost:8080/cs122b-fall22-project2-session-example/Session?myname=Chen%20Li
+        // http://localhost:8080/cs122b-fall22-project2-session-example/session?myname=Konaka%20Sean
         String myName = request.getParameter("myname");
         if (myName != null)
             out.println("Hey " + myName + "<br><br>");
 
         out.println("</body></html>");
 
+        
     }
 }
