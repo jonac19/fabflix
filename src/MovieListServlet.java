@@ -43,24 +43,27 @@ public class MovieListServlet extends HttpServlet {
         String criteria = request.getParameter("criteria");
         String order = request.getParameter("order");
         String limit = request.getParameter("limit");
+        String search = "%" + request.getParameter("search") + "%";
 
         // The log messages can be found in localhost log
         request.getServletContext().log("getting criteria: " + criteria);
         request.getServletContext().log("getting order: " + order);
         request.getServletContext().log("getting limit: " + limit);
+        request.getServletContext().log("getting search:" + search);
 
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
 
         // Get a connection from dataSource and let resource manager close the connection after usage.
         try (Connection conn = dataSource.getConnection()) {
-            String query = constructQuery(criteria, order);
+            String query = constructQuery(criteria, order, search);
 
             // Declare our statement
             PreparedStatement statement = conn.prepareStatement(query);
 
-            // Set the LIMIT parameter
-            statement.setInt(1, parseInt(limit));
+            // Set the additional parameters
+            statement.setString(1, search);
+            statement.setInt(2, parseInt(limit));
 
             // Perform the query
             ResultSet rs = statement.executeQuery();
@@ -122,8 +125,8 @@ public class MovieListServlet extends HttpServlet {
      * @return Query to be processed by MySQL
      * @throws Exception
      */
-    private String constructQuery(String criteria, String order) throws Exception {
-        String query = "SELECT * FROM movies M, ratings R WHERE M.id = R.movieId ORDER BY ";
+    private String constructQuery(String criteria, String order, String search) throws Exception {
+        String query = "SELECT * FROM movies M, ratings R WHERE M.id = R.movieId AND M.title LIKE ? ORDER BY ";
 
         // Set the parameters in the query
         if (criteria.equals("rating")) {
@@ -145,7 +148,6 @@ public class MovieListServlet extends HttpServlet {
         }
 
         query += "LIMIT ?";
-
         // Query will be structured as
         // "SELECT * FROM movies M, ratings R WHERE M.id = R.movieId ORDER BY [rating/title/year] [ASC/DESC] LIMIT ?"
         return query;

@@ -15,9 +15,12 @@
     <title>Movie List</title>
 </head>
 <body>
-    <header>
-        <img src='images/fabflix-logo.png' alt='Fabflix logo' height=65>
-        <h1>Movie List</h1>
+    <header class='navbar'>
+        <img src='images/fabflix-logo.png' alt='Fabflix logo' height=50>
+        <form id='search_form' class='form-inline my-2 my-lg-0' action='#'>
+            <input class='form-control mr-sm-2' name='search' type='search' placeholder='Search' aria-label='Search'>
+            <button class="btn btn-outline-warning my-2 my-sm-0" type='submit'>Search</button>
+        </form>
     </header>
 
     <nav>

@@ -17,3 +17,7 @@ a:hover {
     text-decoration: none;
     color: #fba92c;
 }
+
+.logo {
+    border: white 2px solid;
+}

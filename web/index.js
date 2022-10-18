@@ -76,6 +76,15 @@ function handleMovieListResult(resultData) {
     }
 }
 
+function submitSearchForm(formSubmitEvent) {
+    console.log("submit search form");
+    formSubmitEvent.preventDefault();
+    window.location.replace("index.html?" + searchForm.serialize());
+}
+
+let searchForm = jQuery("#search_form");
+searchForm.submit(submitSearchForm);
+
 // Get movie list parameters from URL
 // Use default values if parameters not found
 let listLimit = getParameterByName("limit");
@@ -93,9 +102,14 @@ if (listOrder == null) {
     listOrder = "desc";
 }
 
+let listSearch = getParameterByName("search");
+if (listSearch == null) {
+    listSearch = "";
+}
+
 jQuery.ajax({
     dataType: "json",
     method: "GET",
-    url: "api/movie-list?criteria=" + listCriteria + "&order=" + listOrder + "&limit=" + listLimit ,
+    url: "api/movie-list?criteria=" + listCriteria + "&order=" + listOrder + "&limit=" + listLimit + "&search=" + listSearch,
     success: (resultData) => handleMovieListResult(resultData)
 });
