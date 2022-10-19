@@ -18,6 +18,16 @@ a:hover {
     color: #fba92c;
 }
 
-.logo {
-    border: white 2px solid;
+.navbar .dropdown-menu {
+    background-color: #343a40;
+}
+
+.navbar .dropdown-item:hover {
+    background-color: #292b2c;
+    color: #fba92c;
+}
+
+
+.navbar .dropdown-menu a {
+    color: #FFFFFF;
 }

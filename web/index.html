@@ -15,21 +15,31 @@
     <title>Movie List</title>
 </head>
 <body>
-    <header class='navbar'>
-        <img src='images/fabflix-logo.png' alt='Fabflix logo' height=50>
-        <form id='search_form' class='form-inline my-2 my-lg-0' action='#'>
+    <nav class='navbar navbar-expand-lg navbar'>
+        <div class='navbar-brand'>
+            <img src='images/fabflix-logo.png' alt='Fabflix logo' height=50>
+        </div>
+
+        <div class='collapse navbar-collapse'>
+            <div class='nav-item dropdown'>
+                <button class="btn btn-outline-warning dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Order By
+                </button>
+                <div class='dropdown-menu' aria-labelledby=navbarDropdownMenuLink'>
+                    <a class='dropdown-item' href='?criteria=year&order=asc&limit=20'>Year Ascending</a>
+                    <a class='dropdown-item' href='?criteria=year&order=desc&limit=20'>Year Descending</a>
+                    <a class='dropdown-item' href='?criteria=title&order=asc&limit=20'>Title Ascending</a>
+                    <a class='dropdown-item' href='?criteria=title&order=desc&limit=20'>Title Descending</a>
+                    <a class='dropdown-item' href='?criteria=rating&order=asc&limit=20'>Rating Ascending</a>
+                    <a class='dropdown-item' href='?criteria=rating&order=desc&limit=20'>Rating Descending</a>
+                </div>
+            </div>
+        </div>
+
+        <form id='search_form' class='form-inline justify-content-end' action='#'>
             <input class='form-control mr-sm-2' name='search' type='search' placeholder='Search' aria-label='Search'>
             <button class="btn btn-outline-warning my-2 my-sm-0" type='submit'>Search</button>
         </form>
-    </header>
-
-    <nav>
-        <a class='btn btn-secondary' href='?criteria=year&order=asc&limit=20'>Year Ascending</a>
-        <a class='btn btn-secondary' href='?criteria=year&order=desc&limit=20'>Year Descending</a>
-        <a class='btn btn-secondary' href='?criteria=title&order=asc&limit=20'>Title Ascending</a>
-        <a class='btn btn-secondary' href='?criteria=title&order=desc&limit=20'>Title Descending</a>
-        <a class='btn btn-secondary' href='?criteria=rating&order=asc&limit=20'>Rating Ascending</a>
-        <a class='btn btn-secondary' href='?criteria=rating&order=desc&limit=20'>Rating Descending</a>
     </nav>
 
     <table id=movie_list_table class="table table-striped table-dark">
