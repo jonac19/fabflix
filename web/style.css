@@ -17,3 +17,10 @@ a:hover {
     text-decoration: none;
     color: #fba92c;
 }
+
+.container-bg {
+    background-color: #212529;
+    border-radius: 25px;
+    margin: 5px;
+    padding: 25px;
+}
