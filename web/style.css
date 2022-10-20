@@ -20,6 +20,7 @@ a:hover {
 
 .navbar .dropdown-menu {
     background-color: #343a40;
+    border: 1px solid #FFFFFF;
 }
 
 .navbar .dropdown-item:hover {
@@ -27,6 +28,6 @@ a:hover {
     color: #fba92c;
 }
 
-.navbar .dropdown-menu a {
+.navbar .dropdown-menu button {
     color: #FFFFFF;
 }

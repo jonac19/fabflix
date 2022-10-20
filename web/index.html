@@ -26,10 +26,10 @@
                     Order By
                 </button>
                 <div class='dropdown-menu' aria-labelledby=navbarDropdownMenuLink'>
-                    <a class='dropdown-item' href='?criteria=title&order=asc&limit=20'>Title Ascending</a>
-                    <a class='dropdown-item' href='?criteria=title&order=desc&limit=20'>Title Descending</a>
-                    <a class='dropdown-item' href='?criteria=rating&order=asc&limit=20'>Rating Ascending</a>
-                    <a class='dropdown-item' href='?criteria=rating&order=desc&limit=20'>Rating Descending</a>
+                    <button class='dropdown-item' onclick='orderBy("title", "asc")'>Title Ascending</button>
+                    <button class='dropdown-item' onclick='orderBy("title", "desc")'>Title Descending</button>
+                    <button class='dropdown-item' onclick='orderBy("rating", "asc")'>Rating Ascending</button>
+                    <button class='dropdown-item' onclick='orderBy("rating", "desc")'>Rating Descending</button>
                 </div>
             </div>
         </div>

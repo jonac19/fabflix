@@ -76,10 +76,30 @@ function handleMovieListResult(resultData) {
     }
 }
 
+/**
+ * Submits form content containing search title
+ * @param formSubmitEvent
+ */
 function submitSearchForm(formSubmitEvent) {
     console.log("submit search form");
     formSubmitEvent.preventDefault();
     window.location.replace("index.html?" + searchForm.serialize());
+}
+
+/**
+ * Orders movie list according to given parameters
+ * @param column Column to order the movie list by
+ * @param order Order to order the movie list by
+ */
+function orderBy(column, order) {
+    console.log("sorting movie list");
+    window.location.replace("index.html?criteria=" + column
+        + "&order=" + order
+        + "&limit=" + listLimit
+        + "&searchTitle=" + listSearchTitle
+        + "&searchYear=" + listSearchYear
+        + "&searchDirector=" + listSearchDirector
+        + "&searchStar=" + listSearchStar);
 }
 
 let searchForm = jQuery("#search_form");
