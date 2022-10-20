@@ -86,30 +86,32 @@ let searchForm = jQuery("#search_form");
 searchForm.submit(submitSearchForm);
 
 // Get movie list parameters from URL
-// Use default values if parameters not found
 let listLimit = getParameterByName("limit");
-if (listLimit == null) {
-    listLimit = "20";
-}
-
 let listCriteria = getParameterByName("criteria");
-if (listCriteria == null) {
-    listCriteria = "rating";
-}
-
 let listOrder = getParameterByName("order");
-if (listOrder == null) {
-    listOrder = "desc";
-}
+let listSearchTitle = getParameterByName("searchTitle");
+let listSearchYear = getParameterByName("searchYear");
+let listSearchDirector = getParameterByName("searchDirector");
+let listSearchStar = getParameterByName("searchStar");
 
-let listSearch = getParameterByName("search");
-if (listSearch == null) {
-    listSearch = "";
-}
+if (listLimit == null) {listLimit = ""};
+if (listCriteria == null) {listCriteria = ""};
+if (listOrder == null) {listOrder = ""};
+if (listSearchTitle == null) {listSearchTitle = ""};
+if (listSearchYear == null) {listSearchYear = ""};
+if (listSearchDirector == null) {listSearchDirector = ""};
+if (listSearchStar == null) {listSearchStar = ""};
+
 
 jQuery.ajax({
     dataType: "json",
     method: "GET",
-    url: "api/movie-list?criteria=" + listCriteria + "&order=" + listOrder + "&limit=" + listLimit + "&search=" + listSearch,
+    url: "api/movie-list?criteria=" + listCriteria
+         + "&order=" + listOrder
+         + "&limit=" + listLimit
+         + "&searchTitle=" + listSearchTitle
+         + "&searchYear=" + listSearchYear
+         + "&searchDirector=" + listSearchDirector
+         + "&searchStar=" + listSearchStar,
     success: (resultData) => handleMovieListResult(resultData)
 });
