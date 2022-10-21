@@ -93,9 +93,10 @@ function submitSearchForm(formSubmitEvent) {
  */
 function orderBy(column, order) {
     console.log("sorting movie list");
-    window.location.replace("index.html?criteria=" + column
+    window.location.replace("index.html?limit=" + listLimit
+        + "&criteria=" + column
         + "&order=" + order
-        + "&limit=" + listLimit
+        + "&page=1"
         + "&searchTitle=" + listSearchTitle
         + "&searchYear=" + listSearchYear
         + "&searchDirector=" + listSearchDirector
@@ -111,6 +112,7 @@ searchForm.submit(submitSearchForm);
 let listLimit = getParameterByName("limit");
 let listCriteria = getParameterByName("criteria");
 let listOrder = getParameterByName("order");
+let listPage = getParameterByName("page");
 let listSearchTitle = getParameterByName("searchTitle");
 let listSearchYear = getParameterByName("searchYear");
 let listSearchDirector = getParameterByName("searchDirector");
@@ -121,6 +123,7 @@ let listBrowseTitle = getParameterByName("browseTitle");
 if (listLimit == null) {listLimit = ""};
 if (listCriteria == null) {listCriteria = ""};
 if (listOrder == null) {listOrder = ""};
+if (listPage == null) {listPage = ""};
 if (listSearchTitle == null) {listSearchTitle = ""};
 if (listSearchYear == null) {listSearchYear = ""};
 if (listSearchDirector == null) {listSearchDirector = ""};
@@ -131,9 +134,10 @@ if (listBrowseTitle == null) {listBrowseTitle = ""};
 jQuery.ajax({
     dataType: "json",
     method: "GET",
-    url: "api/movie-list?criteria=" + listCriteria
+    url: "api/movie-list?limit=" + listLimit
+         + "&criteria=" + listCriteria
          + "&order=" + listOrder
-         + "&limit=" + listLimit
+         + "&page=" + listPage
          + "&searchTitle=" + listSearchTitle
          + "&searchYear=" + listSearchYear
          + "&searchDirector=" + listSearchDirector
