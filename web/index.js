@@ -99,7 +99,9 @@ function orderBy(column, order) {
         + "&searchTitle=" + listSearchTitle
         + "&searchYear=" + listSearchYear
         + "&searchDirector=" + listSearchDirector
-        + "&searchStar=" + listSearchStar);
+        + "&searchStar=" + listSearchStar
+        + "&browseGenre=" + listBrowseGenre
+        + "&browseTitle=" + listBrowseTitle);
 }
 
 let searchForm = jQuery("#search_form");
@@ -113,6 +115,8 @@ let listSearchTitle = getParameterByName("searchTitle");
 let listSearchYear = getParameterByName("searchYear");
 let listSearchDirector = getParameterByName("searchDirector");
 let listSearchStar = getParameterByName("searchStar");
+let listBrowseGenre = getParameterByName("browseGenre");
+let listBrowseTitle = getParameterByName("browseTitle");
 
 if (listLimit == null) {listLimit = ""};
 if (listCriteria == null) {listCriteria = ""};
@@ -121,7 +125,8 @@ if (listSearchTitle == null) {listSearchTitle = ""};
 if (listSearchYear == null) {listSearchYear = ""};
 if (listSearchDirector == null) {listSearchDirector = ""};
 if (listSearchStar == null) {listSearchStar = ""};
-
+if (listBrowseGenre == null) {listBrowseGenre = ""};
+if (listBrowseTitle == null) {listBrowseTitle = ""};
 
 jQuery.ajax({
     dataType: "json",
@@ -132,6 +137,8 @@ jQuery.ajax({
          + "&searchTitle=" + listSearchTitle
          + "&searchYear=" + listSearchYear
          + "&searchDirector=" + listSearchDirector
-         + "&searchStar=" + listSearchStar,
+         + "&searchStar=" + listSearchStar
+         + "&browseGenre=" + listBrowseGenre
+         + "&browseTitle=" + listBrowseTitle,
     success: (resultData) => handleMovieListResult(resultData)
 });

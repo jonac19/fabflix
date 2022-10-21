@@ -47,6 +47,8 @@ public class MovieListServlet extends HttpServlet {
         String searchYear = request.getParameter("searchYear");
         String searchDirector = request.getParameter("searchDirector");
         String searchStar = request.getParameter("searchStar");
+        String browseGenre = request.getParameter("browseGenre");
+        String browseTitle = request.getParameter("browseTitle");
 
         // The log messages can be found in localhost log
         request.getServletContext().log("getting criteria: " + criteria);
@@ -56,16 +58,18 @@ public class MovieListServlet extends HttpServlet {
         request.getServletContext().log("getting searchYear:" + searchYear);
         request.getServletContext().log("getting searchDirector:" + searchDirector);
         request.getServletContext().log("getting searchStar:" + searchStar);
+        request.getServletContext().log("getting browseGenre:" + browseGenre);
+        request.getServletContext().log("getting browseTitle:" + browseTitle);
 
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
 
         // Get a connection from dataSource and let resource manager close the connection after usage.
         try (Connection conn = dataSource.getConnection()) {
-            String query = constructQuery(criteria, order, searchTitle, searchYear, searchDirector, searchStar);
+            String query = constructQuery(criteria, order, searchTitle, searchYear, searchDirector, searchStar, browseGenre, browseTitle);
 
             // Set the additional parameters
-            PreparedStatement statement = prepareStatement(conn, query, searchTitle, searchYear, searchDirector, searchStar, limit);
+            PreparedStatement statement = prepareStatement(conn, query, searchTitle, searchYear, searchDirector, searchStar, browseGenre, browseTitle, limit);
 
             // Perform the query
             ResultSet rs = statement.executeQuery();
@@ -127,7 +131,8 @@ public class MovieListServlet extends HttpServlet {
      * @return Query to be processed by MySQL
      * @throws Exception Invalid parameters in URL
      */
-    private String constructQuery(String criteria, String order, String searchTitle, String searchYear, String searchDirector, String searchStar) throws Exception {
+    private String constructQuery(String criteria, String order, String searchTitle, String searchYear, String searchDirector,
+                                  String searchStar, String browseGenre, String browseTitle) throws Exception {
         String query = "SELECT " +
                             "M.id, " +
                             "M.title, " +
@@ -191,10 +196,18 @@ public class MovieListServlet extends HttpServlet {
             query += "AND M.director LIKE ? ";
         }
 
+        if (browseTitle != "") {
+            query += "AND M.title LIKE ?";
+        }
+
         query += "GROUP BY M.id ";
 
         if (searchStar != "") {
             query += "HAVING sum(S.name LIKE ?) > 0 ";
+        }
+
+        if (browseGenre != "") {
+            query += "HAVING sum(G.id = ?) > 0 ";
         }
 
         query += "ORDER BY ";
@@ -222,7 +235,8 @@ public class MovieListServlet extends HttpServlet {
         return query;
     }
 
-    private PreparedStatement prepareStatement(Connection conn, String query, String searchTitle, String searchYear, String searchDirector, String searchStar, String limit) throws Exception{
+    private PreparedStatement prepareStatement(Connection conn, String query, String searchTitle, String searchYear, String searchDirector,
+                                               String searchStar, String browseGenre, String browseTitle, String limit) throws Exception{
         // Declare our statement
         PreparedStatement statement = conn.prepareStatement(query);
 
@@ -243,8 +257,18 @@ public class MovieListServlet extends HttpServlet {
             index += 1;
         }
 
+        if (browseTitle != "") {
+            statement.setString(index, browseTitle + "%");
+            index += 1;
+        }
+
         if (searchStar != "") {
             statement.setString(index, "%" + searchStar + "%");
+            index += 1;
+        }
+
+        if (browseGenre != "") {
+            statement.setString(index, browseGenre);
             index += 1;
         }
 
