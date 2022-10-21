@@ -17,3 +17,17 @@ a:hover {
     text-decoration: none;
     color: #fba92c;
 }
+
+.navbar .dropdown-menu {
+    background-color: #343a40;
+    border: 1px solid #FFFFFF;
+}
+
+.navbar .dropdown-item:hover {
+    background-color: #292b2c;
+    color: #fba92c;
+}
+
+.navbar .dropdown-menu button {
+    color: #FFFFFF;
+}
