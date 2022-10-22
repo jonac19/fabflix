@@ -31,3 +31,15 @@ a:hover {
 .navbar .dropdown-menu button {
     color: #FFFFFF;
 }
+
+.page-link {
+    color: #ffc107;
+    background-color: #000000;
+    border: 1px solid #ffc107;
+}
+
+.page-link:hover {
+    color: #000000;
+    background-color: #ffc107;
+    border: 1px solid #ffc107;
+}
