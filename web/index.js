@@ -76,26 +76,69 @@ function handleMovieListResult(resultData) {
     }
 }
 
+/**
+ * Submits form content containing search title
+ * @param formSubmitEvent
+ */
+function submitSearchForm(formSubmitEvent) {
+    console.log("submit search form");
+    formSubmitEvent.preventDefault();
+    window.location.replace("index.html?" + searchForm.serialize());
+}
+
+/**
+ * Orders movie list according to given parameters
+ * @param column Column to order the movie list by
+ * @param order Order to order the movie list by
+ */
+function orderBy(column, order) {
+    console.log("sorting movie list");
+    window.location.replace("index.html?criteria=" + column
+        + "&order=" + order
+        + "&limit=" + listLimit
+        + "&searchTitle=" + listSearchTitle
+        + "&searchYear=" + listSearchYear
+        + "&searchDirector=" + listSearchDirector
+        + "&searchStar=" + listSearchStar
+        + "&browseGenre=" + listBrowseGenre
+        + "&browseTitle=" + listBrowseTitle);
+}
+
+let searchForm = jQuery("#search_form");
+searchForm.submit(submitSearchForm);
+
 // Get movie list parameters from URL
-// Use default values if parameters not found
 let listLimit = getParameterByName("limit");
-if (listLimit == null) {
-    listLimit = "20";
-}
-
 let listCriteria = getParameterByName("criteria");
-if (listCriteria == null) {
-    listCriteria = "rating";
-}
-
 let listOrder = getParameterByName("order");
-if (listOrder == null) {
-    listOrder = "desc";
-}
+let listSearchTitle = getParameterByName("searchTitle");
+let listSearchYear = getParameterByName("searchYear");
+let listSearchDirector = getParameterByName("searchDirector");
+let listSearchStar = getParameterByName("searchStar");
+let listBrowseGenre = getParameterByName("browseGenre");
+let listBrowseTitle = getParameterByName("browseTitle");
+
+if (listLimit == null) {listLimit = ""};
+if (listCriteria == null) {listCriteria = ""};
+if (listOrder == null) {listOrder = ""};
+if (listSearchTitle == null) {listSearchTitle = ""};
+if (listSearchYear == null) {listSearchYear = ""};
+if (listSearchDirector == null) {listSearchDirector = ""};
+if (listSearchStar == null) {listSearchStar = ""};
+if (listBrowseGenre == null) {listBrowseGenre = ""};
+if (listBrowseTitle == null) {listBrowseTitle = ""};
 
 jQuery.ajax({
     dataType: "json",
     method: "GET",
-    url: "api/movie-list?criteria=" + listCriteria + "&order=" + listOrder + "&limit=" + listLimit ,
+    url: "api/movie-list?criteria=" + listCriteria
+         + "&order=" + listOrder
+         + "&limit=" + listLimit
+         + "&searchTitle=" + listSearchTitle
+         + "&searchYear=" + listSearchYear
+         + "&searchDirector=" + listSearchDirector
+         + "&searchStar=" + listSearchStar
+         + "&browseGenre=" + listBrowseGenre
+         + "&browseTitle=" + listBrowseTitle,
     success: (resultData) => handleMovieListResult(resultData)
 });
