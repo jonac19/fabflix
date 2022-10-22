@@ -18,6 +18,12 @@ a:hover {
     color: #fba92c;
 }
 
+.container-bg {
+    background-color: #212529;
+    border-radius: 25px;
+    margin: 5px;
+    padding: 25px;
+}
 .navbar .dropdown-menu {
     background-color: #343a40;
     border: 1px solid #FFFFFF;
