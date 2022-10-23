@@ -15,20 +15,6 @@
     <title>Movie List</title>
 </head>
 <body>
-
-    <!-- Session info & current Cart -->
-    <p id="sessionID"></p>
-    <p id="lastAccessTime"></p>
-    <form ACTION="#" id="cart" METHOD="post">
-        <label>Item Purchased</label>
-        <br>
-        <label>
-            <input name="item" required="required" type="text">
-        </label>
-        <input type="submit" VALUE="add">
-    </form>
-    <div id="item_list"></div>
-
     <nav class='navbar navbar-expand-lg navbar'>
         <div class='navbar-brand'>
             <img src='images/fabflix-logo.png' alt='Fabflix logo' height=50>
@@ -70,13 +56,28 @@
         <tbody id=movie_list_table_body></tbody>
     </table>
 
+    <!-- Session info & current Cart -->
+    <p>session Info</p>
+    <p id="sessionID"></p>
+    <p id="lastAccessTime"></p>
+    <form ACTION="#" id="cart" METHOD="post">
+        <label>Item Purchased</label>
+        <br>
+        <label>
+            <input name="item" required="required" type="text">
+        </label>
+        <input type="submit" VALUE="add">
+    </form>
+    <div id="item_list"></div>
+
+    <a href="items" style="color:deepskyblue;"><u>Shopping Cart Items</u></a>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
     <script src="index.js"></script>
 
-    <a href="items" style="color:deepskyblue;"><u>Shopping Cart Items</u></a>
 
 </body>
 </html>
