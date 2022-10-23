@@ -65,6 +65,13 @@ function handleMovieResult(resultData) {
         rowHTML += "</td>";
 
         rowHTML += "<td>" + resultData[i]["movie_rating"] + "</td>";
+
+        // Buy item button
+        rowHTML += "<td>";
+        rowHTML += "<a href='items?newItem=" + resultData[i]["movie_id"] + "'>Buy Movie</a>";
+        rowHTML += "</td>";
+
+
         rowHTML += "</tr>";
 
         // Append the row created to the table body, which will refresh the page
