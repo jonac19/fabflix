@@ -9,7 +9,7 @@ function handleBrowseGenreResult(resultData) {
 
     for (let i = 0; i < resultData.length; i++) {
         let colHTML = "";
-        colHTML += "<a class='col-3' href='index.html?browseGenre='" + resultData[i]['genre_id'] + ">" +
+        colHTML += "<a class='col-3' href='index.html?browseGenre=" + resultData[i]['genre_id'] + "'>" +
             resultData[i]['genre_name'] +
             "</a>";
 
