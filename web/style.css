@@ -1,4 +1,9 @@
+html {
+    height: 100%;
+}
+
 body {
+    height: 100%;
     background-color: #000000;
     color: #FFFFFF;
     padding: 24px;
@@ -16,4 +21,61 @@ a {
 a:hover {
     text-decoration: none;
     color: #fba92c;
+}
+
+.form-bg {
+    width: 60%;
+    margin: auto;
+    padding: 20px;
+    border-radius: 25px;
+    background-color: #212529;
+}
+
+.container-bg {
+    background-color: #212529;
+    border-radius: 25px;
+    margin: 5px;
+    padding: 25px;
+}
+
+.navbar .dropdown-menu {
+    background-color: #343a40;
+    border: 1px solid #FFFFFF;
+}
+
+.navbar .dropdown-item:hover {
+    background-color: #292b2c;
+    color: #fba92c;
+}
+
+.navbar .dropdown-menu button {
+    color: #FFFFFF;
+}
+
+.bg-black {
+    background-color: #000000;
+}
+
+.bg-myPrimary {
+    background-color: #fba92c;
+}
+
+.text-myPrimary {
+    color: #fba92c;
+}
+
+.padding-0 {
+    padding: 0;
+}
+
+.page-link {
+    color: #ffc107;
+    background-color: #000000;
+    border: 1px solid #ffc107;
+}
+
+.page-link:hover {
+    color: #000000;
+    background-color: #ffc107;
+    border: 1px solid #ffc107;
 }

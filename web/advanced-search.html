@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="icon" type="image/png" href="images/favicon-32x32.png" sizes="32x32" />
+  <link rel="icon" type="image/png" href="images/favicon-16x16.png" sizes="16x16" />
+  <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+
+  <title>Advanced Search</title>
+</head>
+<body>
+  <header>
+    <img src='images/fabflix-logo.png' alt='Fabflix logo' height=65>
+    <h1>Advanced Search</h1>
+  </header>
+
+  <nav>
+    <a class='btn btn-secondary' href='index.html'>Movie List</a>
+  </nav>
+
+  <form id="advanced_search_form" class="form-bg" action="#">
+    <div class="form-group">
+      <label><b>Title</b></label>
+      <input class="form-control" name="searchTitle" placeholder="Enter Title" type="text">
+    </div>
+
+    <div class="form-group">
+      <label><b>Year</b></label>
+      <input class="form-control" name="searchYear" placeholder="Enter Year" type="number">
+    </div>
+
+    <div class="form-group">
+      <label><b>Director</b></label>
+      <input class="form-control" name="searchDirector" placeholder="Enter Director" type="text">
+    </div>
+
+    <div class="form-group">
+      <label><b>Star</b></label>
+      <input class="form-control" name="searchStar" placeholder="Enter Star" type="text">
+    </div>
+
+    <button class="btn btn-outline-warning my-2 my-sm-0" type="submit">Search</button>
+  </form>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+  <script src="advanced-search.js"></script>
+</body>
+</html>

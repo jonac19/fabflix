@@ -1,0 +1,53 @@
+<!-- This page will be redirected from any url if you are not logged in -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="icon" type="image/png" href="images/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="images/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+
+    <title>Login to Fabflix</title>
+  </head>
+  <body class="bg-myPrimary padding-0">
+    <div class="jumbotron jumbotron-fluid mb-0 bg-black">
+      <div class="container">
+        <h1 class="display-4 text-myPrimary">Login to Fabflix</h1>
+        <p class="lead">Have the largest collection of movies on the Internet at your fingertips!</p>
+        <hr class="my-4">
+        <form id="login_form" class="form-bg" method="post" action="#">
+          <label><b>Username</b></label>
+          <label>
+            <input name="username" placeholder="Enter Username" type="text">
+          </label>
+          <br>
+          <label><b>Password</b></label>
+          <label>
+            <input name="password" placeholder="Enter Password" type="password">
+          </label>
+          <br>
+          <input type="submit" value="Login">
+        </form>
+
+
+        <div id="login_error_message"></div>
+      </div>
+    </div>
+
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+      <path fill="#000000" fill-opacity="1" d="M0,224L34.3,240C68.6,256,137,288,206,250.7C274.3,213,343,107,411,90.7C480,75,549,149,617,181.3C685.7,213,754,203,823,181.3C891.4,160,960,128,1029,144C1097.1,160,1166,224,1234,229.3C1302.9,235,1371,181,1406,154.7L1440,128L1440,0L1405.7,0C1371.4,0,1303,0,1234,0C1165.7,0,1097,0,1029,0C960,0,891,0,823,0C754.3,0,686,0,617,0C548.6,0,480,0,411,0C342.9,0,274,0,206,0C137.1,0,69,0,34,0L0,0Z"></path>
+    </svg>
+
+    <!-- include jQuery-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- include our own JS file -->
+    <script src="./login.js"></script>
+
+  </body>
+</html>

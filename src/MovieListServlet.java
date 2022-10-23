@@ -40,27 +40,38 @@ public class MovieListServlet extends HttpServlet {
         response.setContentType("application/json"); // Response mime type
 
         // Retrieve parameters from url request.
+        String limit = request.getParameter("limit");
         String criteria = request.getParameter("criteria");
         String order = request.getParameter("order");
-        String limit = request.getParameter("limit");
+        String page = request.getParameter("page");
+        String searchTitle = request.getParameter("searchTitle");
+        String searchYear = request.getParameter("searchYear");
+        String searchDirector = request.getParameter("searchDirector");
+        String searchStar = request.getParameter("searchStar");
+        String browseGenre = request.getParameter("browseGenre");
+        String browseTitle = request.getParameter("browseTitle");
 
         // The log messages can be found in localhost log
+        request.getServletContext().log("getting limit: " + limit);
         request.getServletContext().log("getting criteria: " + criteria);
         request.getServletContext().log("getting order: " + order);
-        request.getServletContext().log("getting limit: " + limit);
+        request.getServletContext().log("getting page: " + page);
+        request.getServletContext().log("getting searchTitle:" + searchTitle);
+        request.getServletContext().log("getting searchYear:" + searchYear);
+        request.getServletContext().log("getting searchDirector:" + searchDirector);
+        request.getServletContext().log("getting searchStar:" + searchStar);
+        request.getServletContext().log("getting browseGenre:" + browseGenre);
+        request.getServletContext().log("getting browseTitle:" + browseTitle);
 
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
 
         // Get a connection from dataSource and let resource manager close the connection after usage.
         try (Connection conn = dataSource.getConnection()) {
-            String query = constructQuery(criteria, order);
+            String query = constructQuery(criteria, order, searchTitle, searchYear, searchDirector, searchStar, browseGenre, browseTitle);
 
-            // Declare our statement
-            PreparedStatement statement = conn.prepareStatement(query);
-
-            // Set the LIMIT parameter
-            statement.setInt(1, parseInt(limit));
+            // Set the additional parameters
+            PreparedStatement statement = prepareStatement(conn, query, limit, page, searchTitle, searchYear, searchDirector, searchStar, browseGenre, browseTitle);
 
             // Perform the query
             ResultSet rs = statement.executeQuery();
@@ -120,42 +131,176 @@ public class MovieListServlet extends HttpServlet {
      * @param criteria Column name to sort movies by
      * @param order Sorting order either ascending or descending
      * @return Query to be processed by MySQL
-     * @throws Exception
+     * @throws Exception Invalid parameters in URL
      */
-    private String constructQuery(String criteria, String order) throws Exception {
-        String query = "SELECT * FROM movies M, ratings R WHERE M.id = R.movieId ORDER BY ";
+    private String constructQuery(String criteria, String order, String searchTitle, String searchYear, String searchDirector,
+                                  String searchStar, String browseGenre, String browseTitle) throws Exception {
+        String query = "SELECT " +
+                            "M.id, " +
+                            "M.title, " +
+                            "M.year, " +
+                            "M.director, " +
+                            "R.rating, " +
+                            "GROUP_CONCAT(DISTINCT S.id SEPARATOR ',') AS genre_ids, " +
+                            "GROUP_CONCAT(DISTINCT G.id SEPARATOR ',') AS star_ids " +
+                        "FROM " +
+                            "(SELECT " +
+                                "R.movieId, " +
+                                "R.rating " +
+                            "FROM movies AS M, ratings AS R " +
+                            "WHERE M.id = R.movieId " +
+                            "ORDER BY ";
 
-        // Set the parameters in the query
-        if (criteria.equals("rating")) {
+        if (criteria == "" || criteria.equals("rating")) {
             query += "rating ";
         } else if (criteria.equals("title")) {
             query += "title ";
-        } else if (criteria.equals("year")) {
-            query += "year ";
         } else {
             throw new Exception("Invalid criteria for sorting");
         }
 
-        if (order.equals("asc")) {
-            query += "ASC ";
-        } else if (order.equals("desc")) {
-            query += "DESC ";
+        if (order == "" || order.equals("desc")) {
+            query += "DESC, ";
+        } else if (order.equals("asc")) {
+            query += "ASC, ";
         } else {
             throw new Exception("Invalid order for sorting");
         }
 
-        query += "LIMIT ?";
+        if (criteria == "" || criteria.equals("rating")) {
+            query += "title ";
+        } else {
+            query += "rating ";
+        }
 
-        // Query will be structured as
-        // "SELECT * FROM movies M, ratings R WHERE M.id = R.movieId ORDER BY [rating/title/year] [ASC/DESC] LIMIT ?"
+        query +=    ") AS R, " +
+                    "movies AS M, " +
+                    "stars AS S, " +
+                    "stars_in_movies AS SM, " +
+                    "genres AS G, " +
+                    "genres_in_movies AS GM " +
+                "WHERE " +
+                    "M.id = R.movieId " +
+                    "AND M.id = SM.movieId " +
+                    "AND S.id = SM.starId " +
+                    "AND M.id = GM.movieId " +
+                    "AND G.id = GM.genreId ";
+
+        if (searchTitle != "") {
+            query += "AND M.title LIKE ? ";
+        }
+
+        if (searchYear != "") {
+            query += "AND M.year = ? ";
+        }
+
+        if (searchDirector != "") {
+            query += "AND M.director LIKE ? ";
+        }
+
+        if (browseTitle != "") {
+            query += "AND M.title LIKE ?";
+        }
+
+        query += "GROUP BY M.id ";
+
+        if (searchStar != "") {
+            query += "HAVING sum(S.name LIKE ?) > 0 ";
+        }
+
+        if (browseGenre != "") {
+            query += "HAVING sum(G.id = ?) > 0 ";
+        }
+
+        query += "ORDER BY ";
+
+        if (criteria == "" || criteria.equals("rating")) {
+            query += "rating ";
+        } else {
+            query += "title ";
+        }
+
+        if (order == "" || order.equals("desc")) {
+            query += "DESC, ";
+        } else {
+            query += "ASC, ";
+        }
+
+        if (criteria == "" || criteria.equals("rating")) {
+            query += "title ";
+        } else {
+            query += "rating ";
+        }
+
+        query += "LIMIT ? " +
+                 "OFFSET ? ";
+
         return query;
+    }
+
+    private PreparedStatement prepareStatement(Connection conn, String query, String limit, String page,
+                                               String searchTitle, String searchYear, String searchDirector,
+                                               String searchStar, String browseGenre, String browseTitle) throws Exception{
+        // Declare our statement
+        PreparedStatement statement = conn.prepareStatement(query);
+
+        int index = 1;
+
+        if (searchTitle != "") {
+            statement.setString(index, "%" + searchTitle + "%");
+            index += 1;
+        }
+
+        if (searchYear != "") {
+            statement.setInt(index, parseInt(searchYear));
+            index += 1;
+        }
+
+        if (searchDirector != "") {
+            statement.setString(index, "%" + searchDirector + "%");
+            index += 1;
+        }
+
+        if (browseTitle != "") {
+            statement.setString(index, browseTitle + "%");
+            index += 1;
+        }
+
+        if (searchStar != "") {
+            statement.setString(index, "%" + searchStar + "%");
+            index += 1;
+        }
+
+        if (browseGenre != "") {
+            statement.setString(index, browseGenre);
+            index += 1;
+        }
+
+        if (limit != "") {
+            statement.setInt(index, parseInt(limit));
+        } else {
+            statement.setInt(index, 20);
+        }
+        index += 1;
+
+        if (page != "") {
+            if (limit != "") {
+                statement.setInt(index, parseInt(limit) * (parseInt(page) - 1));
+            } else {
+                statement.setInt(index, 20 * (parseInt(page) - 1));
+            }
+        } else {
+            statement.setInt(index, 0);
+        }
+
+        return statement;
     }
 
     /**
      * @param conn Existing connection to MySQL database
      * @param movie_id Movie ID to obtain genres for
      * @return Array containing all genres associated with the given movie
-     * @throws SQLException
+     * @throws SQLException Failed MySQL query
      */
     private JsonArray getGenres(Connection conn, String movie_id) throws SQLException {
         String query = "SELECT * FROM genres G, genres_in_movies GM WHERE G.id = GM.genreId AND GM.movieId = ?";
@@ -193,7 +338,7 @@ public class MovieListServlet extends HttpServlet {
      * @param conn Existing connection to MySQL database
      * @param movie_id Movie ID to obtain genres for
      * @return Array containing all stars associated with the given movie
-     * @throws SQLException
+     * @throws SQLException Failed MySQL query
      */
     private JsonArray getStars(Connection conn, String movie_id) throws SQLException {
         String query = "SELECT * FROM stars S, stars_in_movies SM WHERE S.id = SM.starId AND SM.movieId = ?";
