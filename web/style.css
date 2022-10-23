@@ -25,3 +25,22 @@ form {
     border-radius: 25px;
     background-color: #212529;
 }
+.container-bg {
+    background-color: #212529;
+    border-radius: 25px;
+    margin: 5px;
+    padding: 25px;
+}
+.navbar .dropdown-menu {
+    background-color: #343a40;
+    border: 1px solid #FFFFFF;
+}
+
+.navbar .dropdown-item:hover {
+    background-color: #292b2c;
+    color: #fba92c;
+}
+
+.navbar .dropdown-menu button {
+    color: #FFFFFF;
+}
