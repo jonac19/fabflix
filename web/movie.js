@@ -68,7 +68,7 @@ function handleMovieResult(resultData) {
 
         // Buy item button
         rowHTML += "<td>";
-        rowHTML += "<a href='items?newItem=" + resultData[i]["movie_id"] + "'>Buy Movie</a>";
+        rowHTML += "<a href='items.html?newItem=" + resultData[i]["movie_id"] + "'>Buy Movie</a>";
         rowHTML += "</td>";
 
 

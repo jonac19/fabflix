@@ -18,9 +18,11 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 // Declaring a WebServlet called ItemServlet, which maps to url "api/items"
-@WebServlet(name = "ItemServlet", urlPatterns = "api/items")
+@WebServlet(name = "ItemServlet", urlPatterns = "/api/items")
 
 public class ItemsServlet extends HttpServlet {
+    private static final long serialVersionUID = 6L;
+
 
     // Create a dataSource which registered in web.
     private DataSource dataSource;
@@ -31,7 +33,7 @@ public class ItemsServlet extends HttpServlet {
             e.printStackTrace();
         }
     }
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         // Get a instance of current session on the request
         HttpSession session = request.getSession();
