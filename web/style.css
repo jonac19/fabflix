@@ -18,6 +18,13 @@ a:hover {
     color: #fba92c;
 }
 
+form {
+    width: 60%;
+    margin: auto;
+    padding: 20px;
+    border-radius: 25px;
+    background-color: #212529;
+}
 .container-bg {
     background-color: #212529;
     border-radius: 25px;
