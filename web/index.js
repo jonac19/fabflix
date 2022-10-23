@@ -24,8 +24,6 @@ function getParameterByName(target) {
  * @param resultData jsonObject
  */
 function handleMovieListResult(resultData) {
-    console.log("handleMovieListResult: populating movie list table from resultData");
-
     // Populate the movie list table
     // Find the empty table body by id "movie_list_table_body"
     let movieListTableBodyElement = jQuery("#movie_list_table_body");
@@ -76,6 +74,47 @@ function handleMovieListResult(resultData) {
     }
 }
 
+function handleMovieListPaginationResult(resultData) {
+    let movieListPaginationElement = jQuery("#movie_list_pagination");
+
+    let prevHTML = "<li class='page-item ";
+    if (listPage == "1") {
+        prevHTML += "disabled'";
+    }
+    prevHTML += "'><a class='page-link' href="
+        + "index.html?limit=" + listLimit
+        + "&criteria=" + listCriteria
+        + "&order=" + listOrder
+        + "&page=" + (parseInt(listPage) - 1).toString()
+        + "&searchTitle=" + listSearchTitle
+        + "&searchYear=" + listSearchYear
+        + "&searchDirector=" + listSearchDirector
+        + "&searchStar=" + listSearchStar
+        + "&browseGenre=" + listBrowseGenre
+        + "&browseTitle=" + listBrowseTitle;
+
+    prevHTML += ">Previous Page</a></li>";
+    movieListPaginationElement.append(prevHTML);
+
+    let nextHTML = "<li class='page-item ";
+    if (resultData.length == 0) {
+        nextHTML += "disabled'";
+    }
+    nextHTML += "'><a class='page-link' role='button' href="
+        + "index.html?limit=" + listLimit
+        + "&criteria=" + listCriteria
+        + "&order=" + listOrder
+        + "&page=" + (parseInt(listPage) + 1).toString()
+        + "&searchTitle=" + listSearchTitle
+        + "&searchYear=" + listSearchYear
+        + "&searchDirector=" + listSearchDirector
+        + "&searchStar=" + listSearchStar
+        + "&browseGenre=" + listBrowseGenre
+        + "&browseTitle=" + listBrowseTitle;
+    nextHTML += ">Next Page</a></li>";
+    movieListPaginationElement.append(nextHTML);
+}
+
 /**
  * Submits form content containing search title
  * @param formSubmitEvent
@@ -93,9 +132,10 @@ function submitSearchForm(formSubmitEvent) {
  */
 function orderBy(column, order) {
     console.log("sorting movie list");
-    window.location.replace("index.html?criteria=" + column
+    window.location.replace("index.html?limit=" + listLimit
+        + "&criteria=" + column
         + "&order=" + order
-        + "&limit=" + listLimit
+        + "&page=1"
         + "&searchTitle=" + listSearchTitle
         + "&searchYear=" + listSearchYear
         + "&searchDirector=" + listSearchDirector
@@ -111,6 +151,7 @@ searchForm.submit(submitSearchForm);
 let listLimit = getParameterByName("limit");
 let listCriteria = getParameterByName("criteria");
 let listOrder = getParameterByName("order");
+let listPage = getParameterByName("page");
 let listSearchTitle = getParameterByName("searchTitle");
 let listSearchYear = getParameterByName("searchYear");
 let listSearchDirector = getParameterByName("searchDirector");
@@ -118,9 +159,10 @@ let listSearchStar = getParameterByName("searchStar");
 let listBrowseGenre = getParameterByName("browseGenre");
 let listBrowseTitle = getParameterByName("browseTitle");
 
-if (listLimit == null) {listLimit = ""};
-if (listCriteria == null) {listCriteria = ""};
-if (listOrder == null) {listOrder = ""};
+if (listLimit == null) {listLimit = "20"};
+if (listCriteria == null) {listCriteria = "rating"};
+if (listOrder == null) {listOrder = "desc"};
+if (listPage == null) {listPage = "1"};
 if (listSearchTitle == null) {listSearchTitle = ""};
 if (listSearchYear == null) {listSearchYear = ""};
 if (listSearchDirector == null) {listSearchDirector = ""};
@@ -131,9 +173,10 @@ if (listBrowseTitle == null) {listBrowseTitle = ""};
 jQuery.ajax({
     dataType: "json",
     method: "GET",
-    url: "api/movie-list?criteria=" + listCriteria
+    url: "api/movie-list?limit=" + listLimit
+         + "&criteria=" + listCriteria
          + "&order=" + listOrder
-         + "&limit=" + listLimit
+         + "&page=" + listPage
          + "&searchTitle=" + listSearchTitle
          + "&searchYear=" + listSearchYear
          + "&searchDirector=" + listSearchDirector
@@ -141,4 +184,20 @@ jQuery.ajax({
          + "&browseGenre=" + listBrowseGenre
          + "&browseTitle=" + listBrowseTitle,
     success: (resultData) => handleMovieListResult(resultData)
+});
+
+jQuery.ajax({
+    dataType: "json",
+    method: "GET",
+    url: "api/movie-list?limit=" + listLimit
+        + "&criteria=" + listCriteria
+        + "&order=" + listOrder
+        + "&page=" + (parseInt(listPage) + 1).toString()
+        + "&searchTitle=" + listSearchTitle
+        + "&searchYear=" + listSearchYear
+        + "&searchDirector=" + listSearchDirector
+        + "&searchStar=" + listSearchStar
+        + "&browseGenre=" + listBrowseGenre
+        + "&browseTitle=" + listBrowseTitle,
+    success: (resultData) => handleMovieListPaginationResult(resultData)
 });

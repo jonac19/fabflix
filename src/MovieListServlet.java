@@ -40,9 +40,10 @@ public class MovieListServlet extends HttpServlet {
         response.setContentType("application/json"); // Response mime type
 
         // Retrieve parameters from url request.
+        String limit = request.getParameter("limit");
         String criteria = request.getParameter("criteria");
         String order = request.getParameter("order");
-        String limit = request.getParameter("limit");
+        String page = request.getParameter("page");
         String searchTitle = request.getParameter("searchTitle");
         String searchYear = request.getParameter("searchYear");
         String searchDirector = request.getParameter("searchDirector");
@@ -51,9 +52,10 @@ public class MovieListServlet extends HttpServlet {
         String browseTitle = request.getParameter("browseTitle");
 
         // The log messages can be found in localhost log
+        request.getServletContext().log("getting limit: " + limit);
         request.getServletContext().log("getting criteria: " + criteria);
         request.getServletContext().log("getting order: " + order);
-        request.getServletContext().log("getting limit: " + limit);
+        request.getServletContext().log("getting page: " + page);
         request.getServletContext().log("getting searchTitle:" + searchTitle);
         request.getServletContext().log("getting searchYear:" + searchYear);
         request.getServletContext().log("getting searchDirector:" + searchDirector);
@@ -69,7 +71,7 @@ public class MovieListServlet extends HttpServlet {
             String query = constructQuery(criteria, order, searchTitle, searchYear, searchDirector, searchStar, browseGenre, browseTitle);
 
             // Set the additional parameters
-            PreparedStatement statement = prepareStatement(conn, query, searchTitle, searchYear, searchDirector, searchStar, browseGenre, browseTitle, limit);
+            PreparedStatement statement = prepareStatement(conn, query, limit, page, searchTitle, searchYear, searchDirector, searchStar, browseGenre, browseTitle);
 
             // Perform the query
             ResultSet rs = statement.executeQuery();
@@ -230,13 +232,15 @@ public class MovieListServlet extends HttpServlet {
             query += "rating ";
         }
 
-        query += "LIMIT ? ";
+        query += "LIMIT ? " +
+                 "OFFSET ? ";
 
         return query;
     }
 
-    private PreparedStatement prepareStatement(Connection conn, String query, String searchTitle, String searchYear, String searchDirector,
-                                               String searchStar, String browseGenre, String browseTitle, String limit) throws Exception{
+    private PreparedStatement prepareStatement(Connection conn, String query, String limit, String page,
+                                               String searchTitle, String searchYear, String searchDirector,
+                                               String searchStar, String browseGenre, String browseTitle) throws Exception{
         // Declare our statement
         PreparedStatement statement = conn.prepareStatement(query);
 
@@ -276,6 +280,17 @@ public class MovieListServlet extends HttpServlet {
             statement.setInt(index, parseInt(limit));
         } else {
             statement.setInt(index, 20);
+        }
+        index += 1;
+
+        if (page != "") {
+            if (limit != "") {
+                statement.setInt(index, parseInt(limit) * (parseInt(page) - 1));
+            } else {
+                statement.setInt(index, 20 * (parseInt(page) - 1));
+            }
+        } else {
+            statement.setInt(index, 0);
         }
 
         return statement;

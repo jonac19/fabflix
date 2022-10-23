@@ -23,6 +23,13 @@ a:hover {
     color: #fba92c;
 }
 
+form {
+    width: 60%;
+    margin: auto;
+    padding: 20px;
+    border-radius: 25px;
+    background-color: #212529;
+}
 .container-bg {
     background-color: #212529;
     border-radius: 25px;
@@ -58,4 +65,14 @@ a:hover {
 
 .padding-0 {
     padding: 0;
+.page-link {
+    color: #ffc107;
+    background-color: #000000;
+    border: 1px solid #ffc107;
+}
+
+.page-link:hover {
+    color: #000000;
+    background-color: #ffc107;
+    border: 1px solid #ffc107;
 }
