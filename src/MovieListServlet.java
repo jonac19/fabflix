@@ -199,7 +199,7 @@ public class MovieListServlet extends HttpServlet {
         }
 
         if (browseTitle != "") {
-            query += "AND M.title LIKE ?";
+            query += "AND M.title LIKE ? ";
         }
 
         query += "GROUP BY M.id ";
