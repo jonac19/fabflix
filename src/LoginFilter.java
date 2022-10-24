@@ -50,6 +50,10 @@ public class LoginFilter implements Filter {
         allowedURIs.add("login.html");
         allowedURIs.add("login.js");
         allowedURIs.add("api/login");
+        allowedURIs.add("style.css");
+        allowedURIs.add("images/favicon-32x32.png");
+        allowedURIs.add("images/favicon-16x16.png");
+        allowedURIs.add("images/favicon.ico");
     }
 
     public void destroy() {
