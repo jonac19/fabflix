@@ -76,7 +76,7 @@ function handleMovieResult(resultData) {
         //     resultData[i]["movie_title"] +
         //     " added to cart\")' value='Buy'></button></form>";
         rowHTML += "<form ACTION='#' id='buy' METHOD='post'>" +
-            "<button type='submit' formmethod='post' formaction='api/items?item=tt0424773'" +
+            "<button type='submit' formmethod='post' formaction='api/items?item='" + resultData[i]["movie_id"] +
             "onclick='alert(\"Bought movie\")' value='Buy'></button></form>";
         rowHTML += "</td>";
 
