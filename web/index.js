@@ -131,10 +131,26 @@ function submitSearchForm(formSubmitEvent) {
  * @param order Order to order the movie list by
  */
 function orderBy(column, order) {
-    console.log("sorting movie list");
     window.location.replace("index.html?limit=" + listLimit
         + "&criteria=" + column
         + "&order=" + order
+        + "&page=1"
+        + "&searchTitle=" + listSearchTitle
+        + "&searchYear=" + listSearchYear
+        + "&searchDirector=" + listSearchDirector
+        + "&searchStar=" + listSearchStar
+        + "&browseGenre=" + listBrowseGenre
+        + "&browseTitle=" + listBrowseTitle);
+}
+
+/**
+ * Changes the number of listings in the movie list according to given parameter
+ * @param number Number of listings in the movie lsit
+ */
+function listings(number) {
+    window.location.replace("index.html?limit=" + number
+        + "&criteria=" + listCriteria
+        + "&order=" + listOrder
         + "&page=1"
         + "&searchTitle=" + listSearchTitle
         + "&searchYear=" + listSearchYear

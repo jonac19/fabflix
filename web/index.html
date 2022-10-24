@@ -24,9 +24,9 @@
             <ul id="movie_list_pagination" class="pagination my-2 my-sm-0 mr-sm-2"></ul>
         </div>
 
-        <div class='collapse navbar-collapse'>
+        <div class='collapse navbar-collapse mr-sm-2'>
             <div class='nav-item dropdown'>
-                <button class="btn btn-outline-warning dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button class="btn btn-outline-warning dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Order By
                 </button>
                 <div class='dropdown-menu' aria-labelledby=navbarDropdownMenuLink'>
@@ -34,6 +34,19 @@
                     <button class='dropdown-item' onclick='orderBy("title", "desc")'>Title Descending</button>
                     <button class='dropdown-item' onclick='orderBy("rating", "asc")'>Rating Ascending</button>
                     <button class='dropdown-item' onclick='orderBy("rating", "desc")'>Rating Descending</button>
+                </div>
+            </div>
+        </div>
+
+        <div class='collapse navbar-collapse mr-sm-2'>
+            <div class='nav-item dropdown'>
+                <button class="btn btn-outline-warning dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Number of Listings
+                </button>
+                <div class='dropdown-menu' aria-labelledby=navbarDropdownMenuLink'>
+                    <button class='dropdown-item' onclick='listings("25")'>25</button>
+                    <button class='dropdown-item' onclick='listings("50")'>50</button>
+                    <button class='dropdown-item' onclick='listings("100")'>100</button>
                 </div>
             </div>
         </div>
