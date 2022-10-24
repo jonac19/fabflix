@@ -61,16 +61,32 @@ function handleCartArray(resultArray) {
         res += "<tr>";
         res += "<td>" + movieData[0]["movie_title"] + "</td>";
         res += "<td>" + unit_price + "</td>";
-        res += "<td>" + 1 + "</td>";
+        res += "<td>" + "<input type='number' value='1' onblur='findTotal()' name='qty'>" + "</td>";
         res += "<td>" + "remove" + "</td>";
         res += "</tr>";
-        total_cost += unit_price;
+        total_cost += unit_price ;
     }
-    res += "";
+    // console.log(arraycost.reduce((partialSum, a) => partialSum + a, 0));
     $("#total_cost").append((Math.round(total_cost*100)/100).toString());   //Display total cost
+
+    res += "";
     // clear the old array and show the new array in the frontend
     items_table_body.html("");
     items_table_body.append(res);
+}
+
+// Call this function every time user changes an item QTY and recompute total_cost
+function findTotal() {
+    console.log("Update total_cost");
+    var array = document.getElementsByName('qty');
+    var totalCost=0;
+    for(var i=0;i<array.length;i++){
+        if(parseInt(array[i].value))
+            totalCost += parseInt(array[i].value) * unit_price;
+    }
+    console.log("New cost = ", totalCost);
+    document.getElementById('total_cost').innerText = "Total Cost: ";
+    document.getElementById('total_cost').append((Math.round(totalCost*100)/100).toString())
 }
 
 /**
