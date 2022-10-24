@@ -61,12 +61,12 @@ function handleCartArray(resultArray) {
         res += "<tr>";
         res += "<td>" + movieData[0]["movie_title"] + "</td>";
         res += "<td>" + unit_price + "</td>";
-        res += "<td>" + "<input type='number' value='1' onblur='findTotal()' name='qty'>" + "</td>";
+        res += "<td>" + "<input type='number' value='1' min='1' onblur='findTotal()' name='qty'" +
+            "oninput='this.value = Math.abs(this.value)' " + "</td>";
         res += "<td>" + "remove" + "</td>";
         res += "</tr>";
         total_cost += unit_price ;
     }
-    // console.log(arraycost.reduce((partialSum, a) => partialSum + a, 0));
     $("#total_cost").append((Math.round(total_cost*100)/100).toString());   //Display total cost
 
     res += "";
