@@ -1,3 +1,4 @@
+let cart = $("#cart");
 /**
  * Retrieve parameter from request URL, matching by parameter name
  * @param target String
@@ -68,7 +69,15 @@ function handleMovieResult(resultData) {
 
         // Buy item button
         rowHTML += "<td>";
-        rowHTML += "<a href='items.html?newItem=" + resultData[i]["movie_id"] + "'>Buy Movie</a>";
+        // rowHTML += "<form action='api/items?item='" + resultData[i]["movie_id"] + "id='buy' method='post'>" +
+        //     // "<input type='hidden' id=item value='" + resultData[i]["movie_id"] + "'></input>" +
+        //     "<button type='submit' formaction='api/items?item='" + resultData[i]["movie_id"] +
+        //     "onclick='alert(\"" +
+        //     resultData[i]["movie_title"] +
+        //     " added to cart\")' value='Buy'></button></form>";
+        rowHTML += "<form ACTION='#' id='buy' METHOD='post'>" +
+            "<button type='submit' formmethod='post' formaction='api/items?item=tt0424773'" +
+            "onclick='alert(\"Bought movie\")' value='Buy'></button></form>";
         rowHTML += "</td>";
 
 
@@ -79,6 +88,27 @@ function handleMovieResult(resultData) {
     }
 }
 
+function handleBuyEvent(buyEvent) {
+    console.log("submit buy form");
+    /**
+     * When users click the buy button, the browser will not direct
+     * users to the url defined in HTML form. Instead, it will call this
+     * event handler when the event is triggered.
+     */
+    buyEvent.preventDefault();
+
+    $.ajax("api/items", {
+        method: "POST",
+        data: buy.serialize()
+        // success: resultDataString => {
+        //     let resultDataJson = JSON.parse(resultDataString);
+        //     handleCartArray(resultDataJson["previousItems"]);
+        // }
+    });
+    buyEvent.preventDefault();
+}
+
+
 // Get movie id from URL
 let movieId = getParameterByName("id")
 
@@ -88,3 +118,30 @@ jQuery.ajax({
     url: "api/movie?id=" + movieId,
     success: (resultData) => handleMovieResult(resultData)
 });
+
+let buy = $("#buy");
+buy.submit(handleBuyEvent);
+
+function handleCartInfo(cartEvent) {
+    console.log("submit cart form");
+    /**
+     * When users click the submit button, the browser will not direct
+     * users to the url defined in HTML form. Instead, it will call this
+     * event handler when the event is triggered.
+     */
+    cartEvent.preventDefault();
+
+    $.ajax("api/items", {
+        method: "POST",
+        data: cart.serialize()
+        // success: resultDataString => {
+        //     let resultDataJson = JSON.parse(resultDataString);
+        //     handleCartArray(resultDataJson["previousItems"]);
+        // }
+    });
+
+    // clear input form
+    cart[0].reset();
+}
+
+cart.submit(handleCartInfo);

@@ -1,4 +1,4 @@
-console.log("Running items.js");
+let cart = $("#cart");
 const unit_price = 4.99;
 /**
  * Retrieve parameter from request URL, matching by parameter name
@@ -21,44 +21,123 @@ function getParameterByName(target) {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
-/**
- * Handles the data returned by the API, read the jsonObject and populate data into html elements
- * @param resultData jsonObject
- */
-function handleItemsResult(resultData) {
-    console.log("handleItemsResult: populating items table from resultData");
+function handleSessionData(resultDataString) {
+    let resultDataJson = JSON.parse(resultDataString);
 
-    let itemsTableBodyElement = jQuery("#items_table_body");
-    let rowHTML = "";
-    rowHTML += "<tr>"
-    rowHTML += "<td>quantity placeholder</td>";
-    rowHTML += "<td>remove placeholder</td>";
-    rowHTML += "<td>quantity placeholder</td>";
-    rowHTML += "<td>remove placeholder</td>";
-    rowHTML += "</tr>";
-    itemsTableBodyElement.append(rowHTML);
+    console.log("handle session response");
+    console.log(resultDataJson);
+    console.log(resultDataJson["sessionID"]);
 
-    for (let i = 0; i < resultData.length; i++) {
-        // Concatenate the html tags with resultData jsonObject
-        let rowHTML = "";
-        rowHTML += "<tr>"
-        rowHTML += "<td>" + resultData[i]["movie_title"] + "</td>";
-        rowHTML += "<td>" + unit_price + "</td>";
-        rowHTML += "<td>" + "quantity placeholder" + "</td>";
-        rowHTML += "<td>" + "remove placeholder" + "</td>";
-        rowHTML += "</tr>";
+    // show the session information
+    $("#sessionID").text("Session ID: " + resultDataJson["sessionID"]);
+    $("#lastAccessTime").text("Last access time: " + resultDataJson["lastAccessTime"]);
 
-        // Append the row created to the table body, which will refresh the page
-        itemsTableBodyElement.append(rowHTML);
-    }
+    // show cart information
+    handleCartArray(resultDataJson["previousItems"]);
 }
 
+/**
+ * Handle the items in item list
+ * @param resultArray jsonObject, needs to be parsed to html
+ */
+function handleCartArray(resultArray) {
+    console.log(resultArray);
+    let items_table_body = $("#items_table_body");
+    // change it to html list
+    let res = "";
+    for (let i = 0; i < resultArray.length; i++) {
+        // each item will be in a bullet point
+        res += "<tr>";
+        res += "<td>" + resultArray[i] + "</td>";
+        res += "<td>" + unit_price + "</td>";
+        res += "<td>" + 1 + "</td>";
+        res += "<td>" + "remove" + "</td>";
+        res += "</tr>";
+    }
+    res += "";
+
+    // clear the old array and show the new array in the frontend
+    items_table_body.html("");
+    items_table_body.append(res);
+}
+
+/**
+ * Submit form content with POST method
+ * @param cartEvent
+ */
+function handleCartInfo(cartEvent) {
+    console.log("submit cart form");
+    /**
+     * When users click the submit button, the browser will not direct
+     * users to the url defined in HTML form. Instead, it will call this
+     * event handler when the event is triggered.
+     */
+    cartEvent.preventDefault();
+
+    $.ajax("api/items", {
+        method: "POST",
+        data: cart.serialize()
+        // success: resultDataString => {
+        //     let resultDataJson = JSON.parse(resultDataString);
+        //     handleCartArray(resultDataJson["previousItems"]);
+        // }
+    });
+
+    // clear input form
+    cart[0].reset();
+}
+
+// /**
+//  * Handles the data returned by the API, read the jsonObject and populate data into html elements
+//  * @param resultData jsonObject
+//  */
+// function handleItemsResult(resultData) {
+//     console.log("handleItemsResult: populating items table from resultData");
+//
+//     let itemsTableBodyElement = jQuery("#items_table_body");
+//     let rowHTML = "";
+//     rowHTML += "<tr>"
+//     rowHTML += "<td>1 placeholder</td>";
+//     rowHTML += "<td>2 placeholder</td>";
+//     rowHTML += "<td>3 placeholder</td>";
+//     rowHTML += "<td>4 placeholder</td>";
+//     rowHTML += "</tr>";
+//     itemsTableBodyElement.append(rowHTML);
+//     console.log("resultData.length = ");
+//     console.log(resultData.length);
+//     console.log(resultData["previousItems"]);
+//     console.log(resultData["previousItems"].length);
+//
+//     for (let i = 0; i < resultData["previousItems"].length; i++) {
+//         console.log("loop for item table entry");
+//         // Concatenate the html tags with resultData jsonObject
+//         let rowHTML = "";
+//         rowHTML += "<tr>"
+//         rowHTML += "<td>" + resultData["previousItems"][i] + "</td>";
+//         rowHTML += "<td>" + unit_price + "</td>";
+//         rowHTML += "<td>" + "1" + "</td>";
+//         rowHTML += "<td>" + "remove" + "</td>";
+//         rowHTML += "</tr>";
+//
+//         // Append the row created to the table body, which will refresh the page
+//         itemsTableBodyElement.append(rowHTML);
+//     }
+// }
+//
 // Get item id (movie id) from URL
 let movieId = getParameterByName("newItem")
 
-jQuery.ajax({
-    dataType: "json",
+$.ajax("api/items", {
     method: "GET",
-    url: "api/items?newItem=" + movieId,
-    success: (resultData) => handleItemsResult(resultData)
+    success: handleSessionData
 });
+
+// Bind the submit action of the form to a event handler function
+cart.submit(handleCartInfo);
+
+// jQuery.ajax({
+//     dataType: "json",
+//     method: "GET",
+//     url: "api/items?newItem=" + movieId,
+//     success: (resultData) => handleItemsResult(resultData)
+// });
