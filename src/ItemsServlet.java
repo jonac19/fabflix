@@ -16,11 +16,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Date;
 
 // Declaring a WebServlet called ItemServlet, which maps to url "api/items"
-@WebServlet(name = "ItemServlet", urlPatterns = "api/items")
+@WebServlet(name = "ItemServlet", urlPatterns = "/api/items")
 
 public class ItemsServlet extends HttpServlet {
+    private static final long serialVersionUID = 6L;
+
 
     // Create a dataSource which registered in web.
     private DataSource dataSource;
@@ -31,74 +34,59 @@ public class ItemsServlet extends HttpServlet {
             e.printStackTrace();
         }
     }
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-        // Get a instance of current session on the request
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
+        String sessionId = session.getId();
+        long lastAccessTime = session.getLastAccessedTime();
 
-        // Retrieve data named "previousItems" from session
+        JsonObject responseJsonObject = new JsonObject();
+        responseJsonObject.addProperty("sessionID", sessionId);
+        responseJsonObject.addProperty("lastAccessTime", new Date(lastAccessTime).toString());
+
         ArrayList<String> previousItems = (ArrayList<String>) session.getAttribute("previousItems");
-
-        // If "previousItems" is not found on session, means this is a new user, thus we create a new previousItems
-        // ArrayList for the user
         if (previousItems == null) {
-
-            // Add the newly created ArrayList to session, so that it could be retrieved next time
             previousItems = new ArrayList<>();
-            session.setAttribute("previousItems", previousItems);
         }
-
         // Log to localhost log
         request.getServletContext().log("getting " + previousItems.size() + " items");
+        JsonArray previousItemsJsonArray = new JsonArray();
+        previousItems.forEach(previousItemsJsonArray::add);
+        responseJsonObject.add("previousItems", previousItemsJsonArray);
 
-        String newItem = request.getParameter("newItem"); // Get parameter that sent by GET request url
-
-        response.setContentType("application/json");
-        PrintWriter out = response.getWriter();
-
-        // In order to prevent multiple clients, requests from altering previousItems ArrayList at the same time, we
-        // lock the ArrayList while updating
-        synchronized (previousItems) {
-            if (newItem != null) {
-                previousItems.add(newItem); // Add the new item to the previousItems ArrayList
-            }
-
-            JsonArray jsonArray = new JsonArray();
-
-            try (Connection conn = dataSource.getConnection()){
-                out.println("<ul style='color:black'>");
-                for (String previousItem : previousItems) {
-                    // Call database to match previousItem (movieID) to movie title
-                    String query = "SELECT * FROM movies M WHERE M.id=?";
-                    PreparedStatement statement = conn.prepareStatement(query);
-                    statement.setString(1, previousItem);
-                    ResultSet rs = statement.executeQuery();
-                    rs.next();
-
-                    // Make JSON Object to hold movie title, add to Array, and send to items.js
-                    JsonObject jsonObject = new JsonObject();
-                    String movie_Title = rs.getString("title");
-                    jsonObject.addProperty("movie_title", movie_Title);
-                    jsonArray.add(jsonObject);
-
-                    rs.close();
-                    statement.close();
-                }
-                out.write(jsonArray.toString());
-                response.setStatus(200);
-
-            } catch (Exception e) {
-
-            // Write error message JSON object to output
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("errorMessage", e.getMessage());
-            out.write(jsonObject.toString());
-
-            // Set response status to 500 (Internal Server Error)
-            response.setStatus(500);
-            }
-
-        }
-        out.close();
+        // write all the data into the jsonObject
+        response.getWriter().write(responseJsonObject.toString());
     }
+
+    /**
+     * handles POST requests to add and show the item list information
+     */
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String item = request.getParameter("item");
+        System.out.println(item);
+        HttpSession session = request.getSession();
+
+        // get the previous items in a ArrayList
+        ArrayList<String> previousItems = (ArrayList<String>) session.getAttribute("previousItems");
+        if (previousItems == null) {
+            previousItems = new ArrayList<>();
+            previousItems.add(item);
+            session.setAttribute("previousItems", previousItems);
+        } else {
+            // prevent corrupted states through sharing under multi-threads
+            // will only be executed by one thread at a time
+            synchronized (previousItems) {
+                previousItems.add(item);
+            }
+        }
+
+        JsonObject responseJsonObject = new JsonObject();
+
+        JsonArray previousItemsJsonArray = new JsonArray();
+        previousItems.forEach(previousItemsJsonArray::add);
+        responseJsonObject.add("previousItems", previousItemsJsonArray);
+
+        response.getWriter().write(responseJsonObject.toString());
+    }
+
+
 }

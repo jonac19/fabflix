@@ -1,3 +1,4 @@
+console.log("Running items.js");
 const unit_price = 4.99;
 /**
  * Retrieve parameter from request URL, matching by parameter name
@@ -28,6 +29,14 @@ function handleItemsResult(resultData) {
     console.log("handleItemsResult: populating items table from resultData");
 
     let itemsTableBodyElement = jQuery("#items_table_body");
+    let rowHTML = "";
+    rowHTML += "<tr>"
+    rowHTML += "<td>quantity placeholder</td>";
+    rowHTML += "<td>remove placeholder</td>";
+    rowHTML += "<td>quantity placeholder</td>";
+    rowHTML += "<td>remove placeholder</td>";
+    rowHTML += "</tr>";
+    itemsTableBodyElement.append(rowHTML);
 
     for (let i = 0; i < resultData.length; i++) {
         // Concatenate the html tags with resultData jsonObject
@@ -37,6 +46,7 @@ function handleItemsResult(resultData) {
         rowHTML += "<td>" + unit_price + "</td>";
         rowHTML += "<td>" + "quantity placeholder" + "</td>";
         rowHTML += "<td>" + "remove placeholder" + "</td>";
+        rowHTML += "</tr>";
 
         // Append the row created to the table body, which will refresh the page
         itemsTableBodyElement.append(rowHTML);
