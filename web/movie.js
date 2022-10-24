@@ -85,6 +85,7 @@ function handleMovieResult(resultData) {
 
         // Append the row created to the table body, which will refresh the page
         movieTableBodyElement.append(rowHTML);
+        document.getElementById("item").value = resultData[i]["movie_id"];
     }
 }
 
