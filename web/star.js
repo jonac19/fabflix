@@ -68,6 +68,16 @@ function handleResult( resultData ) {
     }
 }
 
+function handleBackResult(resultData) {
+    let starBackNavElement = jQuery("#star_back_nav_element");
+
+    let anchorHTML = "<a class='btn btn-outline-warning' href='"
+        + resultData['backURL']
+        + "'>Back</a>";
+
+    starBackNavElement.append(anchorHTML);
+}
+
 // Get id from URL
 let starId = getParameterByName('id');
 
@@ -78,4 +88,11 @@ jQuery.ajax({
     url: "api/star?id=" + starId,    // Set request url, mapped by StarsServlet in Stars.java
     success: ( resultData ) => handleResult( resultData )   // Set callback function to handle data returned
                                                             //  successfully by the SingleStarServlet
+});
+
+jQuery.ajax({
+    dataType: "json",
+    method: "GET",
+    url: "api/back",
+    success: (resultData) => handleBackResult(resultData)
 });

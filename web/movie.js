@@ -72,6 +72,16 @@ function handleMovieResult(resultData) {
     }
 }
 
+function handleBackResult(resultData) {
+    let movieBackNavElement = jQuery("#movie_back_nav_element");
+
+    let anchorHTML = "<a class='btn btn-outline-warning' href='"
+        + resultData['backURL']
+        + "'>Back</a>";
+
+    movieBackNavElement.append(anchorHTML);
+}
+
 // Get movie id from URL
 let movieId = getParameterByName("id")
 
@@ -80,4 +90,11 @@ jQuery.ajax({
     method: "GET",
     url: "api/movie?id=" + movieId,
     success: (resultData) => handleMovieResult(resultData)
+});
+
+jQuery.ajax({
+    dataType: "json",
+    method: "GET",
+    url: "api/back",
+    success: (resultData) => handleBackResult(resultData)
 });

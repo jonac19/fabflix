@@ -113,6 +113,23 @@ function handleMovieListPaginationResult(resultData) {
         + "&browseTitle=" + listBrowseTitle;
     nextHTML += ">Next Page</a></li>";
     movieListPaginationElement.append(nextHTML);
+
+    // Movie list table
+    jQuery.ajax({
+        dataType: "json",
+        method: "GET",
+        url: "api/movie-list?limit=" + listLimit
+            + "&criteria=" + listCriteria
+            + "&order=" + listOrder
+            + "&page=" + listPage
+            + "&searchTitle=" + listSearchTitle
+            + "&searchYear=" + listSearchYear
+            + "&searchDirector=" + listSearchDirector
+            + "&searchStar=" + listSearchStar
+            + "&browseGenre=" + listBrowseGenre
+            + "&browseTitle=" + listBrowseTitle,
+        success: (resultData) => handleMovieListResult(resultData)
+    });
 }
 
 /**
@@ -170,22 +187,7 @@ if (listSearchStar == null) {listSearchStar = ""};
 if (listBrowseGenre == null) {listBrowseGenre = ""};
 if (listBrowseTitle == null) {listBrowseTitle = ""};
 
-jQuery.ajax({
-    dataType: "json",
-    method: "GET",
-    url: "api/movie-list?limit=" + listLimit
-         + "&criteria=" + listCriteria
-         + "&order=" + listOrder
-         + "&page=" + listPage
-         + "&searchTitle=" + listSearchTitle
-         + "&searchYear=" + listSearchYear
-         + "&searchDirector=" + listSearchDirector
-         + "&searchStar=" + listSearchStar
-         + "&browseGenre=" + listBrowseGenre
-         + "&browseTitle=" + listBrowseTitle,
-    success: (resultData) => handleMovieListResult(resultData)
-});
-
+// Movie list pagination
 jQuery.ajax({
     dataType: "json",
     method: "GET",
