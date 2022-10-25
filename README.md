@@ -37,11 +37,12 @@ will be returned.
 ### Contributions
 
 Jonathan
-- Implemented Movie List page
-- Implemented sorting options on Movie List page
-- Implemented Single Movie page
+- Implemented searching and browsing
+- Implemented login filter
+- Implemented payment processing
 
 Sean
-- Implemented Single Movie page
+- Implemented shopping cart feature
+- Implemented order summary
 - Managed the AWS EC2 instance
 - Video optimization and quality assurance / PR
