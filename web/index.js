@@ -45,7 +45,9 @@ function handleMovieListResult(resultData) {
         // Concatenate the genres associated with each movie
         rowHTML += "<td>";
         for (let j = 0; j < Math.min(3, resultData[i]["movie_genres"].length); j++) {
-            rowHTML += resultData[i]["movie_genres"][j]["genre_name"];
+            rowHTML += "<a href='index.html?browseGenre=" + resultData[i]["movie_genres"][j]["genre_id"] + "'>" +
+                resultData[i]["movie_genres"][j]["genre_name"] +
+                "</a>"
 
             if (j < Math.min(3, resultData[i]["movie_genres"].length) - 1) {
                 rowHTML += ", ";
@@ -136,10 +138,26 @@ function submitSearchForm(formSubmitEvent) {
  * @param order Order to order the movie list by
  */
 function orderBy(column, order) {
-    console.log("sorting movie list");
     window.location.replace("index.html?limit=" + listLimit
         + "&criteria=" + column
         + "&order=" + order
+        + "&page=1"
+        + "&searchTitle=" + listSearchTitle
+        + "&searchYear=" + listSearchYear
+        + "&searchDirector=" + listSearchDirector
+        + "&searchStar=" + listSearchStar
+        + "&browseGenre=" + listBrowseGenre
+        + "&browseTitle=" + listBrowseTitle);
+}
+
+/**
+ * Changes the number of listings in the movie list according to given parameter
+ * @param number Number of listings in the movie lsit
+ */
+function listings(number) {
+    window.location.replace("index.html?limit=" + number
+        + "&criteria=" + listCriteria
+        + "&order=" + listOrder
         + "&page=1"
         + "&searchTitle=" + listSearchTitle
         + "&searchYear=" + listSearchYear
@@ -175,22 +193,24 @@ if (listSearchStar == null) {listSearchStar = ""};
 if (listBrowseGenre == null) {listBrowseGenre = ""};
 if (listBrowseTitle == null) {listBrowseTitle = ""};
 
+// Movie list table
 jQuery.ajax({
     dataType: "json",
     method: "GET",
     url: "api/movie-list?limit=" + listLimit
-         + "&criteria=" + listCriteria
-         + "&order=" + listOrder
-         + "&page=" + listPage
-         + "&searchTitle=" + listSearchTitle
-         + "&searchYear=" + listSearchYear
-         + "&searchDirector=" + listSearchDirector
-         + "&searchStar=" + listSearchStar
-         + "&browseGenre=" + listBrowseGenre
-         + "&browseTitle=" + listBrowseTitle,
+        + "&criteria=" + listCriteria
+        + "&order=" + listOrder
+        + "&page=" + listPage
+        + "&searchTitle=" + listSearchTitle
+        + "&searchYear=" + listSearchYear
+        + "&searchDirector=" + listSearchDirector
+        + "&searchStar=" + listSearchStar
+        + "&browseGenre=" + listBrowseGenre
+        + "&browseTitle=" + listBrowseTitle,
     success: (resultData) => handleMovieListResult(resultData)
 });
 
+// Movie list pagination
 jQuery.ajax({
     dataType: "json",
     method: "GET",
@@ -234,7 +254,23 @@ function buttonBuy( movieID ){
     console.log("Pressed inline Buy button for movieID: " + movieID);
     document.getElementById("item").value = movieID;
     cart.submit(handleCartInfo());
-
 }
 
+// Movie list back
+jQuery.ajax({
+    dataType: "json",
+    method: "POST",
+    url: "api/back?limit=" + listLimit
+        + "&criteria=" + listCriteria
+        + "&order=" + listOrder
+        + "&page=" + listPage
+        + "&searchTitle=" + listSearchTitle
+        + "&searchYear=" + listSearchYear
+        + "&searchDirector=" + listSearchDirector
+        + "&searchStar=" + listSearchStar
+        + "&browseGenre=" + listBrowseGenre
+        + "&browseTitle=" + listBrowseTitle,
+});
+
 cart.submit(handleCartInfo);
+

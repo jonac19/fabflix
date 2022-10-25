@@ -43,8 +43,10 @@ function handleMovieResult(resultData) {
         // Concatenate the genres associated with each movie
         rowHTML += "<td>";
         for (let j = 0; j < resultData[i]["movie_genres"].length; j++) {
-            rowHTML += resultData[i]["movie_genres"][j]["genre_name"];
-
+            rowHTML += "<a href='index.html?browseGenre=" + resultData[i]["movie_genres"][j]["genre_id"] + "'>" +
+                resultData[i]["movie_genres"][j]["genre_name"] +
+                "</a>";
+            
             if (j < resultData[i]["movie_genres"].length - 1) {
                 rowHTML += ", ";
             }
@@ -90,26 +92,22 @@ function handleMovieResult(resultData) {
     }
 }
 
-// function handleBuyEvent(buyEvent) {
-//     console.log("submit buy form");
-//     /**
-//      * When users click the buy button, the browser will not direct
-//      * users to the url defined in HTML form. Instead, it will call this
-//      * event handler when the event is triggered.
-//      */
-//     buyEvent.preventDefault();
-//
-//     $.ajax("api/items", {
-//         method: "POST",
-//         data: buy.serialize()
-//         // success: resultDataString => {
-//         //     let resultDataJson = JSON.parse(resultDataString);
-//         //     handleCartArray(resultDataJson["previousItems"]);
-//         // }
-//     });
-//     buyEvent.preventDefault();
-// }
+function handleBackResult(resultData) {
+    let movieBackNavElement = jQuery("#movie_back_nav_element");
 
+    let anchorHTML = "<a class='btn btn-outline-warning' href='"
+        + resultData['backURL']
+        + "'>Back</a>";
+
+    movieBackNavElement.append(anchorHTML);
+}
+
+jQuery.ajax({
+    dataType: "json",
+    method: "GET",
+    url: "api/back",
+    success: (resultData) => handleBackResult(resultData)
+});
 
 // Get movie id from URL
 let movieId = getParameterByName("id")
@@ -121,8 +119,6 @@ jQuery.ajax({
     success: (resultData) => handleMovieResult(resultData)
 });
 
-// let buy = $("#buy");
-// buy.submit(handleBuyEvent);
 
 function handleCartInfo(cartEvent) {
     console.log("submit cart form");
@@ -147,3 +143,4 @@ function handleCartInfo(cartEvent) {
 }
 
 cart.submit(handleCartInfo);
+

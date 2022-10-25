@@ -8,6 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -36,7 +37,6 @@ public class MovieServlet extends HttpServlet {
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
         response.setContentType("application/json"); // Response mime type
 
         // Retrieve parameter id from url request.
@@ -120,7 +120,7 @@ public class MovieServlet extends HttpServlet {
      * @throws SQLException
      */
     private JsonArray getGenres(Connection conn, String movie_id) throws SQLException {
-        String query = "SELECT * FROM genres G, genres_in_movies GM WHERE G.id = GM.genreId AND GM.movieId = ?";
+        String query = "SELECT * FROM genres G, genres_in_movies GM WHERE G.id = GM.genreId AND GM.movieId = ? ORDER BY G.name";
 
         // Declare our statement
         PreparedStatement statement = conn.prepareStatement(query);
@@ -158,7 +158,7 @@ public class MovieServlet extends HttpServlet {
      * @throws SQLException
      */
     private JsonArray getStars(Connection conn, String movie_id) throws SQLException {
-        String query = "SELECT * FROM stars S, stars_in_movies SM WHERE S.id = SM.starId AND SM.movieId = ?";
+        String query = "SELECT * FROM stars S, stars_in_movies SM WHERE S.id = SM.starId AND SM.movieId = ? ORDER BY S.name";
 
         // Declare our statement
         PreparedStatement statement = conn.prepareStatement(query);
