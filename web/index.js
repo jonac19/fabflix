@@ -1,3 +1,4 @@
+let cart = $("#cart");
 /**
  * Retrieve parameter from request URL, matching by parameter name
  * @param target String
@@ -69,6 +70,10 @@ function handleMovieListResult(resultData) {
         rowHTML += "</td>";
 
         rowHTML += "<td>" + resultData[i]["movie_rating"] + "</td>";
+
+        rowHTML +="<td><button form='cart' type='submit' onclick='buttonBuy(\""
+        + resultData[i]["movie_id"] + "\")'>Buy</button>";
+
         rowHTML += "</tr>";
 
         // Append the row created to the table body, which will refresh the page
@@ -222,6 +227,35 @@ jQuery.ajax({
     success: (resultData) => handleMovieListPaginationResult(resultData)
 });
 
+function handleCartInfo(cartEvent) {
+    console.log("submit cart form");
+    /**
+     * When users click the submit button, the browser will not direct
+     * users to the url defined in HTML form. Instead, it will call this
+     * event handler when the event is triggered.
+     */
+    cartEvent.preventDefault();
+
+    $.ajax("api/items", {
+        method: "POST",
+        data: cart.serialize()
+        // success: resultDataString => {
+        //     let resultDataJson = JSON.parse(resultDataString);
+        //     handleCartArray(resultDataJson["previousItems"]);
+        // }
+    });
+
+    // clear input form
+    cart[0].reset();
+}
+
+function buttonBuy( movieID ){
+    alert("Movie added to cart");
+    console.log("Pressed inline Buy button for movieID: " + movieID);
+    document.getElementById("item").value = movieID;
+    cart.submit(handleCartInfo());
+}
+
 // Movie list back
 jQuery.ajax({
     dataType: "json",
@@ -237,3 +271,6 @@ jQuery.ajax({
         + "&browseGenre=" + listBrowseGenre
         + "&browseTitle=" + listBrowseTitle,
 });
+
+cart.submit(handleCartInfo);
+

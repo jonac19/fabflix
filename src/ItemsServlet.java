@@ -1,69 +1,114 @@
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.servlet.ServletConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 
-// Declaring a WebServlet called ItemServlet, which maps to url "/items"
-@WebServlet(name = "ItemServlet", urlPatterns = "/items")
+// Declaring a WebServlet called ItemServlet, which maps to url "api/items"
+@WebServlet(name = "ItemServlet", urlPatterns = "/api/items")
 
 public class ItemsServlet extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private static final long serialVersionUID = 6L;
 
-        // Get a instance of current session on the request
-        HttpSession session = request.getSession();
 
-        // Retrieve data named "previousItems" from session
-        ArrayList<String> previousItems = (ArrayList<String>) session.getAttribute("previousItems");
-
-        // If "previousItems" is not found on session, means this is a new user, thus we create a new previousItems
-        // ArrayList for the user
-        if (previousItems == null) {
-
-            // Add the newly created ArrayList to session, so that it could be retrieved next time
-            previousItems = new ArrayList<>();
-            session.setAttribute("previousItems", previousItems);
+    // Create a dataSource which registered in web.
+    private DataSource dataSource;
+    public void init(ServletConfig config) {
+        try {
+            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedb");
+        } catch (NamingException e) {
+            e.printStackTrace();
         }
+    }
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        HttpSession session = request.getSession();
+        String sessionId = session.getId();
+        long lastAccessTime = session.getLastAccessedTime();
 
+        JsonObject responseJsonObject = new JsonObject();
+        responseJsonObject.addProperty("sessionID", sessionId);
+        responseJsonObject.addProperty("lastAccessTime", new Date(lastAccessTime).toString());
+
+        ArrayList<String> previousItems = (ArrayList<String>) session.getAttribute("previousItems");
+        if (previousItems == null) {
+            previousItems = new ArrayList<>();
+        }
         // Log to localhost log
         request.getServletContext().log("getting " + previousItems.size() + " items");
+        JsonArray previousItemsJsonArray = new JsonArray();
+        previousItems.forEach(previousItemsJsonArray::add);
+        responseJsonObject.add("previousItems", previousItemsJsonArray);
 
-        String newItem = request.getParameter("newItem"); // Get parameter that sent by GET request url
+        // write all the data into the jsonObject
+        response.getWriter().write(responseJsonObject.toString());
+    }
 
-        response.setContentType("text/html");
-        PrintWriter out = response.getWriter();
-        String title = "Items Purchased";
+    /**
+     * handles POST requests to add and show the item list information
+     */
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String item = request.getParameter("item");
+        String flush = request.getParameter("flush");
+        System.out.println("ItemServlet.Post: " + item);
+        HttpSession session = request.getSession();
 
-        out.println(String.format("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">\n" +
-                "<html>\n" +
-                "   <head>" +
-                "   <title>%s</title>" +
-                "   </head>\n" +
-                "   <body bgcolor=\"#FDF5E6\">\n" +
-                "       <h1>%s</h1>", title, title));
+        // Check for "remove" keyword in "item". If exists, take this overriding branch to remove entry
+        if (item.substring(0,6).equals("remove")) {
+            System.out.println("Removal call received on...: " + item.substring(6));
+            ArrayList<String> prevItems = (ArrayList<String>) session.getAttribute("previousItems");
+            prevItems.removeIf(item.substring(6)::equals);
+            session.setAttribute("previousItems", prevItems);
+            return;
+        }
 
-        // In order to prevent multiple clients, requests from altering previousItems ArrayList at the same time, we
-        // lock the ArrayList while updating
-        synchronized (previousItems) {
-            if (newItem != null) {
-                previousItems.add(newItem); // Add the new item to the previousItems ArrayList
-            }
+        // If Flush flag is true, empty out the entire arraylist containing movieIds
+        if ("true".equals(flush)) {
+            System.out.println("Flush call received...: ");
+            ArrayList<String> prevItems = (ArrayList<String>) session.getAttribute("previousItems");
+            prevItems.clear();
+            session.setAttribute("previousItems", prevItems);
+            return;
+        }
 
-            // Display the current previousItems ArrayList
-            if (previousItems.size() == 0) {
-                out.println("<i>No items</i>");
-            } else {
-                out.println("<ul>");
-                for (String previousItem : previousItems) {
-                    out.println("<li>" + previousItem);
-                }
-                out.println("</ul>");
+        // get the previous items in a ArrayList
+        ArrayList<String> previousItems = (ArrayList<String>) session.getAttribute("previousItems");
+        if (previousItems == null) {
+            previousItems = new ArrayList<>();
+            previousItems.add(item);
+            System.out.println("Adding item: "+ item);
+            session.setAttribute("previousItems", previousItems);
+        } else {
+            // prevent corrupted states through sharing under multi-threads
+            // will only be executed by one thread at a time
+            synchronized (previousItems) {
+                System.out.println("Adding item: " + item);
+                previousItems.add(item);
             }
         }
 
-        out.println("</body></html>");
+        JsonObject responseJsonObject = new JsonObject();
+
+        JsonArray previousItemsJsonArray = new JsonArray();
+        previousItems.forEach(previousItemsJsonArray::add);
+        responseJsonObject.add("previousItems", previousItemsJsonArray);
+
+        response.getWriter().write(responseJsonObject.toString());
     }
+
+
 }
