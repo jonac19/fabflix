@@ -58,14 +58,22 @@ function handleCartArray(resultArray) {
                 movieData = resultData;
             }
         });
+        console.log("entry: " + resultArray[i]);
         res += "<tr>";
         res += "<td>" + movieData[0]["movie_title"] + "</td>";
         res += "<td>" + unit_price + "</td>";
         res += "<td>" + "<input type='number' value='1' min='1' onblur='findTotal()' name='qty'" +
             "oninput='this.value = Math.abs(this.value)' " + "</td>";
-        res += "<td>" + "remove" + "</td>";
+        res += "<td>" + "<input form='remove' name='item' type='hidden' value='remove" + resultArray[i] +
+            "'><input form='remove' type='submit' value='discard'></td>";
+
         res += "</tr>";
         total_cost += unit_price ;
+
+        // Bind the 'remove' button
+        let rem = $("#rem" + i.toString());
+        console.log(rem);
+        rem.submit(handleRemovalRequest);
     }
     $("#total_cost").append((Math.round(total_cost*100)/100).toString());   //Display total cost
 
@@ -85,10 +93,28 @@ function findTotal() {
             totalCost += parseInt(array[i].value) * unit_price;
     }
     console.log("New cost = ", totalCost);
-    document.getElementById('total_cost').innerText = "Total Cost: ";
+    document.getElementById('total_cost').innerText = "Total Cost: $";
     document.getElementById('total_cost').append((Math.round(totalCost*100)/100).toString())
 }
 
+function handleRemovalRequest(removeEvent) {
+    console.log("submit removal form");
+    /**
+     * When users click the remove button, the browser will not direct
+     * users to the url defined in HTML form. Instead, it will call this
+     * event handler when the event is triggered.
+     */
+    removeEvent.preventDefault();
+
+    $.ajax("api/items", {
+        method: "POST",
+        data: rem.serialize()
+        // success: resultDataString => {
+        //     let resultDataJson = JSON.parse(resultDataString);
+        //     handleCartArray(resultDataJson["previousItems"]);
+        // }
+    });
+}
 /**
  * Submit form content with POST method
  * @param cartEvent

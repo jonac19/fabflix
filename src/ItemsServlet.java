@@ -62,8 +62,17 @@ public class ItemsServlet extends HttpServlet {
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String item = request.getParameter("item");
-        System.out.println(item);
+        System.out.println("ItemServlet.Post: " + item);
         HttpSession session = request.getSession();
+
+        // Check for "remove" keyword in "item". If exists, take this overriding branch to remove entry
+        if (item.substring(0,6).equals("remove")) {
+            System.out.println("Removal call received on: " + item.substring(6));
+            ArrayList<String> prevItems = (ArrayList<String>) session.getAttribute("previousItems");
+            prevItems.remove(item.substring(6));
+            session.setAttribute("previousItems", prevItems);
+            return;
+        }
 
         // get the previous items in a ArrayList
         ArrayList<String> previousItems = (ArrayList<String>) session.getAttribute("previousItems");
