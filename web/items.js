@@ -48,9 +48,9 @@ function handleCartArray(resultArray) {
     let res = "";
     items_table_body.html("");
 
+    //Make a local dictionary considered to be the truth of movie counts in session. update later w/this
+    var dict = new Object();
     for (let i = 0; i < resultArray.length; i++) {
-        res = "";
-        // each item will be in a bullet point
         var movieData;
         $.ajax({
             dataType: "json",
@@ -61,7 +61,27 @@ function handleCartArray(resultArray) {
                 movieData = resultData;
             }
         });
-        console.log("entry: " + resultArray[i]);
+        if ( dict[ movieData[0]["movie_id"] ] == null ){
+            dict[ movieData[0]["movie_id"] ] = [ movieData[0]["movie_title"], 1 ];  //new entry in dict
+        } else {
+            dict[ movieData[0]["movie_id"] ][1]++;  //entry exists in dict, incr count++
+        }
+    }
+
+    for (const [key, value] of Object.entries(dict)){
+        res = "";
+        // each item will be in a bullet point
+        // var movieData;
+        // $.ajax({
+        //     dataType: "json",
+        //     method: "GET",
+        //     url: "api/movie?id=" + resultArray[i],
+        //     async: false,
+        //     success: function (resultData){
+        //         movieData = resultData;
+        //     }
+        // });
+        // console.log("entry: " + resultArray[i]);
         res += "<tr>";
         res += "<td>" + movieData[0]["movie_title"] + "</td>";
         res += "<td>" + unit_price + "</td>";

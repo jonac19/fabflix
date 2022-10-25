@@ -16,6 +16,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 
 // Declaring a WebServlet called ItemServlet, which maps to url "api/items"
@@ -67,9 +68,9 @@ public class ItemsServlet extends HttpServlet {
 
         // Check for "remove" keyword in "item". If exists, take this overriding branch to remove entry
         if (item.substring(0,6).equals("remove")) {
-            System.out.println("Removal call received on: " + item.substring(6));
+            System.out.println("Removal call received on...: " + item.substring(6));
             ArrayList<String> prevItems = (ArrayList<String>) session.getAttribute("previousItems");
-            prevItems.remove(item.substring(6));
+            prevItems.removeIf(item.substring(6)::equals);
             session.setAttribute("previousItems", prevItems);
             return;
         }
