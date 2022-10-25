@@ -44,7 +44,9 @@ function handleMovieListResult(resultData) {
         // Concatenate the genres associated with each movie
         rowHTML += "<td>";
         for (let j = 0; j < Math.min(3, resultData[i]["movie_genres"].length); j++) {
-            rowHTML += resultData[i]["movie_genres"][j]["genre_name"];
+            rowHTML += "<a href='index.html?browseGenre=" + resultData[i]["movie_genres"][j]["genre_id"] + "'>" +
+                resultData[i]["movie_genres"][j]["genre_name"] +
+                "</a>"
 
             if (j < Math.min(3, resultData[i]["movie_genres"].length) - 1) {
                 rowHTML += ", ";
