@@ -1,4 +1,4 @@
-console.log("Running items.js");
+let cart = $("#cart");
 const unit_price = 4.99;
 /**
  * Retrieve parameter from request URL, matching by parameter name
@@ -21,44 +21,140 @@ function getParameterByName(target) {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
+function handleSessionData(resultDataString) {
+    let resultDataJson = JSON.parse(resultDataString);
+
+    console.log("handle session response");
+    console.log(resultDataJson);
+    console.log(resultDataJson["sessionID"]);
+
+    // show the session information
+    $("#sessionID").text("Session ID: " + resultDataJson["sessionID"]);
+    $("#lastAccessTime").text("Last access time: " + resultDataJson["lastAccessTime"]);
+
+    // show cart information
+    handleCartArray(resultDataJson["previousItems"]);
+}
+
 /**
- * Handles the data returned by the API, read the jsonObject and populate data into html elements
- * @param resultData jsonObject
+ * Handle the items in item list
+ * @param resultArray jsonObject, needs to be parsed to html
  */
-function handleItemsResult(resultData) {
-    console.log("handleItemsResult: populating items table from resultData");
+function handleCartArray(resultArray) {
+    console.log(resultArray);
+    let items_table_body = $("#items_table_body");
+    var total_cost = 0;
+    // change it to html list
+    let res = "";
+    for (let i = 0; i < resultArray.length; i++) {
+        // each item will be in a bullet point
+        var movieData;
+        $.ajax({
+            dataType: "json",
+            method: "GET",
+            url: "api/movie?id=" + resultArray[i],
+            async: false,
+            success: function (resultData){
+                movieData = resultData;
+            }
+        });
+        console.log("entry: " + resultArray[i]);
+        res += "<tr>";
+        res += "<td>" + movieData[0]["movie_title"] + "</td>";
+        res += "<td>" + unit_price + "</td>";
+        res += "<td>" + "<input type='number' value='1' min='1' onblur='findTotal()' name='qty'" +
+            "oninput='this.value = Math.abs(this.value)' " + "</td>";
+        res += "<td>" + "<input form='remove' name='item' type='hidden' value='remove" + resultArray[i] +
+            "'><input form='remove' type='submit' value='discard'></td>";
 
-    let itemsTableBodyElement = jQuery("#items_table_body");
-    let rowHTML = "";
-    rowHTML += "<tr>"
-    rowHTML += "<td>quantity placeholder</td>";
-    rowHTML += "<td>remove placeholder</td>";
-    rowHTML += "<td>quantity placeholder</td>";
-    rowHTML += "<td>remove placeholder</td>";
-    rowHTML += "</tr>";
-    itemsTableBodyElement.append(rowHTML);
+        res += "</tr>";
+        total_cost += unit_price ;
 
-    for (let i = 0; i < resultData.length; i++) {
-        // Concatenate the html tags with resultData jsonObject
-        let rowHTML = "";
-        rowHTML += "<tr>"
-        rowHTML += "<td>" + resultData[i]["movie_title"] + "</td>";
-        rowHTML += "<td>" + unit_price + "</td>";
-        rowHTML += "<td>" + "quantity placeholder" + "</td>";
-        rowHTML += "<td>" + "remove placeholder" + "</td>";
-        rowHTML += "</tr>";
-
-        // Append the row created to the table body, which will refresh the page
-        itemsTableBodyElement.append(rowHTML);
+        // Bind the 'remove' button
+        let rem = $("#rem" + i.toString());
+        console.log(rem);
+        rem.submit(handleRemovalRequest);
     }
+    $("#total_cost").append((Math.round(total_cost*100)/100).toString());   //Display total cost
+
+    res += "";
+    // clear the old array and show the new array in the frontend
+    items_table_body.html("");
+    items_table_body.append(res);
+}
+
+// Call this function every time user changes an item QTY and recompute total_cost
+function findTotal() {
+    console.log("Update total_cost");
+    var array = document.getElementsByName('qty');
+    var totalCost=0;
+    for(var i=0;i<array.length;i++){
+        if(parseInt(array[i].value))
+            totalCost += parseInt(array[i].value) * unit_price;
+    }
+    console.log("New cost = ", totalCost);
+    document.getElementById('total_cost').innerText = "Total Cost: $";
+    document.getElementById('total_cost').append((Math.round(totalCost*100)/100).toString())
+}
+
+function handleRemovalRequest(removeEvent) {
+    console.log("submit removal form");
+    /**
+     * When users click the remove button, the browser will not direct
+     * users to the url defined in HTML form. Instead, it will call this
+     * event handler when the event is triggered.
+     */
+    removeEvent.preventDefault();
+
+    $.ajax("api/items", {
+        method: "POST",
+        data: rem.serialize()
+        // success: resultDataString => {
+        //     let resultDataJson = JSON.parse(resultDataString);
+        //     handleCartArray(resultDataJson["previousItems"]);
+        // }
+    });
+}
+/**
+ * Submit form content with POST method
+ * @param cartEvent
+ */
+function handleCartInfo(cartEvent) {
+    console.log("submit cart form");
+    /**
+     * When users click the submit button, the browser will not direct
+     * users to the url defined in HTML form. Instead, it will call this
+     * event handler when the event is triggered.
+     */
+    cartEvent.preventDefault();
+
+    $.ajax("api/items", {
+        method: "POST",
+        data: cart.serialize()
+        // success: resultDataString => {
+        //     let resultDataJson = JSON.parse(resultDataString);
+        //     handleCartArray(resultDataJson["previousItems"]);
+        // }
+    });
+
+    // clear input form
+    cart[0].reset();
 }
 
 // Get item id (movie id) from URL
 let movieId = getParameterByName("newItem")
 
-jQuery.ajax({
-    dataType: "json",
+$.ajax("api/items", {
     method: "GET",
-    url: "api/items?newItem=" + movieId,
-    success: (resultData) => handleItemsResult(resultData)
+    success: handleSessionData
 });
+
+// Bind the submit action of the form to a event handler function
+cart.submit(handleCartInfo);
+
+// jQuery.ajax({
+//     dataType: "json",
+//     method: "GET",
+//     url: "api/items?newItem=" + movieId,
+//     success: (resultData) => handleItemsResult(resultData)
+// });

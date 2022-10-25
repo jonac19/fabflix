@@ -1,3 +1,4 @@
+let cart = $("#cart");
 /**
  * Retrieve parameter from request URL, matching by parameter name
  * @param target String
@@ -66,18 +67,49 @@ function handleMovieResult(resultData) {
 
         rowHTML += "<td>" + resultData[i]["movie_rating"] + "</td>";
 
-        // Buy item button
         rowHTML += "<td>";
-        rowHTML += "<a href='items.html?newItem=" + resultData[i]["movie_id"] + "'>Buy Movie</a>";
+        rowHTML += "<button id='button" + i.toString() + "' form='cart' type='submit'>Buy</button>";
         rowHTML += "</td>";
-
 
         rowHTML += "</tr>";
 
         // Append the row created to the table body, which will refresh the page
         movieTableBodyElement.append(rowHTML);
+
+        // On CLICK, set the Value in the Form object and Submit it.
+        // Since this func is jQuery, must be run AFTER rowHTML has been appended to frontend display
+        $('#button' + i.toString()).click(function(){
+            console.log("Pressed inline purchase button");
+            document.getElementById("item").value = resultData[i]["movie_id"];
+            document.getElementById("cart").click();
+        })
+
+        //OLD: Used for setting the Input's Value on a single static Form object before user Clicks Submit
+        // set the Buy Movie button "value" to be id of this movie
+        //document.getElementById("item").value = resultData[i]["movie_id"];
     }
 }
+
+// function handleBuyEvent(buyEvent) {
+//     console.log("submit buy form");
+//     /**
+//      * When users click the buy button, the browser will not direct
+//      * users to the url defined in HTML form. Instead, it will call this
+//      * event handler when the event is triggered.
+//      */
+//     buyEvent.preventDefault();
+//
+//     $.ajax("api/items", {
+//         method: "POST",
+//         data: buy.serialize()
+//         // success: resultDataString => {
+//         //     let resultDataJson = JSON.parse(resultDataString);
+//         //     handleCartArray(resultDataJson["previousItems"]);
+//         // }
+//     });
+//     buyEvent.preventDefault();
+// }
+
 
 // Get movie id from URL
 let movieId = getParameterByName("id")
@@ -88,3 +120,30 @@ jQuery.ajax({
     url: "api/movie?id=" + movieId,
     success: (resultData) => handleMovieResult(resultData)
 });
+
+// let buy = $("#buy");
+// buy.submit(handleBuyEvent);
+
+function handleCartInfo(cartEvent) {
+    console.log("submit cart form");
+    /**
+     * When users click the submit button, the browser will not direct
+     * users to the url defined in HTML form. Instead, it will call this
+     * event handler when the event is triggered.
+     */
+    cartEvent.preventDefault();
+
+    $.ajax("api/items", {
+        method: "POST",
+        data: cart.serialize()
+        // success: resultDataString => {
+        //     let resultDataJson = JSON.parse(resultDataString);
+        //     handleCartArray(resultDataJson["previousItems"]);
+        // }
+    });
+
+    // clear input form
+    cart[0].reset();
+}
+
+cart.submit(handleCartInfo);
