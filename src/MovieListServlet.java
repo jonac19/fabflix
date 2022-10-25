@@ -303,7 +303,7 @@ public class MovieListServlet extends HttpServlet {
      * @throws SQLException Failed MySQL query
      */
     private JsonArray getGenres(Connection conn, String movie_id) throws SQLException {
-        String query = "SELECT * FROM genres G, genres_in_movies GM WHERE G.id = GM.genreId AND GM.movieId = ?";
+        String query = "SELECT * FROM genres G, genres_in_movies GM WHERE G.id = GM.genreId AND GM.movieId = ? ORDER BY G.name";
 
         // Declare our statement
         PreparedStatement statement = conn.prepareStatement(query);
@@ -341,7 +341,7 @@ public class MovieListServlet extends HttpServlet {
      * @throws SQLException Failed MySQL query
      */
     private JsonArray getStars(Connection conn, String movie_id) throws SQLException {
-        String query = "SELECT * FROM stars S, stars_in_movies SM WHERE S.id = SM.starId AND SM.movieId = ?";
+        String query = "SELECT * FROM stars S, stars_in_movies SM WHERE S.id = SM.starId AND SM.movieId = ? ORDER BY S.name";
 
         // Declare our statement
         PreparedStatement statement = conn.prepareStatement(query);
