@@ -37,9 +37,6 @@ public class MovieListServlet extends HttpServlet {
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        HttpSession session = request.getSession();
-        session.setAttribute("backURL", "index.html?" + request.getQueryString());
-
         response.setContentType("application/json"); // Response mime type
 
         // Retrieve parameters from url request.

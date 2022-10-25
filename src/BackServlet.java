@@ -45,6 +45,17 @@ public class BackServlet extends HttpServlet {
         response.setStatus(200);
 
         out.close();
+    }
 
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String backURL = "index.html?" + request.getQueryString();
+
+        HttpSession session = request.getSession();
+        session.setAttribute("backURL", backURL);
+
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("backURL", backURL);
+
+        response.getWriter().write(jsonObject.toString());
     }
 }
