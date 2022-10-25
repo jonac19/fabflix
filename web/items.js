@@ -1,4 +1,4 @@
-let cart = $("#cart");
+let remove = $("#remove");
 const unit_price = 4.99;
 /**
  * Retrieve parameter from request URL, matching by parameter name
@@ -46,7 +46,10 @@ function handleCartArray(resultArray) {
     var total_cost = 0;
     // change it to html list
     let res = "";
+    items_table_body.html("");
+
     for (let i = 0; i < resultArray.length; i++) {
+        res = "";
         // each item will be in a bullet point
         var movieData;
         $.ajax({
@@ -64,23 +67,26 @@ function handleCartArray(resultArray) {
         res += "<td>" + unit_price + "</td>";
         res += "<td>" + "<input type='number' value='1' min='1' onblur='findTotal()' name='qty'" +
             "oninput='this.value = Math.abs(this.value)' " + "</td>";
-        res += "<td>" + "<input form='remove' name='item' type='hidden' value='remove" + resultArray[i] +
-            "'><input form='remove' type='submit' value='discard'></td>";
+        res += "<td>" + //"<input form='remove' name='item' type='hidden' value='remove" + resultArray[i] +
+            //"'><input form='remove' type='submit' value='discard'></td>";
+            "<button id='button" + i.toString() + "' form='remove' type='submit' onclick='buttonRemove(\""
+            + movieData[0]["movie_id"].toString() + "\")'>Remove</button>";
 
         res += "</tr>";
         total_cost += unit_price ;
 
-        // Bind the 'remove' button
-        let rem = $("#rem" + i.toString());
-        console.log(rem);
-        rem.submit(handleRemovalRequest);
+        items_table_body.append(res);
+
     }
     $("#total_cost").append((Math.round(total_cost*100)/100).toString());   //Display total cost
 
-    res += "";
-    // clear the old array and show the new array in the frontend
-    items_table_body.html("");
-    items_table_body.append(res);
+}
+
+function buttonRemove( movieID ){
+    alert("Removed item");
+    console.log("Pressed inline remove button with: remove" + movieID);
+    document.getElementById("input").value = "remove" + movieID;
+    remove.submit(handleRemovalRequest());
 }
 
 // Call this function every time user changes an item QTY and recompute total_cost
@@ -104,42 +110,22 @@ function handleRemovalRequest(removeEvent) {
      * users to the url defined in HTML form. Instead, it will call this
      * event handler when the event is triggered.
      */
-    removeEvent.preventDefault();
+    // removeEvent.preventDefault();
 
     $.ajax("api/items", {
         method: "POST",
-        data: rem.serialize()
+        data: remove.serialize()
         // success: resultDataString => {
         //     let resultDataJson = JSON.parse(resultDataString);
         //     handleCartArray(resultDataJson["previousItems"]);
         // }
     });
+
 }
 /**
  * Submit form content with POST method
  * @param cartEvent
  */
-function handleCartInfo(cartEvent) {
-    console.log("submit cart form");
-    /**
-     * When users click the submit button, the browser will not direct
-     * users to the url defined in HTML form. Instead, it will call this
-     * event handler when the event is triggered.
-     */
-    cartEvent.preventDefault();
-
-    $.ajax("api/items", {
-        method: "POST",
-        data: cart.serialize()
-        // success: resultDataString => {
-        //     let resultDataJson = JSON.parse(resultDataString);
-        //     handleCartArray(resultDataJson["previousItems"]);
-        // }
-    });
-
-    // clear input form
-    cart[0].reset();
-}
 
 // Get item id (movie id) from URL
 let movieId = getParameterByName("newItem")
@@ -149,8 +135,6 @@ $.ajax("api/items", {
     success: handleSessionData
 });
 
-// Bind the submit action of the form to a event handler function
-cart.submit(handleCartInfo);
 
 // jQuery.ajax({
 //     dataType: "json",
