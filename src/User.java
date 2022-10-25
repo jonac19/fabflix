@@ -4,10 +4,12 @@
  */
 public class User {
 
-    private final String username;
+    final String username;
+    final int customerId;
 
-    public User(String username) {
+    public User(String username, int customerId) {
         this.username = username;
+        this.customerId = customerId;
     }
 
 }

@@ -7,18 +7,21 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-@WebServlet(name = "LoginServlet", urlPatterns = "/api/login")
-public class LoginServlet extends HttpServlet {
-    private static final long serialVersionUID = 4L;
+// Declare WebServlet called PaymentServlet. Maps to url "/api/payment"
+@WebServlet( name = "PaymentServlet", urlPatterns = "/api/payment" )
+public class PaymentServlet extends HttpServlet {
+    private static final long SerialVersionUID = 7L;
 
-    // Create a dataSource which registered in web.
+    // Create a dataSource which registered in web.xml
     private DataSource dataSource;
 
     public void init(ServletConfig config) {
@@ -33,24 +36,29 @@ public class LoginServlet extends HttpServlet {
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-//        response.setContentType("application/json"); // Response mime type
-
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
 
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
+        String first_name = request.getParameter("first_name");
+        String last_name = request.getParameter("last_name");
+        String credit_card_number = request.getParameter("credit_card_number");
+        Date expiration_date = Date.valueOf(request.getParameter("expiration_date"));
 
         JsonObject responseJsonObject = new JsonObject();
         try (Connection conn = dataSource.getConnection()) {
-            String query = "SELECT * FROM customers C WHERE C.email = ?";
+            String query = "SELECT * FROM creditcards CC, customers C WHERE CC.id = ? AND " +
+                    "CC.firstName = ? AND " +
+                    "CC.lastName = ? AND " +
+                    "CC.expiration = ? ";
 
             // Declare our statement
             PreparedStatement statement = conn.prepareStatement(query);
 
-            // Set the parameter represented by "?" in the query to the id we get from url,
-            // num 1 indicates the first "?" in the query
-            statement.setString(1, username);
+            // Set the parameter represented by "?" in the query
+            statement.setString(1, credit_card_number);
+            statement.setString(2, first_name);
+            statement.setString(3, last_name);
+            statement.setDate(4, expiration_date);
 
             // Perform the query
             ResultSet rs = statement.executeQuery();
@@ -60,32 +68,25 @@ public class LoginServlet extends HttpServlet {
                 responseJsonObject.addProperty("status", "fail");
                 // Log to localhost log
                 request.getServletContext().log("Login failed");
-                responseJsonObject.addProperty("message", "user " + username + " doesn't exist");
+                responseJsonObject.addProperty("message", "payment information incorrect");
             } else {
-                boolean passwordMatched = false;
+                responseJsonObject.addProperty("status", "success");
+                responseJsonObject.addProperty("message", "success");
 
-                while (rs.next()) {
-                    if (password.equals(rs.getString("password"))) {
-                        // Login success:
+                HttpSession session = request.getSession();
+                User user = (User) session.getAttribute("user");
 
-                        // set this user into the session
-                        request.getSession().setAttribute("user", new User(username, rs.getInt("id")));
+                String updateQuery = "INSERT INTO sales VALUES(?, ?, ?, ?)";
+                PreparedStatement update = conn.prepareStatement(updateQuery);
 
-                        responseJsonObject.addProperty("status", "success");
-                        responseJsonObject.addProperty("message", "success");
+                update.setString(1, null);
+                update.setInt(2, user.customerId);
+                update.setString(3, "tt0286917");
+                update.setDate(4, new Date(System.currentTimeMillis()));
 
-                        passwordMatched = true;
-                        break;
-                    }
-                }
+                update.executeUpdate();
 
-                if (!passwordMatched) {
-                    // Login fail due to incorrect password
-                    responseJsonObject.addProperty("status", "fail");
-                    // Log to localhost log
-                    request.getServletContext().log("Login failed");
-                    responseJsonObject.addProperty("message", "incorrect password");
-                }
+                update.close();
             }
             rs.close();
             statement.close();
@@ -109,6 +110,5 @@ public class LoginServlet extends HttpServlet {
         } finally {
             out.close();
         }
-
     }
 }
