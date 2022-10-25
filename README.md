@@ -28,6 +28,11 @@ Steps:
 
 5. Site should now be up. Connect to [AWS public IP]:8080
 
+### Substring Matching Design
+
+Substring matching was done in the `MovieListServlet` by constructing queries with the format `[column] LIKE ?`. These placeholders 
+throughout the queries are subsequently replaced with strings of the format `%[target]%` so that any database entries that contain the target
+will be returned.
 
 ### Contributions
 
