@@ -171,9 +171,11 @@ function purchaseFuncFlush() {
 function purchaseFuncFill(){
     //put dict contents into backend session one last time before going to Purchase Page
     for (const[key, value] of Object.entries(dict)){
-        $.ajax("api/items?item=" + key, {
-            method: "POST"
-        });
+        for ( let i=0; i<value[1]; i++ ){
+            $.ajax("api/items?item=" + key, {
+                method: "POST"
+            });
+        }
     }
 
 }
