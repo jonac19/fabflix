@@ -15,6 +15,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 
 // Declare WebServlet called PaymentServlet. Maps to url "/api/payment"
 @WebServlet( name = "PaymentServlet", urlPatterns = "/api/payment" )
@@ -75,18 +76,20 @@ public class PaymentServlet extends HttpServlet {
 
                 HttpSession session = request.getSession();
                 User user = (User) session.getAttribute("user");
+                ArrayList<String> prevItems = (ArrayList<String>) session.getAttribute("previousItems");
 
                 String updateQuery = "INSERT INTO sales VALUES(?, ?, ?, ?)";
-                PreparedStatement update = conn.prepareStatement(updateQuery);
+                for (int i = 0; i < prevItems.size(); i++) {
+                    PreparedStatement update = conn.prepareStatement(updateQuery);
 
-                update.setString(1, null);
-                update.setInt(2, user.customerId);
-                update.setString(3, "tt0286917");
-                update.setDate(4, new Date(System.currentTimeMillis()));
+                    update.setString(1, null);
+                    update.setInt(2, user.customerId);
+                    update.setString(3, prevItems.get(i));
+                    update.setDate(4, new Date(System.currentTimeMillis()));
 
-                update.executeUpdate();
-
-                update.close();
+                    update.executeUpdate();
+                    update.close();
+                }
             }
             rs.close();
             statement.close();
