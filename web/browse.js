@@ -28,7 +28,7 @@ function handleBrowseTitleResult(resultData) {
 
     for (let i = 0; i < resultData.length; i++) {
         let colHTML = "";
-        colHTML += "<a class='col-3' href='index.html?browseTitle='" + resultData[i]['title_letter'] + ">" +
+        colHTML += "<a class='col-3' href='index.html?browseTitle=" + resultData[i]['title_letter'] + "'>" +
             resultData[i]['title_letter'] +
             "</a>";
 
