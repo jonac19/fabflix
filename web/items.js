@@ -1,5 +1,8 @@
 let remove = $("#remove");
 const unit_price = 4.99;
+//Make a local dictionary considered to be the truth of movie counts in session. update later w/this
+var dict = new Object();
+
 /**
  * Retrieve parameter from request URL, matching by parameter name
  * @param target String
@@ -48,8 +51,6 @@ function handleCartArray(resultArray) {
     let res = "";
     items_table_body.html("");
 
-    //Make a local dictionary considered to be the truth of movie counts in session. update later w/this
-    var dict = new Object();
     for (let i = 0; i < resultArray.length; i++) {
         var movieData;
         $.ajax({
@@ -83,14 +84,12 @@ function handleCartArray(resultArray) {
         // });
         // console.log("entry: " + resultArray[i]);
         res += "<tr>";
-        res += "<td>" + movieData[0]["movie_title"] + "</td>";
+        res += "<td>" + value[0] + "</td>"; //movie title
         res += "<td>" + unit_price + "</td>";
-        res += "<td>" + "<input type='number' value='1' min='1' onblur='findTotal()' name='qty'" +
+        res += "<td>" + "<input type='number' value='" + value[1] +"' min='1' onblur='findTotal()' name='qty'" +
             "oninput='this.value = Math.abs(this.value)' " + "</td>";
-        res += "<td>" + //"<input form='remove' name='item' type='hidden' value='remove" + resultArray[i] +
-            //"'><input form='remove' type='submit' value='discard'></td>";
-            "<button id='button" + i.toString() + "' form='remove' type='submit' onclick='buttonRemove(\""
-            + movieData[0]["movie_id"].toString() + "\")'>Remove</button>";
+        res += "<td>" + "<button form='remove' type='submit' " +
+            "onclick='buttonRemove(\"" + key + "\")'>Remove</button>";
 
         res += "</tr>";
         total_cost += unit_price ;
@@ -99,6 +98,12 @@ function handleCartArray(resultArray) {
 
     }
     $("#total_cost").append((Math.round(total_cost*100)/100).toString());   //Display total cost
+
+    for (const[key, value] of Object.entries(dict)){
+        $.ajax("api/items?item=" + key, {
+            method: "POST"
+        });
+    }
 
 }
 
@@ -155,10 +160,20 @@ $.ajax("api/items", {
     success: handleSessionData
 });
 
+function purchaseFuncFlush() {
+    //Empty out the backend's session's cart contents one last time
+    $.ajax("api/items?flush=true", {
+        method: "POST",
+        success: {purchaseFuncFill}
+    });
+}
 
-// jQuery.ajax({
-//     dataType: "json",
-//     method: "GET",
-//     url: "api/items?newItem=" + movieId,
-//     success: (resultData) => handleItemsResult(resultData)
-// });
+function purchaseFuncFill(){
+    //put dict contents into backend session one last time before going to Purchase Page
+    for (const[key, value] of Object.entries(dict)){
+        $.ajax("api/items?item=" + key, {
+            method: "POST"
+        });
+    }
+
+}

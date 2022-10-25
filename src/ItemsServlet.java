@@ -63,6 +63,7 @@ public class ItemsServlet extends HttpServlet {
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String item = request.getParameter("item");
+        String flush = request.getParameter("flush");
         System.out.println("ItemServlet.Post: " + item);
         HttpSession session = request.getSession();
 
@@ -75,16 +76,27 @@ public class ItemsServlet extends HttpServlet {
             return;
         }
 
+        // If Flush flag is true, empty out the entire arraylist containing movieIds
+        if ("true".equals(flush)) {
+            System.out.println("Flush call received...: ");
+            ArrayList<String> prevItems = (ArrayList<String>) session.getAttribute("previousItems");
+            prevItems.clear();
+            session.setAttribute("previousItems", prevItems);
+            return;
+        }
+
         // get the previous items in a ArrayList
         ArrayList<String> previousItems = (ArrayList<String>) session.getAttribute("previousItems");
         if (previousItems == null) {
             previousItems = new ArrayList<>();
             previousItems.add(item);
+            System.out.println("Adding item: "+ item);
             session.setAttribute("previousItems", previousItems);
         } else {
             // prevent corrupted states through sharing under multi-threads
             // will only be executed by one thread at a time
             synchronized (previousItems) {
+                System.out.println("Adding item: " + item);
                 previousItems.add(item);
             }
         }
