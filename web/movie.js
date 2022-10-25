@@ -77,7 +77,7 @@ function handleMovieResult(resultData) {
         movieTableBodyElement.append(rowHTML);
 
         // On CLICK, set the Value in the Form object and Submit it.
-        // Since this func is jQuery, must be done AFTER rowHTML has been appended to frontend display
+        // Since this func is jQuery, must be run AFTER rowHTML has been appended to frontend display
         $('#button' + i.toString()).click(function(){
             console.log("Pressed inline purchase button");
             document.getElementById("item").value = resultData[i]["movie_id"];
