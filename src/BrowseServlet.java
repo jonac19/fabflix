@@ -76,7 +76,7 @@ public class BrowseServlet extends HttpServlet {
                     jsonArray.add( jsonObject );
                 }
             } else if (criteria.equals("title")) {
-                query = "SELECT LEFT(title, 1) AS letter FROM movies GROUP BY 1 ORDER BY LEFT(title, 1)";
+                query = "SELECT LEFT(title, 1) AS letter FROM movies WHERE title REGEXP '^[a-zA-Z0-9]+.?' GROUP BY 1 ORDER BY LEFT(title, 1)";
 
                 // Perform the query
                 rs = statement.executeQuery(query);

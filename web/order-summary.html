@@ -2,29 +2,38 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="icon" type="image/png" href="images/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="images/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+
+    <title>Order Summary</title>
 </head>
-<body>
-<header>
-    <img src='images/fabflix-logo.png' alt='Fabflix logo' height=65>
-    <h1>Order Summary Page</h1>
-</header>
-<h2><a href='http://localhost:8080/cs122b-fall22-team-46/'>Back to Main Page</a></h2>
-<!--<a class='btn btn-secondary' href='index.html'>Movie List</a>-->
-<!-- Shopping cart info -->
-<table id=items class="table table-striped table-dark">
-    <thead>
-    <tr>
-        <!-- Titles of each column-->
-        <th>Title</th>
-        <th>Price</th>
-        <th>Quantity</th>
-    </tr>
-    </thead>
-    <tbody id=items_table_body>
-    </tbody>
+    <header>
+        <img src='images/fabflix-logo.png' alt='Fabflix logo' height=65>
+        <h1>Order Summary</h1>
+    </header>
+    <h2><a href='http://localhost:8080/cs122b-fall22-team-46/'>Back to Main Page</a></h2>
+    <!--<a class='btn btn-secondary' href='index.html'>Movie List</a>-->
+    <!-- Shopping cart info -->
+    <table id=items class="table table-striped table-dark">
+        <thead>
+        <tr>
+            <!-- Titles of each column-->
+            <th>Title</th>
+            <th>Price</th>
+            <th>Quantity</th>
+        </tr>
+        </thead>
+        <tbody id=items_table_body>
+        </tbody>
+    </table>
     <p id="total_cost">Total Cost: $</p>
-</table>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
