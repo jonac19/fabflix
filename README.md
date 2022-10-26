@@ -5,7 +5,7 @@ cs122b-fall-team-46 created by GitHub Classroom
 # Fabflix - Team 46
 
 ### Demo Video URL
-[Project 2 Recording](https://youtu.be/WwUgro03PfY)
+[Project 2 Recording](https://youtu.be/S6KLsvRMTK0)
 
 ### Deployment Steps
 (Class Project Instructions followed, no aberrant frameworks)
