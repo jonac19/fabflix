@@ -12,3 +12,20 @@ function submitAdvancedSearchForm(formSubmitEvent) {
 
 // Bind the submit action of the form to a handler function
 advancedSearchForm.submit(submitAdvancedSearchForm);
+
+function handleBackResult(resultData) {
+    let advancedSearchBackNavElement = jQuery("#advanced_search_back_nav_element");
+
+    let anchorHTML = "<a class='btn btn-outline-warning' href='"
+        + resultData['backURL']
+        + "'>Back</a>";
+
+    advancedSearchBackNavElement.append(anchorHTML);
+}
+
+jQuery.ajax({
+    dataType: "json",
+    method: "GET",
+    url: "api/back",
+    success: (resultData) => handleBackResult(resultData)
+});

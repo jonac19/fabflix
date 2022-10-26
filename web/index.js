@@ -104,7 +104,8 @@ function handleMovieListPaginationResult(resultData) {
     prevHTML += "'><a class='page-link' href="
         + "index.html?limit=" + listLimit
         + "&criteria=" + listCriteria
-        + "&order=" + listOrder
+        + "&orderFirst=" + listOrderFirst
+        + "&orderSecond=" + listOrderSecond
         + "&page=" + (parseInt(listPage) - 1).toString()
         + "&searchTitle=" + listSearchTitle
         + "&searchYear=" + listSearchYear
@@ -123,7 +124,8 @@ function handleMovieListPaginationResult(resultData) {
     nextHTML += "'><a class='page-link' role='button' href="
         + "index.html?limit=" + listLimit
         + "&criteria=" + listCriteria
-        + "&order=" + listOrder
+        + "&orderFirst=" + listOrderFirst
+        + "&orderSecond=" + listOrderSecond
         + "&page=" + (parseInt(listPage) + 1).toString()
         + "&searchTitle=" + listSearchTitle
         + "&searchYear=" + listSearchYear
@@ -148,12 +150,14 @@ function submitSearchForm(formSubmitEvent) {
 /**
  * Orders movie list according to given parameters
  * @param column Column to order the movie list by
- * @param order Order to order the movie list by
+ * @param orderFirst Order to order the first column by
+ * @param orderSecond Order to order the second column by
  */
-function orderBy(column, order) {
+function orderBy(column, orderFirst, orderSecond) {
     window.location.replace("index.html?limit=" + listLimit
         + "&criteria=" + column
-        + "&order=" + order
+        + "&orderFirst=" + orderFirst
+        + "&orderSecond=" + orderSecond
         + "&page=1"
         + "&searchTitle=" + listSearchTitle
         + "&searchYear=" + listSearchYear
@@ -170,7 +174,8 @@ function orderBy(column, order) {
 function listings(number) {
     window.location.replace("index.html?limit=" + number
         + "&criteria=" + listCriteria
-        + "&order=" + listOrder
+        + "&orderFirst=" + listOrderFirst
+        + "&orderSecond=" + listOrderSecond
         + "&page=1"
         + "&searchTitle=" + listSearchTitle
         + "&searchYear=" + listSearchYear
@@ -186,7 +191,8 @@ searchForm.submit(submitSearchForm);
 // Get movie list parameters from URL
 let listLimit = getParameterByName("limit");
 let listCriteria = getParameterByName("criteria");
-let listOrder = getParameterByName("order");
+let listOrderFirst = getParameterByName("orderFirst");
+let listOrderSecond = getParameterByName("orderSecond");
 let listPage = getParameterByName("page");
 let listSearchTitle = getParameterByName("searchTitle");
 let listSearchYear = getParameterByName("searchYear");
@@ -197,7 +203,8 @@ let listBrowseTitle = getParameterByName("browseTitle");
 
 if (listLimit == null) {listLimit = "20"};
 if (listCriteria == null) {listCriteria = "rating"};
-if (listOrder == null) {listOrder = "desc"};
+if (listOrderFirst == null) {listOrderFirst = "desc"};
+if (listOrderSecond == null) {listOrderSecond = "asc"};
 if (listPage == null) {listPage = "1"};
 if (listSearchTitle == null) {listSearchTitle = ""};
 if (listSearchYear == null) {listSearchYear = ""};
@@ -212,7 +219,8 @@ jQuery.ajax({
     method: "GET",
     url: "api/movie-list?limit=" + listLimit
         + "&criteria=" + listCriteria
-        + "&order=" + listOrder
+        + "&orderFirst=" + listOrderFirst
+        + "&orderSecond=" + listOrderSecond
         + "&page=" + listPage
         + "&searchTitle=" + listSearchTitle
         + "&searchYear=" + listSearchYear
@@ -229,7 +237,8 @@ jQuery.ajax({
     method: "GET",
     url: "api/movie-list?limit=" + listLimit
         + "&criteria=" + listCriteria
-        + "&order=" + listOrder
+        + "&orderFirst=" + listOrderFirst
+        + "&orderSecond=" + listOrderSecond
         + "&page=" + (parseInt(listPage) + 1).toString()
         + "&searchTitle=" + listSearchTitle
         + "&searchYear=" + listSearchYear
@@ -246,7 +255,8 @@ jQuery.ajax({
     method: "POST",
     url: "api/back?limit=" + listLimit
         + "&criteria=" + listCriteria
-        + "&order=" + listOrder
+        + "&orderFirst=" + listOrderFirst
+        + "&orderSecond=" + listOrderSecond
         + "&page=" + listPage
         + "&searchTitle=" + listSearchTitle
         + "&searchYear=" + listSearchYear
