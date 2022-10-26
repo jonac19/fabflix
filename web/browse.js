@@ -53,3 +53,20 @@ jQuery.ajax({
     url: "api/browse?criteria=title",
     success: (resultData) => handleBrowseTitleResult(resultData)
 });
+
+function handleBackResult(resultData) {
+    let browseBackNavElement = jQuery("#browse_back_nav_element");
+
+    let anchorHTML = "<a class='btn btn-outline-warning' href='"
+        + resultData['backURL']
+        + "'>Back</a>";
+
+    browseBackNavElement.append(anchorHTML);
+}
+
+jQuery.ajax({
+    dataType: "json",
+    method: "GET",
+    url: "api/back",
+    success: (resultData) => handleBackResult(resultData)
+});

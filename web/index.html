@@ -21,12 +21,12 @@
         </div>
 
         <div>
-            <ul id="movie_list_pagination" class="pagination my-2 my-sm-0 mr-sm-2"></ul>
+            <ul id="movie_list_pagination" class="pagination btn-sm my-2 my-sm-0 mr-sm-2"></ul>
         </div>
 
         <div class='mr-sm-2'>
             <div class='nav-item dropdown'>
-                <button class="btn btn-outline-warning dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button class="btn btn-outline-warning btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Number of Listings
                 </button>
                 <div class='dropdown-menu' aria-labelledby=navbarDropdownMenuLink'>
@@ -39,28 +39,32 @@
 
         <div class='collapse navbar-collapse mr-sm-2'>
             <div class='nav-item dropdown'>
-                <button class="btn btn-outline-warning dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button class="btn btn-outline-warning btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Order By
                 </button>
                 <div class='dropdown-menu' aria-labelledby=navbarDropdownMenuLink'>
-                    <button class='dropdown-item' onclick='orderBy("title", "asc")'>Title Ascending</button>
-                    <button class='dropdown-item' onclick='orderBy("title", "desc")'>Title Descending</button>
-                    <button class='dropdown-item' onclick='orderBy("rating", "asc")'>Rating Ascending</button>
-                    <button class='dropdown-item' onclick='orderBy("rating", "desc")'>Rating Descending</button>
+                    <button class='dropdown-item' onclick='orderBy("title", "asc", "asc")'>Title Ascending, Rating Ascending</button>
+                    <button class='dropdown-item' onclick='orderBy("title", "asc", "desc")'>Title Ascending, Rating Descending</button>
+                    <button class='dropdown-item' onclick='orderBy("rating", "asc", "asc")'>Rating Ascending, Title Ascending</button>
+                    <button class='dropdown-item' onclick='orderBy("rating", "asc", "desc")'>Rating Ascending, Title Descending</button>
+                    <button class='dropdown-item' onclick='orderBy("title", "desc", "asc")'>Title Descending, Rating Ascending</button>
+                    <button class='dropdown-item' onclick='orderBy("title", "desc", "desc")'>Title Descending, Rating Descending</button>
+                    <button class='dropdown-item' onclick='orderBy("rating", "desc", "asc")'>Rating Descending, Title Ascending</button>
+                    <button class='dropdown-item' onclick='orderBy("rating", "desc", "desc")'>Rating Descending, Title Descending</button>
                 </div>
             </div>
         </div>
 
-        <a class="btn btn-outline-warning mr-sm-2" href="browse.html">Browse</a>
+        <a class="btn btn-outline-warning btn-sm mr-sm-2" href="browse.html">Browse</a>
 
-        <a class="btn btn-outline-warning mr-sm-2" href="advanced-search.html">Advanced Search</a>
+        <a class="btn btn-outline-warning btn-sm mr-sm-2" href="advanced-search.html">Advanced Search</a>
 
-        <form id='search_form' class='form-inline justify-content-end' action='#'>
-            <input class='form-control mr-sm-2' name='searchTitle' type='search' placeholder='Search' aria-label='Search'>
-            <button class="btn btn-outline-warning my-2 my-sm-0" type='submit'>Search</button>
+        <form id='search_form' class='form-inline justify-content-end mr-sm-2' action='#'>
+            <input class='form-control btn-sm mr-sm-2' name='searchTitle' type='search' placeholder='Search' aria-label='Search'>
+            <button class="btn btn-outline-warning btn-sm my-2 my-sm-0" type='submit'>Search</button>
         </form>
 
-        <a href="items.html" class="btn btn-warning">Checkout Items</a>
+        <a href="items.html" class="btn btn-warning btn-sm">Checkout Items</a>
     </nav>
 
     <table id=movie_list_table class="table table-striped table-dark">

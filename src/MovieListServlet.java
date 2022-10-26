@@ -8,7 +8,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -42,7 +41,8 @@ public class MovieListServlet extends HttpServlet {
         // Retrieve parameters from url request.
         String limit = request.getParameter("limit");
         String criteria = request.getParameter("criteria");
-        String order = request.getParameter("order");
+        String orderFirst = request.getParameter("orderFirst");
+        String orderSecond = request.getParameter("orderSecond");
         String page = request.getParameter("page");
         String searchTitle = request.getParameter("searchTitle");
         String searchYear = request.getParameter("searchYear");
@@ -54,7 +54,8 @@ public class MovieListServlet extends HttpServlet {
         // The log messages can be found in localhost log
         request.getServletContext().log("getting limit: " + limit);
         request.getServletContext().log("getting criteria: " + criteria);
-        request.getServletContext().log("getting order: " + order);
+        request.getServletContext().log("getting orderFirst: " + orderFirst);
+        request.getServletContext().log("getting orderSecond: " + orderSecond);
         request.getServletContext().log("getting page: " + page);
         request.getServletContext().log("getting searchTitle:" + searchTitle);
         request.getServletContext().log("getting searchYear:" + searchYear);
@@ -68,7 +69,7 @@ public class MovieListServlet extends HttpServlet {
 
         // Get a connection from dataSource and let resource manager close the connection after usage.
         try (Connection conn = dataSource.getConnection()) {
-            String query = constructQuery(criteria, order, searchTitle, searchYear, searchDirector, searchStar, browseGenre, browseTitle);
+            String query = constructQuery(criteria, orderFirst, orderSecond, searchTitle, searchYear, searchDirector, searchStar, browseGenre, browseTitle);
 
             // Set the additional parameters
             PreparedStatement statement = prepareStatement(conn, query, limit, page, searchTitle, searchYear, searchDirector, searchStar, browseGenre, browseTitle);
@@ -129,12 +130,13 @@ public class MovieListServlet extends HttpServlet {
     /**
      * Constructs the base query with criteria and order options
      * @param criteria Column name to sort movies by
-     * @param order Sorting order either ascending or descending
+     * @param orderFirst Sorting order for first column either ascending or descending
+     * @param orderSecond Sorting order for second column either ascending or descending
      * @return Query to be processed by MySQL
      * @throws Exception Invalid parameters in URL
      */
-    private String constructQuery(String criteria, String order, String searchTitle, String searchYear, String searchDirector,
-                                  String searchStar, String browseGenre, String browseTitle) throws Exception {
+    private String constructQuery(String criteria, String orderFirst, String orderSecond, String searchTitle, String searchYear,
+                                  String searchDirector, String searchStar, String browseGenre, String browseTitle) throws Exception {
         String query = "SELECT " +
                             "M.id, " +
                             "M.title, " +
@@ -151,7 +153,7 @@ public class MovieListServlet extends HttpServlet {
                             "WHERE M.id = R.movieId " +
                             "ORDER BY ";
 
-        if (criteria == "" || criteria.equals("rating")) {
+        if (criteria.equals("") || criteria.equals("rating")) {
             query += "rating ";
         } else if (criteria.equals("title")) {
             query += "title ";
@@ -159,9 +161,9 @@ public class MovieListServlet extends HttpServlet {
             throw new Exception("Invalid criteria for sorting");
         }
 
-        if (order.equals("") || order.equals("desc")) {
+        if (orderFirst.equals("") || orderFirst.equals("desc")) {
             query += "DESC, ";
-        } else if (order.equals("asc")) {
+        } else if (orderFirst.equals("asc")) {
             query += "ASC, ";
         } else {
             throw new Exception("Invalid order for sorting");
@@ -169,8 +171,16 @@ public class MovieListServlet extends HttpServlet {
 
         if (criteria.equals("") || criteria.equals("rating")) {
             query += "title ";
-        } else {
+        } else  {
             query += "rating ";
+        }
+
+        if (orderSecond.equals("") || orderSecond.equals("asc")) {
+            query += "ASC";
+        } else if (orderSecond.equals("desc")) {
+            query += "DESC";
+        } else {
+            throw new Exception("Invalid order for sorting");
         }
 
         query +=    ") AS R, " +
@@ -218,22 +228,28 @@ public class MovieListServlet extends HttpServlet {
 
         query += "ORDER BY ";
 
-        if (!criteria.equals("") || criteria.equals("rating")) {
+        if (criteria.equals("") || criteria.equals("rating")) {
             query += "rating ";
-        } else {
+        }  else  {
             query += "title ";
         }
 
-        if (!order.equals("") || order.equals("desc")) {
+        if (orderFirst.equals("") || orderFirst.equals("desc")) {
             query += "DESC, ";
         } else {
             query += "ASC, ";
         }
 
-        if (!criteria.equals("") || criteria.equals("rating")) {
+        if (criteria.equals("") || criteria.equals("rating")) {
             query += "title ";
         } else {
             query += "rating ";
+        }
+
+        if (orderSecond.equals("") || orderSecond.equals("asc")) {
+            query += "ASC ";
+        } else {
+            query += "DESC ";
         }
 
         query += "LIMIT ? " +
