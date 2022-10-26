@@ -1,3 +1,4 @@
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import javax.naming.InitialContext;
@@ -16,6 +17,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 // Declare WebServlet called PaymentServlet. Maps to url "/api/payment"
 @WebServlet( name = "PaymentServlet", urlPatterns = "/api/payment" )
@@ -76,19 +78,21 @@ public class PaymentServlet extends HttpServlet {
 
                 HttpSession session = request.getSession();
                 User user = (User) session.getAttribute("user");
-                ArrayList<String> prevItems = (ArrayList<String>) session.getAttribute("previousItems");
+                ShoppingCart shoppingCart = (ShoppingCart) session.getAttribute("shoppingCart");
 
-                String updateQuery = "INSERT INTO sales VALUES(?, ?, ?, ?)";
-                for (int i = 0; i < prevItems.size(); i++) {
-                    PreparedStatement update = conn.prepareStatement(updateQuery);
+                String updateQuery = "INSERT INTO sales VALUES(?, ?, ?, CURDATE())";
+                for (Object movie_id_object : shoppingCart.movie_ids.keySet()) {
+                    String movie_id = (String) movie_id_object;
+                    for (int i = 0; i < shoppingCart.movie_ids.get(movie_id); i++) {
+                        PreparedStatement update = conn.prepareStatement(updateQuery);
 
-                    update.setString(1, null);
-                    update.setInt(2, user.customerId);
-                    update.setString(3, prevItems.get(i));
-                    update.setDate(4, new Date(System.currentTimeMillis()));
+                        update.setString(1, null);
+                        update.setInt(2, user.customerId);
+                        update.setString(3, movie_id);
 
-                    update.executeUpdate();
-                    update.close();
+                        update.executeUpdate();
+                        update.close();
+                    }
                 }
             }
             rs.close();

@@ -69,9 +69,8 @@ function handleMovieResult(resultData) {
 
         rowHTML += "<td>" + resultData[i]["movie_rating"] + "</td>";
 
-        rowHTML += "<td>";
-        rowHTML += "<button id='button" + i.toString() + "' form='cart' type='submit'>Buy</button>";
-        rowHTML += "</td>";
+        rowHTML += "<td><button form='cart' type='submit' onclick='handleAddMovie(\""
+            + resultData[i]["movie_id"] + "\")'>Add to Cart</button></td>";
 
         rowHTML += "</tr>";
 
@@ -82,7 +81,7 @@ function handleMovieResult(resultData) {
         // Since this func is jQuery, must be run AFTER rowHTML has been appended to frontend display
         $('#button' + i.toString()).click(function(){
             console.log("Pressed inline purchase button");
-            document.getElementById("item").value = resultData[i]["movie_id"];
+            document.getElementById("movie_id").value = resultData[i]["movie_id"];
             document.getElementById("cart").click();
         })
 
@@ -120,27 +119,17 @@ jQuery.ajax({
 });
 
 
-function handleCartInfo(cartEvent) {
-    console.log("submit cart form");
-    /**
-     * When users click the submit button, the browser will not direct
-     * users to the url defined in HTML form. Instead, it will call this
-     * event handler when the event is triggered.
-     */
-    cartEvent.preventDefault();
-
-    $.ajax("api/items", {
+function handleAddMovie(movie_id) {
+    $.ajax({
+        url: "api/items?action=increment&movie_id=" + movie_id,
         method: "POST",
-        data: cart.serialize()
-        // success: resultDataString => {
-        //     let resultDataJson = JSON.parse(resultDataString);
-        //     handleCartArray(resultDataJson["previousItems"]);
-        // }
+        success: () => {
+            cart[0].reset();
+            alert("Movie Added to Cart");
+        }
     });
 
-    // clear input form
-    cart[0].reset();
+    document.location.reload();
 }
 
-cart.submit(handleCartInfo);
 

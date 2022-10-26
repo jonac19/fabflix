@@ -159,7 +159,7 @@ public class MovieListServlet extends HttpServlet {
             throw new Exception("Invalid criteria for sorting");
         }
 
-        if (order == "" || order.equals("desc")) {
+        if (order.equals("") || order.equals("desc")) {
             query += "DESC, ";
         } else if (order.equals("asc")) {
             query += "ASC, ";
@@ -167,7 +167,7 @@ public class MovieListServlet extends HttpServlet {
             throw new Exception("Invalid order for sorting");
         }
 
-        if (criteria == "" || criteria.equals("rating")) {
+        if (criteria.equals("") || criteria.equals("rating")) {
             query += "title ";
         } else {
             query += "rating ";
@@ -186,47 +186,51 @@ public class MovieListServlet extends HttpServlet {
                     "AND M.id = GM.movieId " +
                     "AND G.id = GM.genreId ";
 
-        if (searchTitle != "") {
+        if (!searchTitle.equals("")) {
             query += "AND M.title LIKE ? ";
         }
 
-        if (searchYear != "") {
+        if (!searchYear.equals("")) {
             query += "AND M.year = ? ";
         }
 
-        if (searchDirector != "") {
+        if (!searchDirector.equals("")) {
             query += "AND M.director LIKE ? ";
         }
 
-        if (browseTitle != "") {
-            query += "AND M.title LIKE ? ";
+        if (!browseTitle.equals("")) {
+            if (browseTitle.equals("*")) {
+                query += "AND M.title REGEXP '^[^a-zA-Z0-9]+.?'";
+            } else {
+                query += "AND M.title LIKE ? ";
+            }
         }
 
         query += "GROUP BY M.id ";
 
-        if (searchStar != "") {
+        if (!searchStar.equals("")) {
             query += "HAVING sum(S.name LIKE ?) > 0 ";
         }
 
-        if (browseGenre != "") {
+        if (!browseGenre.equals("")) {
             query += "HAVING sum(G.id = ?) > 0 ";
         }
 
         query += "ORDER BY ";
 
-        if (criteria == "" || criteria.equals("rating")) {
+        if (!criteria.equals("") || criteria.equals("rating")) {
             query += "rating ";
         } else {
             query += "title ";
         }
 
-        if (order == "" || order.equals("desc")) {
+        if (!order.equals("") || order.equals("desc")) {
             query += "DESC, ";
         } else {
             query += "ASC, ";
         }
 
-        if (criteria == "" || criteria.equals("rating")) {
+        if (!criteria.equals("") || criteria.equals("rating")) {
             query += "title ";
         } else {
             query += "rating ";
@@ -246,45 +250,45 @@ public class MovieListServlet extends HttpServlet {
 
         int index = 1;
 
-        if (searchTitle != "") {
+        if (!searchTitle.equals("")) {
             statement.setString(index, "%" + searchTitle + "%");
             index += 1;
         }
 
-        if (searchYear != "") {
+        if (!searchYear.equals("")) {
             statement.setInt(index, parseInt(searchYear));
             index += 1;
         }
 
-        if (searchDirector != "") {
+        if (!searchDirector.equals("")) {
             statement.setString(index, "%" + searchDirector + "%");
             index += 1;
         }
 
-        if (browseTitle != "") {
+        if (!browseTitle.equals("") && !browseTitle.equals("*")) {
             statement.setString(index, browseTitle + "%");
             index += 1;
         }
 
-        if (searchStar != "") {
+        if (!searchStar.equals("")) {
             statement.setString(index, "%" + searchStar + "%");
             index += 1;
         }
 
-        if (browseGenre != "") {
+        if (!browseGenre.equals("")) {
             statement.setString(index, browseGenre);
             index += 1;
         }
 
-        if (limit != "") {
+        if (!limit.equals("")) {
             statement.setInt(index, parseInt(limit));
         } else {
             statement.setInt(index, 20);
         }
         index += 1;
 
-        if (page != "") {
-            if (limit != "") {
+        if (!page.equals("")) {
+            if (!limit.equals("")) {
                 statement.setInt(index, parseInt(limit) * (parseInt(page) - 1));
             } else {
                 statement.setInt(index, 20 * (parseInt(page) - 1));
