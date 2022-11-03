@@ -1,4 +1,5 @@
 import com.google.gson.JsonObject;
+import org.jasypt.util.password.StrongPasswordEncryptor;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -63,9 +64,11 @@ public class LoginServlet extends HttpServlet {
                 responseJsonObject.addProperty("message", "user " + username + " doesn't exist");
             } else {
                 boolean passwordMatched = false;
+                StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
 
                 while (rs.next()) {
-                    if (password.equals(rs.getString("password"))) {
+                    String encryptedPassword = rs.getString("password");
+                    if (passwordEncryptor.checkPassword(password, encryptedPassword)){
                         // Login success:
 
                         // set this user into the session

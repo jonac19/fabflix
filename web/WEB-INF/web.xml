@@ -16,6 +16,7 @@
     </resource-ref>
 
 <!--    Project 3 addition: HTTPS only  -->
+<!--    Must comment out <security-constraint> for local testing    -->
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>HTTPSOnly</web-resource-name>
