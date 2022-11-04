@@ -61,7 +61,7 @@ public class DashboardServlet extends HttpServlet {
                     responseJsonObject.addProperty("status", "success");
                     // Log to localhost log
                     request.getServletContext().log("Operation succeeded");
-                    responseJsonObject.addProperty("message", "Star added: " + starId);
+                    responseJsonObject.addProperty("message", "Star added with Star ID: " + starId);
                 } else {
                     // Operation failed due to invalid action
                     responseJsonObject.addProperty("status", "fail");
@@ -77,7 +77,7 @@ public class DashboardServlet extends HttpServlet {
                 String starBirthYear = request.getParameter("starBirthYear");
                 String genreName = request.getParameter("genreName");
 
-                String callQuery = "CALL add_movie(?, ?, ?, ?, ?, ?)";
+                String callQuery = "CALL add_movie(?, ?, ?, ?, ?, ?, ?)";
                 CallableStatement call = conn.prepareCall(callQuery);
 
                 call.setString(1, movieTitle);
@@ -87,7 +87,16 @@ public class DashboardServlet extends HttpServlet {
                 call.setInt(5, Integer.parseInt(starBirthYear));
                 call.setString(6, genreName);
 
+                call.registerOutParameter(7, Types.VARCHAR);
                 call.executeUpdate();
+
+                String message = call.getString(7);
+                // Operation succeeded
+                responseJsonObject.addProperty("status", "success");
+                // Log to localhost log
+                request.getServletContext().log("Operation succeeded");
+                responseJsonObject.addProperty("message", message);
+
                 call.close();
             } else {
                 // Operation failed due to invalid action
