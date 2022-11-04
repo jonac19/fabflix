@@ -54,7 +54,6 @@ public class DashboardLoginServlet extends HttpServlet {
             // Perform the query
             ResultSet rs = statement.executeQuery();
 
-            System.out.println("DashboardLoginServlet: " + username + " " + password);
             if (rs.next()) {
                 // Login success
 
