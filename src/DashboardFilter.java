@@ -8,8 +8,8 @@ import java.util.ArrayList;
 /**
  * Servlet Filter implementation class LoginFilter
  */
-@WebFilter(filterName = "LoginFilter", urlPatterns = "/*")
-public class LoginFilter implements Filter {
+@WebFilter(filterName = "DashboardFilter", urlPatterns = "/_*")
+public class DashboardFilter implements Filter {
     private final ArrayList<String> allowedURIs = new ArrayList<>();
 
     /**
@@ -20,7 +20,7 @@ public class LoginFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        System.out.println("LoginFilter: " + httpRequest.getRequestURI());
+        System.out.println("DashboardFilter: " + httpRequest.getRequestURI());
 
         // Check if this URL is allowed to access without logging in
         if (this.isUrlAllowedWithoutLogin(httpRequest.getRequestURI())) {
@@ -30,9 +30,8 @@ public class LoginFilter implements Filter {
         }
 
         // Redirect to login page if the "user" attribute doesn't exist in session
-        if (httpRequest.getSession().getAttribute("user") == null
-                && httpRequest.getSession().getAttribute("employee") == null) {
-            httpResponse.sendRedirect("login.html");
+        if (httpRequest.getSession().getAttribute("employee") == null) {
+            httpResponse.sendRedirect("dashboard-login.html");
         } else {
             chain.doFilter(request, response);
         }
@@ -48,16 +47,7 @@ public class LoginFilter implements Filter {
     }
 
     public void init(FilterConfig fConfig) {
-        allowedURIs.add("login.html");
-        allowedURIs.add("login.js");
-        allowedURIs.add("api/login");
-        allowedURIs.add("dashboard-login.html");
-        allowedURIs.add("dashboard-login.js");
-        allowedURIs.add("api/dashboard-login");
-        allowedURIs.add("style.css");
-        allowedURIs.add("images/favicon-32x32.png");
-        allowedURIs.add("images/favicon-16x16.png");
-        allowedURIs.add("images/favicon.ico");
+
     }
 
     public void destroy() {
