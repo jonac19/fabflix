@@ -42,25 +42,33 @@ public class DashboardServlet extends HttpServlet {
         try (Connection conn = dataSource.getConnection()) {
             if ("addStar".equals(action)) {
                 String starName = request.getParameter("starName");
-                String starBirthYear = request.getParameter("starBirthYear");
+                String starBirthYear = getStarBirthYear(request);
                 String starId = getStarId(conn);
 
-                String updateQuery = "INSERT INTO stars (id, name, birthYear) VALUES (?, ?, ?)";
+                if (!"".equals(starName)) {
+                    String updateQuery = "INSERT INTO stars (id, name, birthYear) VALUES (?, ?, ?)";
 
-                PreparedStatement update = conn.prepareStatement(updateQuery);
+                    PreparedStatement update = conn.prepareStatement(updateQuery);
 
-                update.setString(1, starId);
-                update.setString(2, starName);
-                update.setInt(3, Integer.parseInt(starBirthYear));
+                    update.setString(1, starId);
+                    update.setString(2, starName);
+                    update.setInt(3, Integer.parseInt(starBirthYear));
 
-                update.executeUpdate();
-                update.close();
+                    update.executeUpdate();
+                    update.close();
 
-                // Operation succeeded
-                responseJsonObject.addProperty("status", "success");
-                // Log to localhost log
-                request.getServletContext().log("Operation succeeded");
-                responseJsonObject.addProperty("message", "Star added: " + starId);
+                    // Operation succeeded
+                    responseJsonObject.addProperty("status", "success");
+                    // Log to localhost log
+                    request.getServletContext().log("Operation succeeded");
+                    responseJsonObject.addProperty("message", "Star added: " + starId);
+                } else {
+                    // Operation failed due to invalid action
+                    responseJsonObject.addProperty("status", "fail");
+                    // Log to localhost log
+                    request.getServletContext().log("Operation failed");
+                    responseJsonObject.addProperty("message", "Name missing");
+                }
             } else if ("addMovie".equals(action)) {
                 String movieTitle = request.getParameter("movieTitle");
                 String movieYear = request.getParameter("movieYear");
@@ -109,6 +117,16 @@ public class DashboardServlet extends HttpServlet {
             out.close();
         }
 
+    }
+
+    private String getStarBirthYear(HttpServletRequest request) {
+        String starBirthYear = request.getParameter("starBirthYear");
+
+        if ("".equals(starBirthYear)) {
+            starBirthYear = "0";
+        }
+
+        return starBirthYear;
     }
 
     private String getStarId(Connection conn) throws SQLException {
