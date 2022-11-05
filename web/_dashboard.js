@@ -68,3 +68,42 @@ function submitAddMovieForm(formSubmitEvent) {
 // Bind the submit action of the form to a handler function
 add_star_form.submit(submitAddStarForm);
 add_movie_form.submit(submitAddMovieForm)
+
+$.ajax({
+    dataType: "json",
+    method: "GET",
+    url: "api/dashboard",
+    success: (resultData) => handleDashboardResult(resultData)
+});
+
+function handleDashboardResult(resultData) {
+    let dashboardTablesElement = $("#dashboard_tables");
+
+    // Iterate through resultData
+    for (let i = 0; i < resultData.length; i++) {
+        let table = resultData[i];
+        let tableHTML = "<div class='m-4'>" +
+                            "<h4>Table: " + table["table_name"] + "</h4>" +
+                            "<table class='table table-striped table-dark'>" +
+                                "<thead>" +
+                                    "<tr>" +
+                                        "<th>Attribute</th>" +
+                                        "<th>Type</th>" +
+                                    "</tr>" +
+                                "</thead>" +
+                                "<tbody>";
+        for (let j = 0; j < table["table_columns"].length; j++) {
+            let table_column = table["table_columns"][j]
+            let rowHTML = "";
+            rowHTML += "<tr>"
+            rowHTML += "<td>" + table_column["table_field"] + "</td>";
+            rowHTML += "<td>" + table_column["table_type"] + "</td>";
+            rowHTML += "</tr>";
+
+            // Append the row created to the table body, which will refresh the page
+            tableHTML += rowHTML;
+        }
+        tableHTML += "</tbody></table></div>";
+        dashboardTablesElement.append(tableHTML);
+    }
+}
