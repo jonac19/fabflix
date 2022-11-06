@@ -4,6 +4,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -25,8 +27,15 @@ public class StarSAXParser extends DefaultHandler {
 
     private String starId;
 
+    private ConnectionPool connectionPool;
+
     public StarSAXParser() {
-        stars = new ArrayList<Star>();
+        try {
+            stars = new ArrayList<Star>();
+            connectionPool = new ConnectionPool(5);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public void run() {
@@ -62,42 +71,18 @@ public class StarSAXParser extends DefaultHandler {
      */
     private void cleanData() {
         try {
-            // Incorporate mySQL driver
-            Class.forName("com.mysql.cj.jdbc.Driver");
-
-            // Connect to the test database
-            Connection conn = DriverManager.getConnection("jdbc:mysql:///moviedb?autoReconnect=true&useSSL=false",
-                    "mytestuser", "My6$Password");
-
+            ExecutorService executor = Executors.newFixedThreadPool(5);
             Iterator<Star> it = stars.iterator();
             stars = new ArrayList<>();
             while (it.hasNext()) {
                 Star star = it.next();
 
-                if ("".equals(star.getName())) {
-                    continue;
-                }
-
-                String query = "SELECT * FROM stars S WHERE S.name = ?";
-
-                // Declare our statement
-                PreparedStatement statement = conn.prepareStatement(query);
-
-                statement.setString(1, star.getName());
-
-                // Perform the query
-                ResultSet rs = statement.executeQuery();
-
-                // Iterate through each row of rs
-                if (!rs.isBeforeFirst()) {
-                    stars.add(star);
-                } else {
-                    System.out.println(star);
-                }
-
-                rs.close();
-                statement.close();
+                QueryWorker worker = new QueryWorker(star);
+                executor.execute(worker);
             }
+            executor.shutdown();
+            while (!executor.isTerminated()) {}
+            connectionPool.close();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -213,6 +198,49 @@ public class StarSAXParser extends DefaultHandler {
             tempStar.setBirthYear(Integer.parseInt(tempVal));
         }
 
+    }
+
+    class QueryWorker implements Runnable {
+        Star star;
+
+        QueryWorker(Star star) {
+            this.star = star;
+        }
+
+        @Override
+        public void run() {
+            Connection conn = connectionPool.getConnection();
+
+            try {
+                if ("".equals(star.getName())) {
+                    return;
+                }
+
+                String query = "SELECT * FROM stars S WHERE S.name = ?";
+
+                // Declare our statement
+                PreparedStatement statement = conn.prepareStatement(query);
+
+                statement.setString(1, star.getName());
+
+                // Perform the query
+                ResultSet rs = statement.executeQuery();
+
+                // Iterate through each row of rs
+                if (!rs.isBeforeFirst()) {
+                    stars.add(star);
+                } else {
+                    System.out.println(star);
+                }
+
+                rs.close();
+                statement.close();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            } finally {
+                connectionPool.releaseConnection(conn);
+            }
+        }
     }
 
     public static void main(String[] args) {
