@@ -49,7 +49,7 @@ public class StarSAXParser extends DefaultHandler {
             SAXParser sp = spf.newSAXParser();
 
             //parse the file and also register this class for call backs
-            sp.parse("src/casts124.xml", this);
+            sp.parse("src/actors63.xml", this);
 
         } catch (SAXException se) {
             se.printStackTrace();
@@ -74,9 +74,13 @@ public class StarSAXParser extends DefaultHandler {
                     "mytestuser", "My6$Password");
 
             Iterator<Star> it = stars.iterator();
-            stars = new ArrayList<Star>();
+            int totalStars = 0;
             while (it.hasNext()) {
                 Star star = it.next();
+
+                if (star.getBirthYear() == 0) {
+                    continue;
+                }
 
                 String query = "SELECT * FROM stars S WHERE S.name = ?";
 
@@ -91,22 +95,22 @@ public class StarSAXParser extends DefaultHandler {
                 // Iterate through each row of rs
                 if (!rs.isBeforeFirst()) {
                     System.out.println(star.toString());
-                    stars.add(star);
+                    totalStars += 1;
                 }
                 rs.close();
                 statement.close();
             }
+            System.out.println("No of Stars '" + totalStars + "'.");
         } catch (Exception e) {
 
         }
-        System.out.println("No of Stars '" + stars.size() + "'.");
     }
 
     //Event Handlers
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         //reset
         tempVal = "";
-        if (qName.equalsIgnoreCase("a")) {
+        if (qName.equalsIgnoreCase("actor")) {
             //create a new instance of star
             tempStar = new Star();
         }
@@ -117,14 +121,23 @@ public class StarSAXParser extends DefaultHandler {
     }
 
     public void endElement(String uri, String localName, String qName) throws SAXException {
-        if (qName.equalsIgnoreCase("m")) {
+        if (qName.equalsIgnoreCase("actor")) {
             //add it to the list
-            tempStar.setMovieId(tempMovie);
             stars.add(tempStar);
-        } else if (qName.equalsIgnoreCase("a")) {
+        } else if (qName.equalsIgnoreCase("stagename")) {
             tempStar.setName(tempVal);
-        } else if (qName.equalsIgnoreCase("f")) {
-            tempMovie = tempVal;
+        } else if (qName.equalsIgnoreCase("dob")) {
+            if ("".equalsIgnoreCase(tempVal)) {
+                tempVal = "0";
+            }
+
+            for (char c : tempVal.toCharArray()) {
+                if (!Character.isDigit(c)) {
+                    tempVal = "0";
+                    break;
+                }
+            }
+            tempStar.setBirthYear(Integer.parseInt(tempVal));
         }
 
     }

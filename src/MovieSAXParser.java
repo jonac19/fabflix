@@ -101,7 +101,6 @@ public class MovieSAXParser extends DefaultHandler {
             rs.close();
             statement.close();
         } catch (Exception e) {
-            System.out.println("Genre linking error");
             System.out.println(e.getMessage());
         }
     }
@@ -198,6 +197,7 @@ public class MovieSAXParser extends DefaultHandler {
                 if (!Character.isAlphabetic(c)) {
                     tempDirector = "";
                 }
+                break;
             }
         } else if (qName.equalsIgnoreCase("cat")) {
             if ("".equals(tempVal)) {
