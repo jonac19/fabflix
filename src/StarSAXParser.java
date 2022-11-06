@@ -31,6 +31,7 @@ public class StarSAXParser extends DefaultHandler {
     }
 
     public void runExample() {
+        System.out.println("---Inconsistencies in Star XML---");
         parseDocument();
         printData();
     }
@@ -70,11 +71,12 @@ public class StarSAXParser extends DefaultHandler {
                     "mytestuser", "My6$Password");
 
             Iterator<Star> it = stars.iterator();
-            int totalStars = 0;
             while (it.hasNext()) {
                 Star star = it.next();
 
-                if (star.getBirthYear() == 0) {
+                if ("".equals(star.getName())) {
+                    continue;
+                } else if (star.getBirthYear() == 0) {
                     continue;
                 }
 
@@ -90,13 +92,13 @@ public class StarSAXParser extends DefaultHandler {
 
                 // Iterate through each row of rs
                 if (!rs.isBeforeFirst()) {
-                    System.out.println(star.toString());
-                    totalStars += 1;
+
+                } else {
+                    System.out.println(star);
                 }
                 rs.close();
                 statement.close();
             }
-            System.out.println("No of Stars '" + totalStars + "'.");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -113,7 +115,7 @@ public class StarSAXParser extends DefaultHandler {
     }
 
     public void characters(char[] ch, int start, int length) throws SAXException {
-        tempVal = new String(ch, start, length);
+        tempVal = new String(ch, start, length).trim();
     }
 
     public void endElement(String uri, String localName, String qName) throws SAXException {
@@ -121,6 +123,12 @@ public class StarSAXParser extends DefaultHandler {
             //add it to the list
             stars.add(tempStar);
         } else if (qName.equalsIgnoreCase("stagename")) {
+            for (char c : tempVal.toCharArray()) {
+                if (Character.isDigit(c)) {
+                    System.out.println("<stagename>" + tempVal + "</stagename>");
+                    tempVal = "";
+                }
+            }
             tempStar.setName(tempVal);
         } else if (qName.equalsIgnoreCase("dob")) {
             if ("".equalsIgnoreCase(tempVal)) {
@@ -129,6 +137,7 @@ public class StarSAXParser extends DefaultHandler {
 
             for (char c : tempVal.toCharArray()) {
                 if (!Character.isDigit(c)) {
+                    System.out.println("<dob>" + tempVal + "</dob>");
                     tempVal = "0";
                     break;
                 }

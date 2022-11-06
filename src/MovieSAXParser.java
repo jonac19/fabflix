@@ -11,7 +11,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import com.google.gson.JsonArray;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -20,7 +19,7 @@ import org.xml.sax.helpers.DefaultHandler;
 @WebServlet(name = "MovieSAXParser", urlPatterns = "/api/movie-sax-parser")
 public class MovieSAXParser extends DefaultHandler {
     private List<Movie> movies;
-    private HashMap<String, String> genres;
+    private HashMap<String, Integer> genres;
 
     private String tempVal;
 
@@ -30,10 +29,11 @@ public class MovieSAXParser extends DefaultHandler {
 
     public MovieSAXParser() {
         movies = new ArrayList<Movie>();
-        genres = new HashMap<String, String>();
+        genres = new HashMap<String, Integer>();
     }
 
     public void runExample() {
+        System.out.println("---Inconsistencies in Movie XML---");
         parseDocument();
         linkGenres();
         printData();
@@ -69,35 +69,60 @@ public class MovieSAXParser extends DefaultHandler {
             Connection conn = DriverManager.getConnection("jdbc:mysql:///moviedb?autoReconnect=true&useSSL=false",
                     "mytestuser", "My6$Password");
 
-            String query = "SELECT name FROM genres";
+            String query = "SELECT * FROM genres";
 
             // Declare our statement
-            PreparedStatement statement = conn.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            PreparedStatement statement = conn.prepareStatement(query);
 
             // Perform the query
             ResultSet rs = statement.executeQuery();
 
+            HashMap<String, Integer> genresDB = new HashMap<>();
+            while (rs.next()) {
+                genresDB.put(rs.getString("name").toLowerCase(), rs.getInt("id"));
+            }
+            rs.close();
+            statement.close();
+
             for (String genreXML: genres.keySet()) {
-                while (rs.next()) {
-                    String genreDB = rs.getString("name");
+                for (String genreDB: genresDB.keySet()) {
                     int index = 0;
 
-                    for (char ch: genreDB.toLowerCase().toCharArray()) {
+                    for (char ch: genreDB.toCharArray()) {
                         if (ch == genreXML.charAt(index)) {
                             index += 1;
                         }
 
                         if (index == genreXML.length()) {
-                            genres.replace(genreXML, genreDB);
+                            genres.replace(genreXML, genresDB.get(genreDB));
                             break;
                         }
                     }
                 }
-                rs.beforeFirst();
+
+                if (genres.get(genreXML) == -1) {
+                    String updateGenreQuery = "INSERT INTO genres VALUES(?, ?)";
+                    PreparedStatement updateGenre = conn.prepareStatement(updateGenreQuery);
+
+                    updateGenre.setString(1, null);
+                    updateGenre.setString(2, genreXML);
+
+                    updateGenre.executeUpdate();
+                    updateGenre.close();
+
+                    String idQuery = "SELECT id FROM genres G WHERE G.name = ?";
+                    PreparedStatement idStatement = conn.prepareStatement(idQuery);
+                    idStatement.setString(1, genreXML);
+                    ResultSet idRS = idStatement.executeQuery();
+                    idRS.next();
+                    genres.replace(genreXML, idRS.getInt("id"));
+                    idStatement.close();
+                    idRS.close();
+                }
             }
-            rs.close();
-            statement.close();
+            System.out.println(genres);
         } catch (Exception e) {
+            System.out.println("Genre Linking");
             System.out.println(e.getMessage());
         }
     }
@@ -115,12 +140,13 @@ public class MovieSAXParser extends DefaultHandler {
             Connection conn = DriverManager.getConnection("jdbc:mysql:///moviedb?autoReconnect=true&useSSL=false",
                     "mytestuser", "My6$Password");
 
-            int totalMovies = 0;
             Iterator<Movie> it = movies.iterator();
             while (it.hasNext()) {
                 Movie movie = it.next();
 
-                if (movie.getYear() == 0) {
+                if ("".equals(movie.getMovieId())) {
+                    continue;
+                } else if (movie.getYear() == 0) {
                     continue;
                 } else if ("".equals(movie.getDirector())) {
                     continue;
@@ -140,20 +166,36 @@ public class MovieSAXParser extends DefaultHandler {
 
                 // Iterate through each row of rs
                 if (!rs.isBeforeFirst()) {
-                    List<String> movieGenres = movie.getGenres();
+                    String updateMovieQuery = "INSERT IGNORE INTO movies VALUES(?, ?, ?, ?)";
+                    PreparedStatement updateMovie = conn.prepareStatement(updateMovieQuery);
+
+                    updateMovie.setString(1, movie.getMovieId());
+                    updateMovie.setString(2, movie.getTitle());
+                    updateMovie.setInt(3, movie.getYear());
+                    updateMovie.setString(4, movie.getDirector());
+
+                    updateMovie.executeUpdate();
+                    updateMovie.close();
+
+                    List<String> movieGenres = movie.getGenreNames();
                     for (int i = 0; i < movieGenres.size(); i++) {
-                        if (!"".equals(genres.get(movieGenres.get(i)))) {
-                            movie.linkGenre(i, genres.get(movieGenres.get(i)));
-                        }
+                        String updateGenreQuery = "INSERT IGNORE INTO genres_in_movies VALUES(?, ?)";
+                        PreparedStatement updateGenre = conn.prepareStatement(updateGenreQuery);
+
+                        updateGenre.setInt(1, genres.get(movieGenres.get(i)));
+                        updateGenre.setString(2, movie.getMovieId());
+
+                        updateGenre.executeUpdate();
+                        updateGenre.close();
                     }
+                } else {
                     System.out.println(movie);
-                    totalMovies += 1;
                 }
                 rs.close();
                 statement.close();
             }
-            System.out.println("No of Movies '" + totalMovies);
         } catch (Exception e) {
+            System.out.println("Data Insertion");
             System.out.println(e.getMessage());
         }
     }
@@ -169,7 +211,7 @@ public class MovieSAXParser extends DefaultHandler {
     }
 
     public void characters(char[] ch, int start, int length) throws SAXException {
-        tempVal = new String(ch, start, length);
+        tempVal = new String(ch, start, length).trim();
     }
 
     public void endElement(String uri, String localName, String qName) throws SAXException {
@@ -184,6 +226,7 @@ public class MovieSAXParser extends DefaultHandler {
         } else if (qName.equalsIgnoreCase("year")) {
             for (char c : tempVal.toCharArray()) {
                 if (!Character.isDigit(c)) {
+                    System.out.println("<year>" + tempVal + "</year>");
                     tempVal = "0";
                 }
             }
@@ -191,27 +234,30 @@ public class MovieSAXParser extends DefaultHandler {
         } else if (qName.equalsIgnoreCase("dirname")) {
             tempDirector = tempVal;
             for (char c : tempVal.toCharArray()) {
-                if (!Character.isAlphabetic(c)) {
+                if (Character.isDigit(c)) {
+                    System.out.println("<dirname>" + tempVal + "</dirname>");
                     tempDirector = "";
                 }
-                break;
             }
         } else if (qName.equalsIgnoreCase("cat")) {
             if ("".equals(tempVal)) {
+                System.out.println("<cat>" + tempVal + "</cat>");
                 return;
             }
 
             for (char c : tempVal.toCharArray()) {
                 if (!Character.isAlphabetic(c)) {
+                    System.out.println("<cat>" + tempVal + "</cat>");
                     return;
                 }
             }
 
-            tempVal = tempVal.toLowerCase();
-            if (!genres.containsKey(tempVal)) {
-                genres.put(tempVal, "");
+            for (String genre: tempVal.toLowerCase().split("\\s+")) {
+                if (!genres.containsKey(genre)) {
+                    genres.put(genre, -1);
+                }
+                tempMovie.addGenreName(genre);
             }
-            tempMovie.addGenre(tempVal);
         }
     }
 

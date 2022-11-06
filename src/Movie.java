@@ -3,77 +3,73 @@ import java.util.List;
 
 public class Movie {
 
-    private String id;
+    private String movieId;
 
-    private String title;
+    private String movieTitle;
 
-    private int year;
+    private int movieYear;
 
-    private String director;
+    private String movieDirector;
 
-    private List<String> genres;
+    private List<String> genreNames;
 
     public Movie() {
-        genres = new ArrayList<>();
+        genreNames = new ArrayList<>();
     }
 
-    public Movie(String id, String title, int year, String director) {
-        this.id = id;
-        this.title = title;
-        this.year = year;
-        this.director  = director;
+    public Movie(String movieId, String movieTitle, int movieYear, String movieDirector) {
+        this.movieId = movieId;
+        this.movieTitle = movieTitle;
+        this.movieYear = movieYear;
+        this.movieDirector  = movieDirector;
     }
 
-    public String getId() {
-        return id;
+    public String getMovieId() {
+        return movieId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setId(String movieId) {
+        this.movieId = movieId;
     }
 
     public String getTitle() {
-        return title;
+        return movieTitle;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setTitle(String movieTitle) {
+        this.movieTitle = movieTitle;
     }
 
     public int getYear() {
-        return year;
+        return movieYear;
     }
 
-    public void setYear(int year) {
-        this.year = year;
+    public void setYear(int movieYear) {
+        this.movieYear = movieYear;
     }
 
     public String getDirector() {
-        return director;
+        return movieDirector;
     }
 
-    public void setDirector(String director) {
-        this.director = director;
+    public void setDirector(String movieDirector) {
+        this.movieDirector = movieDirector;
     }
 
-    public void addGenre(String genre) {
-        if (!genres.contains(genre)) {
-            genres.add(genre);
+    public void addGenreName(String genreName) {
+        if (!genreNames.contains(genreName)) {
+            genreNames.add(genreName);
         }
     }
 
-    public void linkGenre(int index, String genre) {
-        genres.set(index, genre);
-    }
-
-    public List<String> getGenres() {
-        return genres;
+    public List<String> getGenreNames() {
+        return genreNames;
     }
 
     public String toString() {
         String string = "";
         string += "Movie Details - ";
-        string += "Id:" + getId();
+        string += "ID:" + getMovieId();
         string += ", ";
         string += "Title:" + getTitle();
         string += ", ";
@@ -81,7 +77,7 @@ public class Movie {
         string += ", ";
         string += "Director:" + getDirector();
         string += ", ";
-        string += "Genres:" + getGenres();
+        string += "Genres:" + getGenreNames();
 
         return string;
     }

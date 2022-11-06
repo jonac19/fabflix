@@ -31,6 +31,7 @@ public class CastSAXParser extends DefaultHandler {
     }
 
     public void runExample() {
+        System.out.println("---Inconsistencies in Cast XML---");
         parseDocument();
         printData();
     }
@@ -70,7 +71,6 @@ public class CastSAXParser extends DefaultHandler {
                     "mytestuser", "My6$Password");
 
             Iterator<Cast> it = casts.iterator();
-            int totalCasts = 0;
             while (it.hasNext()) {
                 Cast cast = it.next();
 
@@ -87,13 +87,13 @@ public class CastSAXParser extends DefaultHandler {
 
                 // Iterate through each row of rs
                 if (!rs.isBeforeFirst()) {
-                    System.out.println(cast.toString());
-                    totalCasts += 1;
+
+                } else {
+                    System.out.println(cast);
                 }
                 rs.close();
                 statement.close();
             }
-            System.out.println("No of Casts '" + totalCasts + "'.");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -110,7 +110,7 @@ public class CastSAXParser extends DefaultHandler {
     }
 
     public void characters(char[] ch, int start, int length) throws SAXException {
-        tempVal = new String(ch, start, length);
+        tempVal = new String(ch, start, length).trim();
     }
 
     public void endElement(String uri, String localName, String qName) throws SAXException {
