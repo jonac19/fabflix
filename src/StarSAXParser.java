@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -28,7 +25,6 @@ public class StarSAXParser extends DefaultHandler {
 
     //to maintain context
     private Star tempStar;
-    private String tempMovie;
 
     public StarSAXParser() {
         stars = new ArrayList<Star>();
@@ -102,7 +98,7 @@ public class StarSAXParser extends DefaultHandler {
             }
             System.out.println("No of Stars '" + totalStars + "'.");
         } catch (Exception e) {
-
+            System.out.println(e.getMessage());
         }
     }
 
