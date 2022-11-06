@@ -1,9 +1,6 @@
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -76,8 +73,6 @@ public class StarSAXParser extends DefaultHandler {
 
                 if ("".equals(star.getName())) {
                     continue;
-                } else if (star.getBirthYear() == 0) {
-                    continue;
                 }
 
                 String query = "SELECT * FROM stars S WHERE S.name = ?";
@@ -92,16 +87,51 @@ public class StarSAXParser extends DefaultHandler {
 
                 // Iterate through each row of rs
                 if (!rs.isBeforeFirst()) {
+                    String starId = getStarId(conn);
 
+                    String updateStarQuery = "INSERT IGNORE INTO stars VALUES(?, ?, ?)";
+                    PreparedStatement updateStar = conn.prepareStatement(updateStarQuery);
+
+                    updateStar.setString(1, starId);
+                    updateStar.setString(2, star.getName());
+                    if (star.getBirthYear() != 0) {
+                        updateStar.setInt(3, star.getBirthYear());
+                    } else {
+                        updateStar.setString(3, null);
+                    }
+
+                    updateStar.executeUpdate();
+                    updateStar.close();
                 } else {
                     System.out.println(star);
                 }
+
                 rs.close();
                 statement.close();
             }
         } catch (Exception e) {
+            System.out.println("Star Insertion");
             System.out.println(e.getMessage());
         }
+    }
+
+    private String getStarId(Connection conn) throws SQLException {
+        String query = "SELECT MAX(id) id from stars";
+        Statement statement = conn.createStatement();
+        ResultSet rs = statement.executeQuery(query);
+
+        rs.next();
+        String starId = rs.getString("id");
+        if (starId == null) {
+            starId = "nm0000000";
+        }
+        statement.close();
+        rs.close();
+
+        int starIdDigits = (Integer.parseInt(starId.substring(2)) + 1);
+        starId = "nm" + "0".repeat(7 - String.valueOf(starIdDigits).length()) + starIdDigits;
+
+        return starId;
     }
 
     //Event Handlers

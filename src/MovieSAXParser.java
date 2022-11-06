@@ -120,9 +120,7 @@ public class MovieSAXParser extends DefaultHandler {
                     idRS.close();
                 }
             }
-            System.out.println(genres);
         } catch (Exception e) {
-            System.out.println("Genre Linking");
             System.out.println(e.getMessage());
         }
     }
@@ -195,7 +193,6 @@ public class MovieSAXParser extends DefaultHandler {
                 statement.close();
             }
         } catch (Exception e) {
-            System.out.println("Data Insertion");
             System.out.println(e.getMessage());
         }
     }
