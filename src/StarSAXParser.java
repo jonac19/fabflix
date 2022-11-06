@@ -23,14 +23,17 @@ public class StarSAXParser extends DefaultHandler {
     //to maintain context
     private Star tempStar;
 
+    private String starId;
+
     public StarSAXParser() {
         stars = new ArrayList<Star>();
     }
 
-    public void runExample() {
+    public void run() {
         System.out.println("---Inconsistencies in Star XML---");
         parseDocument();
-        printData();
+        cleanData();
+        insertData();
     }
 
     private void parseDocument() {
@@ -55,10 +58,9 @@ public class StarSAXParser extends DefaultHandler {
     }
 
     /**
-     * Iterate through the list and print
-     * the contents
+     * Iterate through the list and clean the contents
      */
-    private void printData() {
+    private void cleanData() {
         try {
             // Incorporate mySQL driver
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -68,6 +70,7 @@ public class StarSAXParser extends DefaultHandler {
                     "mytestuser", "My6$Password");
 
             Iterator<Star> it = stars.iterator();
+            stars = new ArrayList<>();
             while (it.hasNext()) {
                 Star star = it.next();
 
@@ -87,21 +90,7 @@ public class StarSAXParser extends DefaultHandler {
 
                 // Iterate through each row of rs
                 if (!rs.isBeforeFirst()) {
-                    String starId = getStarId(conn);
-
-                    String updateStarQuery = "INSERT IGNORE INTO stars VALUES(?, ?, ?)";
-                    PreparedStatement updateStar = conn.prepareStatement(updateStarQuery);
-
-                    updateStar.setString(1, starId);
-                    updateStar.setString(2, star.getName());
-                    if (star.getBirthYear() != 0) {
-                        updateStar.setInt(3, star.getBirthYear());
-                    } else {
-                        updateStar.setString(3, null);
-                    }
-
-                    updateStar.executeUpdate();
-                    updateStar.close();
+                    stars.add(star);
                 } else {
                     System.out.println(star);
                 }
@@ -110,7 +99,51 @@ public class StarSAXParser extends DefaultHandler {
                 statement.close();
             }
         } catch (Exception e) {
-            System.out.println("Star Insertion");
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Iterate through the list and insert the contents
+     */
+    private void insertData() {
+        try {
+            // Incorporate mySQL driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            // Connect to the test database
+            Connection conn = DriverManager.getConnection("jdbc:mysql:///moviedb?autoReconnect=true&useSSL=false",
+                    "mytestuser", "My6$Password");
+            
+            int batchSize = 100;
+            int count = 0;
+
+            starId = getStarId(conn);
+            String updateStarQuery = "INSERT IGNORE INTO stars VALUES(?, ?, ?)";
+            PreparedStatement update = conn.prepareStatement(updateStarQuery);
+            
+            Iterator<Star> it = stars.iterator();
+            while (it.hasNext()) {
+                Star star = it.next();
+                
+                update.setString(1, starId);
+                update.setString(2, star.getName());
+                if (star.getBirthYear() != 0) {
+                    update.setInt(3, star.getBirthYear());
+                } else {
+                    update.setString(3, null);
+                }
+                updateStarId();
+                update.addBatch();
+
+                count++;
+                if (count % batchSize == 0) {
+                    update.executeBatch();
+                }
+            }
+            update.executeBatch();
+            update.close();
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
@@ -132,6 +165,11 @@ public class StarSAXParser extends DefaultHandler {
         starId = "nm" + "0".repeat(7 - String.valueOf(starIdDigits).length()) + starIdDigits;
 
         return starId;
+    }
+
+    private void updateStarId() {
+        int starIdDigits = (Integer.parseInt(starId.substring(2)) + 1);
+        starId = "nm" + "0".repeat(7 - String.valueOf(starIdDigits).length()) + starIdDigits;
     }
 
     //Event Handlers
@@ -179,6 +217,6 @@ public class StarSAXParser extends DefaultHandler {
 
     public static void main(String[] args) {
         StarSAXParser spe = new StarSAXParser();
-        spe.runExample();
+        spe.run();
     }
 }

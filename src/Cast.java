@@ -3,6 +3,8 @@ public class Cast {
 
     private String starName;
 
+    private String starId;
+
     public Cast(){
 
     }
@@ -26,6 +28,14 @@ public class Cast {
 
     public void setStarName(String starName) {
         this.starName = starName;
+    }
+
+    public String getStarId() {
+        return starId;
+    }
+
+    public void setStarId(String starId) {
+        this.starId = starId;
     }
 
     public String toString() {

@@ -32,11 +32,12 @@ public class MovieSAXParser extends DefaultHandler {
         genres = new HashMap<String, Integer>();
     }
 
-    public void runExample() {
+    public void run() {
         System.out.println("---Inconsistencies in Movie XML---");
         parseDocument();
         linkGenres();
-        printData();
+        cleanData();
+        insertData();
     }
 
     private void parseDocument() {
@@ -126,10 +127,9 @@ public class MovieSAXParser extends DefaultHandler {
     }
 
     /**
-     * Iterate through the list and print
-     * the contents
+     * Iterate through the list and clean the contents
      */
-    private void printData() {
+    private void cleanData() {
         try {
             // Incorporate mySQL driver
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -139,10 +139,11 @@ public class MovieSAXParser extends DefaultHandler {
                     "mytestuser", "My6$Password");
 
             Iterator<Movie> it = movies.iterator();
+            movies = new ArrayList<>();
             while (it.hasNext()) {
                 Movie movie = it.next();
 
-                if ("".equals(movie.getMovieId())) {
+                if ("".equals(movie.getMovieId()) || movie.getMovieId() == null) {
                     continue;
                 } else if (movie.getYear() == 0) {
                     continue;
@@ -164,33 +165,57 @@ public class MovieSAXParser extends DefaultHandler {
 
                 // Iterate through each row of rs
                 if (!rs.isBeforeFirst()) {
-                    String updateMovieQuery = "INSERT IGNORE INTO movies VALUES(?, ?, ?, ?)";
-                    PreparedStatement updateMovie = conn.prepareStatement(updateMovieQuery);
-
-                    updateMovie.setString(1, movie.getMovieId());
-                    updateMovie.setString(2, movie.getTitle());
-                    updateMovie.setInt(3, movie.getYear());
-                    updateMovie.setString(4, movie.getDirector());
-
-                    updateMovie.executeUpdate();
-                    updateMovie.close();
-
-                    List<String> movieGenres = movie.getGenreNames();
-                    for (int i = 0; i < movieGenres.size(); i++) {
-                        String updateGenreQuery = "INSERT IGNORE INTO genres_in_movies VALUES(?, ?)";
-                        PreparedStatement updateGenre = conn.prepareStatement(updateGenreQuery);
-
-                        updateGenre.setInt(1, genres.get(movieGenres.get(i)));
-                        updateGenre.setString(2, movie.getMovieId());
-
-                        updateGenre.executeUpdate();
-                        updateGenre.close();
-                    }
+                    movies.add(movie);
                 } else {
                     System.out.println(movie);
                 }
                 rs.close();
                 statement.close();
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Iterate through the list and insert the contents
+     */
+    public void insertData() {
+        try {
+            // Incorporate mySQL driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            // Connect to the test database
+            Connection conn = DriverManager.getConnection("jdbc:mysql:///moviedb?autoReconnect=true&useSSL=false",
+                    "mytestuser", "My6$Password");
+
+            Iterator<Movie> it = movies.iterator();
+            movies = new ArrayList<>();
+            while (it.hasNext()) {
+                Movie movie = it.next();
+
+                String updateQuery = "INSERT IGNORE INTO movies VALUES(?, ?, ?, ?)";
+                PreparedStatement updateMovie = conn.prepareStatement(updateQuery);
+
+                updateMovie.setString(1, movie.getMovieId());
+                updateMovie.setString(2, movie.getTitle());
+                updateMovie.setInt(3, movie.getYear());
+                updateMovie.setString(4, movie.getDirector());
+
+                updateMovie.executeUpdate();
+                updateMovie.close();
+
+                List<String> movieGenres = movie.getGenreNames();
+                for (int i = 0; i < movieGenres.size(); i++) {
+                    String updateGenreQuery = "INSERT IGNORE INTO genres_in_movies VALUES(?, ?)";
+                    PreparedStatement updateGenre = conn.prepareStatement(updateGenreQuery);
+
+                    updateGenre.setInt(1, genres.get(movieGenres.get(i)));
+                    updateGenre.setString(2, movie.getMovieId());
+
+                    updateGenre.executeUpdate();
+                    updateGenre.close();
+                }
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -260,6 +285,6 @@ public class MovieSAXParser extends DefaultHandler {
 
     public static void main(String[] args) {
         MovieSAXParser spe = new MovieSAXParser();
-        spe.runExample();
+        spe.run();
     }
 }

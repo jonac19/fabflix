@@ -1,13 +1,14 @@
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
+import javax.sql.ConnectionPoolDataSource;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -26,14 +27,22 @@ public class CastSAXParser extends DefaultHandler {
     //to maintain context
     private Cast tempCast;
 
+    private ConnectionPool connectionPool;
+
     public CastSAXParser() {
-        casts = new ArrayList<Cast>();
+        try {
+            casts = new ArrayList<Cast>();
+            connectionPool = new ConnectionPool(6);
+        } catch (Exception e) {
+            System.out.println("Connection Pool Error");
+        }
     }
 
-    public void runExample() {
+    public void run() {
         System.out.println("---Inconsistencies in Cast XML---");
         parseDocument();
-        printData();
+        cleanData();
+        insertData();
     }
 
     private void parseDocument() {
@@ -58,10 +67,31 @@ public class CastSAXParser extends DefaultHandler {
     }
 
     /**
-     * Iterate through the list and print
-     * the contents
+     * Iterate through the list and clean the contents
      */
-    private void printData() {
+    private void cleanData() {
+        try {
+            ExecutorService executor = Executors.newFixedThreadPool(5);
+            Iterator<Cast> it = casts.iterator();
+            casts = new ArrayList<>();
+            while (it.hasNext()) {
+                Cast cast = it.next();
+
+                QueryWorker worker = new QueryWorker(cast);
+                executor.execute(worker);
+            }
+            executor.shutdown();
+            while (!executor.isTerminated()) {}
+            connectionPool.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Iterate through the list and insert the contents
+     */
+    private void insertData() {
         try {
             // Incorporate mySQL driver
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -70,30 +100,27 @@ public class CastSAXParser extends DefaultHandler {
             Connection conn = DriverManager.getConnection("jdbc:mysql:///moviedb?autoReconnect=true&useSSL=false",
                     "mytestuser", "My6$Password");
 
+            int batchSize = 100;
+            int count = 0;
+
+            String updateQuery = "INSERT IGNORE INTO stars_in_movies VALUES(?, ?)";
+            PreparedStatement update = conn.prepareStatement(updateQuery);
+
             Iterator<Cast> it = casts.iterator();
             while (it.hasNext()) {
                 Cast cast = it.next();
 
-                String query = "SELECT * FROM movies M, stars S, stars_in_movies SM WHERE M.id = SM.movieId AND S.id = SM.starId AND S.name = ? AND M.id = ?";
+                update.setString(1, cast.getStarId());
+                update.setString(2, cast.getMovieId());
+                update.addBatch();
 
-                // Declare our statement
-                PreparedStatement statement = conn.prepareStatement(query);
-
-                statement.setString(1, cast.getMovieId());
-                statement.setString(2, cast.getStarName());
-
-                // Perform the query
-                ResultSet rs = statement.executeQuery();
-
-                // Iterate through each row of rs
-                if (!rs.isBeforeFirst()) {
-
-                } else {
-                    System.out.println(cast);
+                count++;
+                if (count % batchSize == 0) {
+                    update.executeBatch();
                 }
-                rs.close();
-                statement.close();
             }
+            update.executeBatch();
+            update.close();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -126,6 +153,125 @@ public class CastSAXParser extends DefaultHandler {
 
     public static void main(String[] args) {
         CastSAXParser spe = new CastSAXParser();
-        spe.runExample();
+        spe.run();
+    }
+
+    class QueryWorker implements Runnable {
+        Cast cast;
+
+        QueryWorker(Cast cast) {
+            this.cast = cast;
+        }
+
+        @Override
+        public void run() {
+            Connection conn = connectionPool.getConnection();
+            try {
+                String query = "SELECT * FROM movies M WHERE M.id = ?";
+
+                // Declare our statement
+                PreparedStatement statement = conn.prepareStatement(query);
+
+                statement.setString(1, cast.getMovieId());
+
+                // Perform the query
+                ResultSet rs = statement.executeQuery();
+
+                if (!rs.isBeforeFirst()) {
+                    System.out.println(cast);
+                    rs.close();
+                    statement.close();
+                    return;
+                }
+                rs.close();
+                statement.close();
+
+                query = "SELECT * FROM stars S WHERE S.name = ?";
+
+                // Declare our statement
+                statement = conn.prepareStatement(query);
+
+                statement.setString(1, cast.getStarName());
+
+                // Perform the query
+                rs = statement.executeQuery();
+
+                if (!rs.isBeforeFirst()) {
+                    System.out.println(cast);
+                    rs.close();
+                    statement.close();
+                    return;
+                } else {
+                    rs.next();
+                    cast.setStarId(rs.getString("id"));
+                }
+                rs.close();
+                statement.close();
+
+                String finalQuery = "SELECT * FROM movies M, stars S, stars_in_movies SM WHERE M.id = SM.movieId AND S.id = SM.starId AND M.id = ? AND S.id = ?";
+
+                // Declare our statement
+                statement = conn.prepareStatement(finalQuery);
+
+                statement.setString(1, cast.getMovieId());
+                statement.setString(2, cast.getStarId());
+
+                // Perform the query
+                rs = statement.executeQuery();
+
+                // Iterate through each row of rs
+                if (!rs.isBeforeFirst()) {
+                    casts.add(cast);
+                } else {
+                    System.out.println(cast);
+                }
+                rs.close();
+                statement.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                connectionPool.releaseConnection(conn);
+            }
+        }
+    }
+
+    class ConnectionPool {
+        private List<Connection> connectionPool;
+        private List<Connection> usedConnectionPool = new ArrayList<>();
+
+        ConnectionPool(int size) throws ClassNotFoundException, SQLException {
+            // Incorporate mySQL driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            connectionPool = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                // Connect to the database
+                Connection conn = DriverManager.getConnection("jdbc:mysql:///moviedb?autoReconnect=true&useSSL=false",
+                        "mytestuser", "My6$Password");
+
+                connectionPool.add(conn);
+            }
+        }
+
+        public synchronized Connection getConnection() {
+            Connection conn = connectionPool.remove(connectionPool.size() - 1);
+            usedConnectionPool.add(conn);
+            return conn;
+        }
+
+        public synchronized void releaseConnection(Connection conn) {
+            usedConnectionPool.remove(conn);
+            connectionPool.add(conn);
+        }
+
+        public void close() throws SQLException {
+            for (Connection conn: connectionPool) {
+                conn.close();
+            }
+
+            for (Connection conn: usedConnectionPool) {
+                conn.close();
+            }
+        }
     }
 }
