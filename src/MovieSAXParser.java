@@ -17,6 +17,8 @@ import org.xml.sax.SAXException;
 
 import org.xml.sax.helpers.DefaultHandler;
 
+
+
 @WebServlet(name = "MovieSAXParser", urlPatterns = "/api/movie-sax-parser")
 public class MovieSAXParser extends DefaultHandler {
     private List<Movie> movies;
@@ -302,4 +304,5 @@ public class MovieSAXParser extends DefaultHandler {
         MovieSAXParser spe = new MovieSAXParser();
         spe.run();
     }
+
 }
