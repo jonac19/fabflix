@@ -222,7 +222,7 @@ public class DashboardServlet extends HttpServlet {
 
         String starId;
         if (!rs.next()) {
-            starId = "nm0000001";
+            starId = "nm0000000";
         } else {
             starId = rs.getString("id");
         }
