@@ -79,3 +79,11 @@ a:hover {
     background-color: #ffc107;
     border: 1px solid #ffc107;
 }
+
+.form-section {
+    margin: 10px;
+}
+
+hr.solid {
+    border-top: 1px solid #fba92c;
+}
