@@ -1,4 +1,5 @@
 import com.google.gson.JsonObject;
+import org.jasypt.util.password.StrongPasswordEncryptor;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -46,9 +47,12 @@ public class DashboardLoginServlet extends HttpServlet {
             // Declare our statement
             PreparedStatement statement = conn.prepareStatement(query);
 
+            StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
+            String encryptedPassword = passwordEncryptor.encryptPassword(password);
+
             // Set the parameter represented by "?" in the query
             statement.setString(1, username);
-            statement.setString(2, password);
+            statement.setString(2, encryptedPassword);
 
 
             // Perform the query
