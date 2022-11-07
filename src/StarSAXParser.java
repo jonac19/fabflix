@@ -134,7 +134,7 @@ public class StarSAXParser extends DefaultHandler {
     }
 
     private String getStarId(Connection conn) throws SQLException {
-        String query = "SELECT MAX(id) id from stars";
+        String query = "SELECT MAX(id) id from stars WHERE id LIKE BINARY 'nm%'";
         Statement statement = conn.createStatement();
         ResultSet rs = statement.executeQuery(query);
 
