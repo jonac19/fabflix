@@ -16,6 +16,8 @@ import org.xml.sax.SAXException;
 
 import org.xml.sax.helpers.DefaultHandler;
 
+
+
 @WebServlet(name = "MovieSAXParser", urlPatterns = "/api/movie-sax-parser")
 public class MovieSAXParser extends DefaultHandler {
     private List<Movie> movies;
@@ -50,7 +52,7 @@ public class MovieSAXParser extends DefaultHandler {
             SAXParser sp = spf.newSAXParser();
 
             //parse the file and also register this class for call backs
-            sp.parse("~/pipeline_source/mains243.xml", this);
+            sp.parse("../pipeline_source/mains243.xml", this);
 
         } catch (SAXException se) {
             se.printStackTrace();
@@ -287,4 +289,5 @@ public class MovieSAXParser extends DefaultHandler {
         MovieSAXParser spe = new MovieSAXParser();
         spe.run();
     }
+
 }

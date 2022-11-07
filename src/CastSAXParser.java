@@ -55,7 +55,7 @@ public class CastSAXParser extends DefaultHandler {
             SAXParser sp = spf.newSAXParser();
 
             //parse the file and also register this class for call backs
-            sp.parse("~/pipeline_source/casts124.xml", this);
+            sp.parse("../pipeline_source/casts124.xml", this);
 
         } catch (SAXException se) {
             se.printStackTrace();
