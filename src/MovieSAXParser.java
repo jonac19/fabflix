@@ -50,7 +50,7 @@ public class MovieSAXParser extends DefaultHandler {
             SAXParser sp = spf.newSAXParser();
 
             //parse the file and also register this class for call backs
-            sp.parse("src/mains243.xml", this);
+            sp.parse("~/pipeline_source/mains243.xml", this);
 
         } catch (SAXException se) {
             se.printStackTrace();

@@ -55,7 +55,7 @@ public class StarSAXParser extends DefaultHandler {
             SAXParser sp = spf.newSAXParser();
 
             //parse the file and also register this class for call backs
-            sp.parse("src/actors63.xml", this);
+            sp.parse("~/pipeline_source/actors63.xml", this);
 
         } catch (SAXException se) {
             se.printStackTrace();
