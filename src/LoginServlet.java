@@ -33,15 +33,32 @@ public class LoginServlet extends HttpServlet {
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-//        response.setContentType("application/json"); // Response mime type
-
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+        String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
 
         JsonObject responseJsonObject = new JsonObject();
+
+        // Verify reCAPTCHA
+        try {
+            RecaptchaVerifyUtils.verify(gRecaptchaResponse);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            // Login fail due to incorrect password
+            responseJsonObject.addProperty("status", "fail");
+            // Log to localhost log
+            request.getServletContext().log("Login failed");
+            responseJsonObject.addProperty("message", "recaptcha failed");
+
+            out.write(responseJsonObject.toString());
+
+            response.setStatus(200);
+            return;
+        }
+
         try (Connection conn = dataSource.getConnection()) {
             String query = "SELECT * FROM customers C WHERE C.email = ?";
 
@@ -95,6 +112,7 @@ public class LoginServlet extends HttpServlet {
             // Set response status to 200 (OK)
             response.setStatus(200);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             // Write error message JSON object to output
             // Login fail
             responseJsonObject.addProperty("status", "fail");

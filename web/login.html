@@ -13,6 +13,8 @@
     <link rel="icon" type="image/png" href="images/favicon-16x16.png" sizes="16x16" />
     <link rel="icon" type="image/x-icon" href="images/favicon.ico">
 
+    <script src="https://www.google.com/recaptcha/api.js"></script>
+
     <title>Login to Fabflix</title>
   </head>
   <body class="bg-myPrimary padding-0">
@@ -21,7 +23,7 @@
         <h1 class="display-4 text-myPrimary">Login to Fabflix</h1>
         <p class="lead">Have the largest collection of movies on the Internet at your fingertips!</p>
         <hr class="my-4">
-        <form id="login_form" class="form-bg" method="post" action="#">
+        <form id="login_form" class="form-bg" method="post" action="form-recaptcha">
           <label><b>Username</b></label>
           <label>
             <input name="username" placeholder="Enter Username" type="text">
@@ -32,8 +34,9 @@
             <input name="password" placeholder="Enter Password" type="password">
           </label>
           <br>
+          <div class="g-recaptcha" data-sitekey="6Levy-UiAAAAALai2O3vvYjZz9sK2ChxuJndY3z0"></div>
+          <br>
           <input type="submit" value="Login">
-
           <div id="login_error_message"></div>
         </form>
       </div>
