@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="icon" type="image/png" href="images/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="images/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+
+    <title>Dashboard</title>
+</head>
+<body>
+    <header>
+        <img src='images/fabflix-logo.png' alt='Fabflix logo' height=65>
+        <h1>Dashboard</h1>
+    </header>
+
+    <div class='row'>
+        <div class='col container-bg'>
+            <h3 class='text-center font-weight-bold'>Add a Star</h3>
+            <form id="add_star_form" class="form-bg" method="post" action="#">
+                <h5 class="form-section">Star Information</h5>
+                <label><b>Name</b></label>
+                <label>
+                    <input name="starName" placeholder="Enter Name" type="text">
+                </label>
+                <br>
+                <label><b>Birth Year</b></label>
+                <label>
+                    <input name="starBirthYear" placeholder="Enter Birth Year" type="number">
+                </label>
+                <hr>
+
+                <input type="submit" value="Add">
+
+                <div id="add_star_message"></div>
+            </form>
+        </div>
+
+        <div class='col container-bg'>
+            <h3 class='text-center font-weight-bold'>Add a Movie</h3>
+            <form id="add_movie_form" class="form-bg" method="post" action="#">
+                <h5 class="form-section">Movie Information</h5>
+                <label><b>Title</b></label>
+                <label>
+                    <input name="movieTitle" placeholder="Enter Title" type="text">
+                </label>
+                <br>
+                <label><b>Release Year</b></label>
+                <label>
+                    <input name="movieYear" placeholder="Enter Release Year" type="number">
+                </label>
+                <br>
+                <label><b>Director</b></label>
+                <label>
+                    <input name="movieDirector" placeholder="Enter Director" type="text">
+                </label>
+                <hr class="solid">
+
+                <h5 class="form-section">Star Information</h5>
+                <label><b>Name</b></label>
+                <label>
+                    <input name="starName" placeholder="Enter Name" type="text">
+                </label>
+                <br>
+                <label><b>Birth Year</b></label>
+                <label>
+                    <input name="starBirthYear" placeholder="Enter Birth Year" type="number">
+                </label>
+                <hr class="solid">
+
+                <h5 class="form-section">Genre Information</h5>
+                <label><b>Name</b></label>
+                <label>
+                    <input name="genreName" placeholder="Enter Name" type="text">
+                </label>
+                <hr>
+
+                <input type="submit" value="Add">
+
+                <div id="add_movie_message"></div>
+            </form>
+        </div>
+    </div>
+
+    <div id="dashboard_tables" class="container"></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+    <script src="_dashboard.js"></script>
+</body>
+</html>
