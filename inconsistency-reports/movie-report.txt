@@ -1,0 +1,179 @@
+---Inconsistencies in Movie XML---
+<dirname>Unknown0</dirname>
+<dirname>Unknown2</dirname>
+<dirname>UnYear12</dirname>
+<dirname>UnYear12</dirname>
+<dirname>Unknown42</dirname>
+<dirname>Unknown42</dirname>
+<dirname>Unknown15</dirname>
+<dirname>Unknown15</dirname>
+<cat>Romt Comd</cat>
+<cat>West1</cat>
+<dirname>UnYear20</dirname>
+<dirname>UnYear20</dirname>
+<dirname>UnYear21</dirname>
+<dirname>UnYear21</dirname>
+<dirname>UnYear23</dirname>
+<dirname>UnYear23</dirname>
+<cat>Romt Comd</cat>
+<dirname>Unknown55</dirname>
+<dirname>Unknown55</dirname>
+<year>19yy</year>
+<year>0</year>
+<cat>stage musical</cat>
+<dirname>Unknown49</dirname>
+<dirname>Unknown49</dirname>
+<cat>Avant Garde</cat>
+<dirname>Unknown11</dirname>
+<dirname>Unknown11</dirname>
+<dirname>UnYear30</dirname>
+<dirname>UnYear30</dirname>
+<cat>Psych Dram</cat>
+<dirname>UnYear32</dirname>
+<dirname>UnYear32</dirname>
+<cat>Romt Comd</cat>
+<dirname>UnYear35</dirname>
+<dirname>UnYear35</dirname>
+<dirname>UnYear39</dirname>
+<dirname>UnYear39</dirname>
+<dirname>Unknown41</dirname>
+<dirname>Unknown41</dirname>
+<dirname>UnYear43</dirname>
+<dirname>UnYear43</dirname>
+<cat>S.F.</cat>
+<cat>Romt Comd</cat>
+<year>19yy</year>
+<year>0</year>
+<dirname>UnYear47</dirname>
+<dirname>UnYear47</dirname>
+<dirname>Unknown4</dirname>
+<dirname>UnYear50</dirname>
+<dirname>UnYear50</dirname>
+<cat>Romt Comd</cat>
+<cat>FantH*</cat>
+<cat>RFP; H*</cat>
+<year>199x</year>
+<year>199x</year>
+<dirname>UnYear51</dirname>
+<dirname>UnYear51</dirname>
+<dirname>Unknown56</dirname>
+<dirname>Unknown56</dirname>
+<cat></cat>
+<dirname>UnYear57</dirname>
+<dirname>UnYear57</dirname>
+<cat></cat>
+<cat></cat>
+<cat>H**</cat>
+<cat>Comd West</cat>
+<year>199x</year>
+<cat>H0</cat>
+<dirname>UnYear64</dirname>
+<dirname>UnYear64</dirname>
+<dirname>UnYear65</dirname>
+<dirname>UnYear65</dirname>
+<dirname>UnYear66</dirname>
+<dirname>UnYear66</dirname>
+<year>199x</year>
+<dirname>UnYear69</dirname>
+<dirname>UnYear69</dirname>
+<year>196x</year>
+<dirname>UnYear71</dirname>
+<dirname>UnYear71</dirname>
+<cat>Romt Comd</cat>
+<cat>Dram></cat>
+<dirname>UnYear73</dirname>
+<dirname>UnYear73</dirname>
+<dirname>UnYear74</dirname>
+<dirname>UnYear74</dirname>
+<year>19yy</year>
+<year>0</year>
+<dirname>Unknown34</dirname>
+<dirname>Unknown34</dirname>
+<year>19yy</year>
+<year>0</year>
+<dirname>UnYear78</dirname>
+<dirname>UnYear78</dirname>
+<dirname>Unknown28</dirname>
+<dirname>Unknown28</dirname>
+<cat>Romt Comd</cat>
+<dirname>UnYear82</dirname>
+<dirname>UnYear82</dirname>
+<cat>Romt Comd</cat>
+<year>19yy</year>
+<year>0</year>
+<dirname>UnYear86</dirname>
+<dirname>UnYear86</dirname>
+<cat>Romt Comd</cat>
+<dirname>UnYear87</dirname>
+<dirname>UnYear87</dirname>
+<cat>Romt Fant</cat>
+<cat>Romt Comd</cat>
+<dirname>Unknown18</dirname>
+<dirname>Unknown18</dirname>
+<dirname>Unknown48</dirname>
+<dirname>Unknown48</dirname>
+<dirname>Unknown54</dirname>
+<dirname>Unknown54</dirname>
+<dirname>Unknown3</dirname>
+<dirname>UnYear88</dirname>
+<dirname>UnYear88</dirname>
+<cat>Comd Noir</cat>
+<dirname>UnYear89</dirname>
+<dirname>UnYear89</dirname>
+<dirname>UnYear90</dirname>
+<dirname>UnYear90</dirname>
+<dirname>UnYear91</dirname>
+<dirname>UnYear91</dirname>
+<year>199x</year>
+<cat>Noir Comd Romt</cat>
+<cat>Art Video</cat>
+<cat>Romt Comd</cat>
+<dirname>UnYear92</dirname>
+<dirname>UnYear92</dirname>
+<cat>Romt Actn</cat>
+<cat>Dram Docu</cat>
+<cat>Romt Comd</cat>
+<dirname>UnYear93</dirname>
+<dirname>UnYear93</dirname>
+<cat>Romt. Comd</cat>
+<cat>Romt. Comd</cat>
+<cat>Romt Comd</cat>
+<cat>Romt Comd</cat>
+<cat>Dram.Actn</cat>
+<cat>Romt Comd</cat>
+<dirname>UnYear94</dirname>
+<dirname>UnYear94</dirname>
+<cat>Noir Comd</cat>
+<year>199x</year>
+<year>19yy</year>
+<year>0</year>
+<dirname>UnYear95</dirname>
+<dirname>UnYear95</dirname>
+<year>19yy</year>
+<year>0</year>
+<year>19yy</year>
+<year>0</year>
+<cat>Romt Comd</cat>
+<dirname>UnYear96</dirname>
+<dirname>UnYear96</dirname>
+<dirname>UnYear97</dirname>
+<dirname>UnYear97</dirname>
+<cat>Romt Dram</cat>
+<cat>anti-Dram</cat>
+<cat>Romt Comd</cat>
+<year>19yy</year>
+<year>0</year>
+<cat>Romt Comd</cat>
+<cat>Romt Comd</cat>
+<cat>Docu Dram</cat>
+<cat>Romt Comd</cat>
+<dirname>UnYear98</dirname>
+<dirname>UnYear98</dirname>
+<cat>Romt Comd</cat>
+<cat>Romt Comd</cat>
+<dirname>UnYear99</dirname>
+<dirname>UnYear99</dirname>
+<dirname>J.Becker2</dirname>
+<cat>Romt Comd</cat>
+<dirname>Unknown00</dirname>
+<dirname>Unknown00</dirname>

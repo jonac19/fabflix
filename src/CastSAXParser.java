@@ -1,5 +1,6 @@
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -29,20 +30,25 @@ public class CastSAXParser extends DefaultHandler {
 
     private ConnectionPool connectionPool;
 
+//    private PrintWriter writer;
+
     public CastSAXParser() {
         try {
             casts = new ArrayList<Cast>();
             connectionPool = new ConnectionPool(5);
+//            writer = new PrintWriter("cast-report.txt", "UTF-8");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
     public void run() {
+//        writer.println("---Inconsistencies in Cast XML---");
         System.out.println("---Inconsistencies in Cast XML---");
         parseDocument();
         cleanData();
         insertData();
+//        writer.close();
     }
 
     private void parseDocument() {
@@ -55,7 +61,7 @@ public class CastSAXParser extends DefaultHandler {
             SAXParser sp = spf.newSAXParser();
 
             //parse the file and also register this class for call backs
-            sp.parse("~/pipeline_source/casts124.xml", this);
+            sp.parse("../pipeline_source/casts124.xml", this);
 
         } catch (SAXException se) {
             se.printStackTrace();
@@ -178,6 +184,7 @@ public class CastSAXParser extends DefaultHandler {
                 ResultSet rs = statement.executeQuery();
 
                 if (!rs.isBeforeFirst()) {
+//                    writer.println(cast);
                     System.out.println(cast);
                     rs.close();
                     statement.close();
@@ -197,6 +204,7 @@ public class CastSAXParser extends DefaultHandler {
                 rs = statement.executeQuery();
 
                 if (!rs.isBeforeFirst()) {
+//                    writer.println(cast);
                     System.out.println(cast);
                     rs.close();
                     statement.close();
@@ -223,6 +231,7 @@ public class CastSAXParser extends DefaultHandler {
                 if (!rs.isBeforeFirst()) {
                     casts.add(cast);
                 } else {
+//                    writer.println(cast);
                     System.out.println(cast);
                 }
                 rs.close();

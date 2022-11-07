@@ -1,5 +1,6 @@
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,17 +28,26 @@ public class MovieSAXParser extends DefaultHandler {
     private Movie tempMovie;
     private String tempDirector;
 
+//    private PrintWriter writer;
+
     public MovieSAXParser() {
-        movies = new ArrayList<Movie>();
-        genres = new HashMap<String, Integer>();
+        try {
+            movies = new ArrayList<Movie>();
+            genres = new HashMap<String, Integer>();
+//            writer = new PrintWriter("movie-report.txt", "UTF-8");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public void run() {
+//        writer.println("---Inconsistencies in Movie XML---");
         System.out.println("---Inconsistencies in Movie XML---");
         parseDocument();
         linkGenres();
         cleanData();
         insertData();
+//        writer.close();
     }
 
     private void parseDocument() {
@@ -50,7 +60,7 @@ public class MovieSAXParser extends DefaultHandler {
             SAXParser sp = spf.newSAXParser();
 
             //parse the file and also register this class for call backs
-            sp.parse("~/pipeline_source/mains243.xml", this);
+            sp.parse("../pipeline_source/mains243.xml", this);
 
         } catch (SAXException se) {
             se.printStackTrace();
@@ -167,6 +177,7 @@ public class MovieSAXParser extends DefaultHandler {
                 if (!rs.isBeforeFirst()) {
                     movies.add(movie);
                 } else {
+//                    writer.println(movie);
                     System.out.println(movie);
                 }
                 rs.close();
@@ -248,6 +259,7 @@ public class MovieSAXParser extends DefaultHandler {
         } else if (qName.equalsIgnoreCase("year")) {
             for (char c : tempVal.toCharArray()) {
                 if (!Character.isDigit(c)) {
+//                    writer.println("<year>" + tempVal + "</year>");
                     System.out.println("<year>" + tempVal + "</year>");
                     tempVal = "0";
                 }
@@ -257,18 +269,21 @@ public class MovieSAXParser extends DefaultHandler {
             tempDirector = tempVal;
             for (char c : tempVal.toCharArray()) {
                 if (Character.isDigit(c)) {
+//                    writer.println("<dirname>" + tempVal + "</dirname>");
                     System.out.println("<dirname>" + tempVal + "</dirname>");
                     tempDirector = "";
                 }
             }
         } else if (qName.equalsIgnoreCase("cat")) {
             if ("".equals(tempVal)) {
+//                writer.println("<cat>" + tempVal + "</cat>");
                 System.out.println("<cat>" + tempVal + "</cat>");
                 return;
             }
 
             for (char c : tempVal.toCharArray()) {
                 if (!Character.isAlphabetic(c)) {
+//                    writer.println("<cat>" + tempVal + "</cat>");
                     System.out.println("<cat>" + tempVal + "</cat>");
                     return;
                 }

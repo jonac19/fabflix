@@ -1,5 +1,6 @@
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -29,20 +30,25 @@ public class StarSAXParser extends DefaultHandler {
 
     private ConnectionPool connectionPool;
 
+//    private PrintWriter writer;
+
     public StarSAXParser() {
         try {
             stars = new ArrayList<Star>();
             connectionPool = new ConnectionPool(5);
+//            writer = new PrintWriter("star-report.txt", "UTF-8");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
     public void run() {
+//        writer.println("---Inconsistencies in Star XML---");
         System.out.println("---Inconsistencies in Star XML---");
         parseDocument();
         cleanData();
         insertData();
+//        writer.close();
     }
 
     private void parseDocument() {
@@ -55,7 +61,7 @@ public class StarSAXParser extends DefaultHandler {
             SAXParser sp = spf.newSAXParser();
 
             //parse the file and also register this class for call backs
-            sp.parse("~/pipeline_source/actors63.xml", this);
+            sp.parse("../pipeline_source/actors63.xml", this);
 
         } catch (SAXException se) {
             se.printStackTrace();
@@ -178,6 +184,7 @@ public class StarSAXParser extends DefaultHandler {
         } else if (qName.equalsIgnoreCase("stagename")) {
             for (char c : tempVal.toCharArray()) {
                 if (Character.isDigit(c)) {
+//                    writer.println("<stagename>" + tempVal + "</stagename>");
                     System.out.println("<stagename>" + tempVal + "</stagename>");
                     tempVal = "";
                 }
@@ -190,6 +197,7 @@ public class StarSAXParser extends DefaultHandler {
 
             for (char c : tempVal.toCharArray()) {
                 if (!Character.isDigit(c)) {
+//                    writer.println("<dob>" + tempVal + "</dob>");
                     System.out.println("<dob>" + tempVal + "</dob>");
                     tempVal = "0";
                     break;
@@ -230,6 +238,7 @@ public class StarSAXParser extends DefaultHandler {
                 if (!rs.isBeforeFirst()) {
                     stars.add(star);
                 } else {
+//                    writer.println(star);
                     System.out.println(star);
                 }
 
