@@ -1,4 +1,5 @@
 import com.google.gson.JsonObject;
+import org.jasypt.util.password.StrongPasswordEncryptor;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -41,34 +42,53 @@ public class DashboardLoginServlet extends HttpServlet {
 
         JsonObject responseJsonObject = new JsonObject();
         try (Connection conn = dataSource.getConnection()) {
-            String query = "SELECT * FROM employees E WHERE E.email = ? AND E.password = ?";
+            String query = "SELECT * FROM employees E WHERE E.email = ?";
 
             // Declare our statement
             PreparedStatement statement = conn.prepareStatement(query);
 
             // Set the parameter represented by "?" in the query
             statement.setString(1, username);
-            statement.setString(2, password);
 
 
             // Perform the query
             ResultSet rs = statement.executeQuery();
 
-            if (rs.next()) {
-                // Login success
-
-                // set this user into the session
-                request.getSession().setAttribute("employee", new Employee(username, rs.getString("fullname")));
-
-                responseJsonObject.addProperty("status", "success");
-                responseJsonObject.addProperty("message", "success");
-            } else {
-                // Login fail
+            if (!rs.isBeforeFirst()) {
+                // Login fail due to incorrect username
                 responseJsonObject.addProperty("status", "fail");
                 // Log to localhost log
                 request.getServletContext().log("Login failed");
-                responseJsonObject.addProperty("message", "Login Failed");
+                responseJsonObject.addProperty("message", "employee " + username + " doesn't exist");
+            } else {
+                boolean passwordMatched = false;
+                StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
+
+                while (rs.next()) {
+                    String encryptedPassword = rs.getString("password");
+                    if (passwordEncryptor.checkPassword(password, encryptedPassword)){
+                        // Login success:
+
+                        // set this user into the session
+                        request.getSession().setAttribute("employee", new Employee(username, rs.getString("fullname")));
+
+                        responseJsonObject.addProperty("status", "success");
+                        responseJsonObject.addProperty("message", "success");
+
+                        passwordMatched = true;
+                        break;
+                    }
+                }
+
+                if (!passwordMatched) {
+                    // Login fail due to incorrect password
+                    responseJsonObject.addProperty("status", "fail");
+                    // Log to localhost log
+                    request.getServletContext().log("Login failed");
+                    responseJsonObject.addProperty("message", "incorrect password");
+                }
             }
+
             rs.close();
             statement.close();
 
