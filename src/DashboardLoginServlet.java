@@ -1,5 +1,4 @@
 import com.google.gson.JsonObject;
-import org.jasypt.util.password.StrongPasswordEncryptor;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -15,10 +14,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-@WebServlet(name = "LoginServlet", urlPatterns = "/api/login")
-public class LoginServlet extends HttpServlet {
-    private static final long serialVersionUID = 4L;
-
+@WebServlet(name = "DashboardLoginServlet", urlPatterns = "/api/dashboard-login")
+public class DashboardLoginServlet extends HttpServlet {
     // Create a dataSource which registered in web.
     private DataSource dataSource;
 
@@ -34,78 +31,43 @@ public class LoginServlet extends HttpServlet {
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//        response.setContentType("application/json"); // Response mime type
+
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
 
         JsonObject responseJsonObject = new JsonObject();
-
-        // Verify reCAPTCHA
-        try {
-            RecaptchaVerifyUtils.verify(gRecaptchaResponse);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            // Login fail due to incorrect password
-            responseJsonObject.addProperty("status", "fail");
-            // Log to localhost log
-            request.getServletContext().log("Login failed");
-            responseJsonObject.addProperty("message", "recaptcha failed");
-
-            out.write(responseJsonObject.toString());
-
-            response.setStatus(200);
-            return;
-        }
-
         try (Connection conn = dataSource.getConnection()) {
-            String query = "SELECT * FROM customers C WHERE C.email = ?";
+            String query = "SELECT * FROM employees E WHERE E.email = ? AND E.password = ?";
 
             // Declare our statement
             PreparedStatement statement = conn.prepareStatement(query);
 
-            // Set the parameter represented by "?" in the query to the id we get from url,
-            // num 1 indicates the first "?" in the query
+            // Set the parameter represented by "?" in the query
             statement.setString(1, username);
+            statement.setString(2, password);
+
 
             // Perform the query
             ResultSet rs = statement.executeQuery();
 
-            if (!rs.isBeforeFirst()) {
-                // Login fail due to incorrect username
+            if (rs.next()) {
+                // Login success
+
+                // set this user into the session
+                request.getSession().setAttribute("employee", new Employee(username, rs.getString("fullname")));
+
+                responseJsonObject.addProperty("status", "success");
+                responseJsonObject.addProperty("message", "success");
+            } else {
+                // Login fail
                 responseJsonObject.addProperty("status", "fail");
                 // Log to localhost log
                 request.getServletContext().log("Login failed");
-                responseJsonObject.addProperty("message", "user " + username + " doesn't exist");
-            } else {
-                boolean passwordMatched = false;
-                StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
-
-                while (rs.next()) {
-                    String encryptedPassword = rs.getString("password");
-                    if (passwordEncryptor.checkPassword(password, encryptedPassword)){
-                        // Login success:
-
-                        // set this user into the session
-                        request.getSession().setAttribute("user", new User(username, rs.getInt("id")));
-
-                        responseJsonObject.addProperty("status", "success");
-                        responseJsonObject.addProperty("message", "success");
-
-                        passwordMatched = true;
-                        break;
-                    }
-                }
-
-                if (!passwordMatched) {
-                    // Login fail due to incorrect password
-                    responseJsonObject.addProperty("status", "fail");
-                    // Log to localhost log
-                    request.getServletContext().log("Login failed");
-                    responseJsonObject.addProperty("message", "incorrect password");
-                }
+                responseJsonObject.addProperty("message", "Login Failed");
             }
             rs.close();
             statement.close();
@@ -115,7 +77,6 @@ public class LoginServlet extends HttpServlet {
             // Set response status to 200 (OK)
             response.setStatus(200);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             // Write error message JSON object to output
             // Login fail
             responseJsonObject.addProperty("status", "fail");
