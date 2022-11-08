@@ -205,12 +205,12 @@ public class CastSAXParser extends DefaultHandler {
                 rs.close();
                 statement.close();
 
-                query = "SELECT * FROM stars S WHERE S.name = ? LIMIT 1";
+                query = "SELECT * FROM stars S WHERE MATCH (S.name) AGAINST (? IN BOOLEAN MODE) LIMIT 1";
 
                 // Declare our statement
                 statement = conn.prepareStatement(query);
 
-                statement.setString(1, cast.getStarName());
+                statement.setString(1, "+" + cast.getStarName());
 
                 // Perform the query
                 rs = statement.executeQuery();
