@@ -28,7 +28,7 @@ proc_label: BEGIN
     
     -- Set newStarId. If no star found, create it with id=MAX(stars.id)+1
     IF (starBirthYear = 0) THEN SET starBirthYear = NULL; END IF;
-    SELECT search_stars(starName, starBirthYear) INTO newStarId;
+    SELECT search_stars(starName) INTO newStarId;
     IF (newStarId IS NULL) THEN
 		SET starExisted = "(NEW)";
 		SELECT MAX(id) INTO newStarId FROM stars WHERE id LIKE BINARY "nm%";
@@ -82,7 +82,7 @@ DELIMITER ;
 DROP FUNCTION IF EXISTS search_stars;
 DELIMITER $$ 
 -- If star exists in table, return their ID. Else return NULL
-CREATE FUNCTION  search_stars (iName VARCHAR(100), iBirthYear INTEGER)
+CREATE FUNCTION  search_stars (iName VARCHAR(100))
 RETURNS VARCHAR(10)
 BEGIN
 	RETURN (
