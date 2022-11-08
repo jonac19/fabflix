@@ -193,7 +193,7 @@ public class CastSAXParser extends DefaultHandler {
                 rs.close();
                 statement.close();
 
-                query = "SELECT * FROM stars S WHERE S.name = ?";
+                query = "SELECT * FROM stars S WHERE S.name = ? LIMIT 1";
 
                 // Declare our statement
                 statement = conn.prepareStatement(query);

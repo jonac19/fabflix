@@ -224,7 +224,7 @@ public class StarSAXParser extends DefaultHandler {
                     return;
                 }
 
-                String query = "SELECT * FROM stars S WHERE S.name = ?";
+                String query = "SELECT * FROM stars S WHERE S.name = ? LIMIT 1";
 
                 // Declare our statement
                 PreparedStatement statement = conn.prepareStatement(query);
