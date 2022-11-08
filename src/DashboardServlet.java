@@ -101,7 +101,7 @@ public class DashboardServlet extends HttpServlet {
         try (Connection conn = dataSource.getConnection()) {
             if ("addStar".equals(action)) {
                 String starName = request.getParameter("starName");
-                String starBirthYear = getStarBirthYear(request);
+                String starBirthYear = request.getParameter("starBirthYear");
                 String starId = getStarId(conn);
 
                 if (!"".equals(starName)) {
@@ -111,7 +111,11 @@ public class DashboardServlet extends HttpServlet {
 
                     update.setString(1, starId);
                     update.setString(2, starName);
-                    update.setInt(3, Integer.parseInt(starBirthYear));
+                    if ("".equals(starBirthYear)) {
+                        update.setString(3, null);
+                    } else {
+                        update.setInt(3, Integer.parseInt(starBirthYear));
+                    }
 
                     update.executeUpdate();
                     update.close();
@@ -143,7 +147,11 @@ public class DashboardServlet extends HttpServlet {
                 call.setInt(2, Integer.parseInt(movieYear));
                 call.setString(3, movieDirector);
                 call.setString(4, starName);
-                call.setInt(5, Integer.parseInt(starBirthYear));
+                if ("".equals(starBirthYear)) {
+                    call.setInt(5, 0);
+                } else {
+                    call.setInt(5, Integer.parseInt(starBirthYear));
+                }
                 call.setString(6, genreName);
 
                 call.registerOutParameter(7, Types.VARCHAR);
@@ -203,16 +211,6 @@ public class DashboardServlet extends HttpServlet {
         statement.close();
 
         return tables;
-    }
-
-    private String getStarBirthYear(HttpServletRequest request) {
-        String starBirthYear = request.getParameter("starBirthYear");
-
-        if ("".equals(starBirthYear)) {
-            starBirthYear = "0";
-        }
-
-        return starBirthYear;
     }
 
     private String getStarId(Connection conn) throws SQLException {

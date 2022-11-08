@@ -246,6 +246,16 @@ public class MovieSAXParser extends DefaultHandler {
                 updateMovie.executeUpdate();
                 updateMovie.close();
 
+                updateQuery = "INSERT IGNORE INTO ratings VALUES(?, ?, ?)";
+                PreparedStatement updateRatings = conn.prepareStatement(updateQuery);
+
+                updateRatings.setString(1, movie.getMovieId());
+                updateRatings.setFloat(2, 0);
+                updateRatings.setInt(3, 0);
+
+                updateRatings.executeUpdate();
+                updateRatings.close();
+
                 List<String> movieGenres = movie.getGenreNames();
                 for (int i = 0; i < movieGenres.size(); i++) {
                     String updateGenreQuery = "INSERT IGNORE INTO genres_in_movies VALUES(?, ?)";
