@@ -47,7 +47,6 @@ public class LoginServlet extends HttpServlet {
         try {
             RecaptchaVerifyUtils.verify(gRecaptchaResponse);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             // Login fail due to incorrect password
             responseJsonObject.addProperty("status", "fail");
             // Log to localhost log

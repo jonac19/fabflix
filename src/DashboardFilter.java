@@ -8,7 +8,7 @@ import java.util.ArrayList;
 /**
  * Servlet Filter implementation class LoginFilter
  */
-@WebFilter(filterName = "DashboardFilter", urlPatterns = "/_*")
+@WebFilter(filterName = "DashboardFilter", urlPatterns = "/_dashboard/*")
 public class DashboardFilter implements Filter {
     private final ArrayList<String> allowedURIs = new ArrayList<>();
 
@@ -31,7 +31,7 @@ public class DashboardFilter implements Filter {
 
         // Redirect to login page if the "user" attribute doesn't exist in session
         if (httpRequest.getSession().getAttribute("employee") == null) {
-            httpResponse.sendRedirect("dashboard-login.html");
+            httpResponse.sendRedirect("/cs122b-fall22-team-46/dashboard-login.html");
         } else {
             chain.doFilter(request, response);
         }
