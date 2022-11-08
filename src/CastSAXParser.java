@@ -30,25 +30,38 @@ public class CastSAXParser extends DefaultHandler {
 
     private ConnectionPool connectionPool;
 
+    private int nonexistingMoviesCount;
+    private int nonexistingStarsCount;
+    private int insertedStarsInMoviesCount;
+
 //    private PrintWriter writer;
 
     public CastSAXParser() {
         try {
             casts = new ArrayList<Cast>();
             connectionPool = new ConnectionPool(5);
-//            writer = new PrintWriter("cast-report.txt", "UTF-8");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
     public void run() {
-//        writer.println("---Inconsistencies in Cast XML---");
-        System.out.println("---Inconsistencies in Cast XML---");
+        System.out.println("---Parsing Cast XML---");
         parseDocument();
         cleanData();
         insertData();
-//        writer.close();
+    }
+
+    public int getNonexistingMoviesCount() {
+        return nonexistingMoviesCount;
+    }
+
+    public int getNonexistingStarsCount() {
+        return nonexistingStarsCount;
+    }
+
+    public int getInsertedStarsInMoviesCount() {
+        return insertedStarsInMoviesCount;
     }
 
     private void parseDocument() {
@@ -184,10 +197,9 @@ public class CastSAXParser extends DefaultHandler {
                 ResultSet rs = statement.executeQuery();
 
                 if (!rs.isBeforeFirst()) {
-//                    writer.println(cast);
-                    System.out.println(cast);
                     rs.close();
                     statement.close();
+                    nonexistingMoviesCount++;
                     return;
                 }
                 rs.close();
@@ -204,10 +216,9 @@ public class CastSAXParser extends DefaultHandler {
                 rs = statement.executeQuery();
 
                 if (!rs.isBeforeFirst()) {
-//                    writer.println(cast);
-                    System.out.println(cast);
                     rs.close();
                     statement.close();
+                    nonexistingStarsCount++;
                     return;
                 } else {
                     rs.next();
@@ -230,9 +241,7 @@ public class CastSAXParser extends DefaultHandler {
                 // Iterate through each row of rs
                 if (!rs.isBeforeFirst()) {
                     casts.add(cast);
-                } else {
-//                    writer.println(cast);
-                    System.out.println(cast);
+                    insertedStarsInMoviesCount++;
                 }
                 rs.close();
                 statement.close();

@@ -30,26 +30,53 @@ public class MovieSAXParser extends DefaultHandler {
     private Movie tempMovie;
     private String tempDirector;
 
+    private int inconsistentMoviesCount;
+    private int duplicateMoviesCount;
+    private int insertedMoviesCount;
+    private int insertedGenresCount;
+    private int linkedGenresCount;
+    private int insertedGenresInMoviesCount;
+
 //    private PrintWriter writer;
 
     public MovieSAXParser() {
         try {
             movies = new ArrayList<Movie>();
             genres = new HashMap<String, Integer>();
-//            writer = new PrintWriter("movie-report.txt", "UTF-8");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
     public void run() {
-//        writer.println("---Inconsistencies in Movie XML---");
-        System.out.println("---Inconsistencies in Movie XML---");
         parseDocument();
         linkGenres();
         cleanData();
         insertData();
-//        writer.close();
+    }
+
+    public int getInconsistentMoviesCount() {
+        return inconsistentMoviesCount;
+    }
+
+    public int getDuplicateMoviesCount() {
+        return duplicateMoviesCount;
+    }
+
+    public int getInsertedMoviesCount() {
+        return insertedMoviesCount;
+    }
+
+    public int getLinkedGenresCount() {
+        return linkedGenresCount;
+    }
+
+    public int getInsertedGenresCount() {
+        return insertedGenresCount;
+    }
+
+    public int getInsertedGenresInMoviesCount() {
+        return insertedGenresInMoviesCount;
     }
 
     private void parseDocument() {
@@ -108,6 +135,7 @@ public class MovieSAXParser extends DefaultHandler {
 
                         if (index == genreXML.length()) {
                             genres.replace(genreXML, genresDB.get(genreDB));
+                            linkedGenresCount++;
                             break;
                         }
                     }
@@ -131,6 +159,8 @@ public class MovieSAXParser extends DefaultHandler {
                     genres.replace(genreXML, idRS.getInt("id"));
                     idStatement.close();
                     idRS.close();
+
+                    insertedGenresCount++;
                 }
             }
         } catch (Exception e) {
@@ -175,12 +205,10 @@ public class MovieSAXParser extends DefaultHandler {
                 // Perform the query
                 ResultSet rs = statement.executeQuery();
 
-                // Iterate through each row of rs
                 if (!rs.isBeforeFirst()) {
                     movies.add(movie);
                 } else {
-//                    writer.println(movie);
-                    System.out.println(movie);
+                    duplicateMoviesCount++;
                 }
                 rs.close();
                 statement.close();
@@ -228,7 +256,9 @@ public class MovieSAXParser extends DefaultHandler {
 
                     updateGenre.executeUpdate();
                     updateGenre.close();
+                    insertedGenresInMoviesCount++;
                 }
+                insertedMoviesCount++;
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -261,8 +291,7 @@ public class MovieSAXParser extends DefaultHandler {
         } else if (qName.equalsIgnoreCase("year")) {
             for (char c : tempVal.toCharArray()) {
                 if (!Character.isDigit(c)) {
-//                    writer.println("<year>" + tempVal + "</year>");
-                    System.out.println("<year>" + tempVal + "</year>");
+                    inconsistentMoviesCount++;
                     tempVal = "0";
                 }
             }
@@ -271,22 +300,17 @@ public class MovieSAXParser extends DefaultHandler {
             tempDirector = tempVal;
             for (char c : tempVal.toCharArray()) {
                 if (Character.isDigit(c)) {
-//                    writer.println("<dirname>" + tempVal + "</dirname>");
-                    System.out.println("<dirname>" + tempVal + "</dirname>");
+                    inconsistentMoviesCount++;
                     tempDirector = "";
                 }
             }
         } else if (qName.equalsIgnoreCase("cat")) {
             if ("".equals(tempVal)) {
-//                writer.println("<cat>" + tempVal + "</cat>");
-                System.out.println("<cat>" + tempVal + "</cat>");
                 return;
             }
 
             for (char c : tempVal.toCharArray()) {
                 if (!Character.isAlphabetic(c)) {
-//                    writer.println("<cat>" + tempVal + "</cat>");
-                    System.out.println("<cat>" + tempVal + "</cat>");
                     return;
                 }
             }

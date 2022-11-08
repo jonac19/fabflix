@@ -30,25 +30,32 @@ public class StarSAXParser extends DefaultHandler {
 
     private ConnectionPool connectionPool;
 
+    private int duplicateStarsCount;
+    private int insertStarsCount;
+
 //    private PrintWriter writer;
 
     public StarSAXParser() {
         try {
             stars = new ArrayList<Star>();
             connectionPool = new ConnectionPool(5);
-//            writer = new PrintWriter("star-report.txt", "UTF-8");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
     public void run() {
-//        writer.println("---Inconsistencies in Star XML---");
-        System.out.println("---Inconsistencies in Star XML---");
         parseDocument();
         cleanData();
         insertData();
-//        writer.close();
+    }
+
+    public int getDuplicateStarsCount() {
+        return duplicateStarsCount;
+    }
+
+    public int getInsertStarsCount() {
+        return insertStarsCount;
     }
 
     private void parseDocument() {
@@ -184,8 +191,6 @@ public class StarSAXParser extends DefaultHandler {
         } else if (qName.equalsIgnoreCase("stagename")) {
             for (char c : tempVal.toCharArray()) {
                 if (Character.isDigit(c)) {
-//                    writer.println("<stagename>" + tempVal + "</stagename>");
-                    System.out.println("<stagename>" + tempVal + "</stagename>");
                     tempVal = "";
                 }
             }
@@ -197,8 +202,6 @@ public class StarSAXParser extends DefaultHandler {
 
             for (char c : tempVal.toCharArray()) {
                 if (!Character.isDigit(c)) {
-//                    writer.println("<dob>" + tempVal + "</dob>");
-                    System.out.println("<dob>" + tempVal + "</dob>");
                     tempVal = "0";
                     break;
                 }
@@ -237,9 +240,9 @@ public class StarSAXParser extends DefaultHandler {
                 // Iterate through each row of rs
                 if (!rs.isBeforeFirst()) {
                     stars.add(star);
+                    insertStarsCount++;
                 } else {
-//                    writer.println(star);
-                    System.out.println(star);
+                    duplicateStarsCount++;
                 }
 
                 rs.close();
