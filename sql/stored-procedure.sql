@@ -48,6 +48,7 @@ proc_label: BEGIN
     -- Link Star and Genre to movie
     INSERT INTO stars_in_movies VALUES(newStarId, newMovieId);
     INSERT INTO genres_in_movies VALUES(newGenreId, newMovieId);
+    INSERT INTO ratings VALUES (newMovieId, 0, 0);
     
     
 	SET message = CONCAT("Movie added with Movie ID: ", newMovieId, 
