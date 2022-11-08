@@ -46,7 +46,6 @@ public class CastSAXParser extends DefaultHandler {
     }
 
     public void run() {
-        System.out.println("---Parsing Cast XML---");
         parseDocument();
         cleanData();
         insertData();
@@ -166,6 +165,12 @@ public class CastSAXParser extends DefaultHandler {
         } else if (qName.equalsIgnoreCase("f")) {
             tempCast.setMovieId(tempVal);
         } else if (qName.equalsIgnoreCase("a")) {
+            for (char c : tempVal.toCharArray()) {
+                if (!Character.isAlphabetic(c) && c != ' ') {
+                    tempCast.setStarName("");
+                    return;
+                }
+            }
             tempCast.setStarName(tempVal);
         }
     }
@@ -186,6 +191,10 @@ public class CastSAXParser extends DefaultHandler {
         public void run() {
             Connection conn = connectionPool.getConnection();
             try {
+                if ("".equals(cast.getStarName())) {
+                    return;
+                }
+
                 String query = "SELECT * FROM movies M WHERE M.id = ?";
 
                 // Declare our statement
@@ -210,7 +219,13 @@ public class CastSAXParser extends DefaultHandler {
                 // Declare our statement
                 statement = conn.prepareStatement(query);
 
-                statement.setString(1, "+" + cast.getStarName());
+                String fulltext = "";
+                for (String word: cast.getStarName().split("\\s+")) {
+                    fulltext += "+" + word + " ";
+                }
+                fulltext.trim();
+
+                statement.setString(1, fulltext);
 
                 // Perform the query
                 rs = statement.executeQuery();

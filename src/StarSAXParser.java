@@ -190,8 +190,9 @@ public class StarSAXParser extends DefaultHandler {
             stars.add(tempStar);
         } else if (qName.equalsIgnoreCase("stagename")) {
             for (char c : tempVal.toCharArray()) {
-                if (Character.isDigit(c)) {
-                    tempVal = "";
+                if (!Character.isAlphabetic(c) && c != ' ') {
+                    tempStar.setName("");
+                    return;
                 }
             }
             tempStar.setName(tempVal);
@@ -227,12 +228,18 @@ public class StarSAXParser extends DefaultHandler {
                     return;
                 }
 
-                String query = "SELECT * FROM stars S WHERE S.name = ? LIMIT 1";
+                String query = "SELECT * FROM stars S WHERE MATCH (S.name) AGAINST (? IN BOOLEAN MODE) LIMIT 1";
 
                 // Declare our statement
                 PreparedStatement statement = conn.prepareStatement(query);
 
-                statement.setString(1, star.getName());
+                String fulltext = "";
+                for (String word: star.getName().split("\\s+")) {
+                    fulltext += "+" + word + " ";
+                }
+                fulltext.trim();
+
+                statement.setString(1, fulltext);
 
                 // Perform the query
                 ResultSet rs = statement.executeQuery();

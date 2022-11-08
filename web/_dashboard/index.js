@@ -32,8 +32,8 @@ function submitAddStarForm(formSubmitEvent) {
      */
     formSubmitEvent.preventDefault();
 
-    $.ajax(
-        "api/dashboard", {
+    $.ajax({
+            url: "../api/dashboard",
             method: "POST",
             // Serialize the login form to the data sent by POST request
             data: add_star_form.serialize() + "&action=addStar",
@@ -55,8 +55,8 @@ function submitAddMovieForm(formSubmitEvent) {
      */
     formSubmitEvent.preventDefault();
 
-    $.ajax(
-        "api/dashboard", {
+    $.ajax({
+            url: "../api/dashboard",
             method: "POST",
             // Serialize the login form to the data sent by POST request
             data: add_movie_form.serialize() + "&action=addMovie",
@@ -72,7 +72,7 @@ add_movie_form.submit(submitAddMovieForm)
 $.ajax({
     dataType: "json",
     method: "GET",
-    url: "api/dashboard",
+    url: "../api/dashboard",
     success: (resultData) => handleDashboardResult(resultData)
 });
 

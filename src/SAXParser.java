@@ -8,6 +8,7 @@ public class SAXParser {
         StarSAXParser ssp = new StarSAXParser();
         ssp.run();
 
+        System.out.println("---Parsing Cast XML---");
         CastSAXParser csp = new CastSAXParser();
         csp.run();
 

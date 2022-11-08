@@ -7,9 +7,9 @@ let dashboard_form = $("#dashboard_form");
 function handleLoginResult(resultDataString) {
     let resultDataJson = JSON.parse(resultDataString);
 
-    // If login succeeds, it will redirect the user to _dashboard.html
+    // If login succeeds, it will redirect the user to index.html
     if (resultDataJson["status"] === "success") {
-        window.location.replace("_dashboard.html");
+        window.location.replace("_dashboard/index.html");
     } else {
         // If login fails, the web page will display
         // error messages on <div> with id "login_error_message"
