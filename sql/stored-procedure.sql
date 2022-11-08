@@ -88,7 +88,7 @@ BEGIN
 	RETURN (
 		SELECT id
 		FROM stars AS s
-		WHERE s.name=iName AND s.birthYear=iBirthYear
+		WHERE s.name=iName
     );
 END$$
 DELIMITER ;
