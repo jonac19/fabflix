@@ -1,3 +1,4 @@
+SET GLOBAL log_bin_trust_function_creators = 1;
 use moviedb;
 DROP PROCEDURE IF EXISTS add_movie;
 DELIMITER $$ 
@@ -103,19 +104,6 @@ BEGIN
 		FROM genres AS g
 		WHERE g.name=iName
     );
-END$$
-DELIMITER ;
-
-
-
-DROP PROCEDURE IF EXISTS test;
-DELIMITER $$
-CREATE PROCEDURE test()
-BEGIN
-	DECLARE newId VARCHAR(10);
-    SELECT max(id) as "old max" FROM stars;
-	SELECT CONCAT("nm", SUBSTRING(max(id), 3, 7)+1) INTO newId FROM stars;
-    SELECT newId as "new ID";
 END$$
 DELIMITER ;
 
