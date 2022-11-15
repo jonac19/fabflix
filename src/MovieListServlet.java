@@ -197,7 +197,7 @@ public class MovieListServlet extends HttpServlet {
                     "AND G.id = GM.genreId ";
 
         if (!searchTitle.equals("")) {
-            query += "AND M.title LIKE ? ";
+            query += "AND MATCH(M.title) AGAINST ('+?' IN BOOLEAN MODE) "; //Changed from "LIKE ?" in Proj4: Implement fulltext search
         }
 
         if (!searchYear.equals("")) {
