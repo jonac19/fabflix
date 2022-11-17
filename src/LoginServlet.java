@@ -45,7 +45,9 @@ public class LoginServlet extends HttpServlet {
 
         // Verify reCAPTCHA
         try {
-            RecaptchaVerifyUtils.verify(gRecaptchaResponse);
+            if (gRecaptchaResponse != null) {
+                RecaptchaVerifyUtils.verify(gRecaptchaResponse);
+            }
         } catch (Exception e) {
             // Login fail due to incorrect password
             responseJsonObject.addProperty("status", "fail");
@@ -58,7 +60,7 @@ public class LoginServlet extends HttpServlet {
             response.setStatus(200);
             return;
         }
-
+        
         try (Connection conn = dataSource.getConnection()) {
             String query = "SELECT * FROM customers C WHERE C.email = ?";
 
