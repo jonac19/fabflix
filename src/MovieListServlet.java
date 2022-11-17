@@ -45,6 +45,7 @@ public class MovieListServlet extends HttpServlet {
         String orderSecond = request.getParameter("orderSecond");
         String page = request.getParameter("page");
         String searchTitle = request.getParameter("searchTitle");
+        searchTitle = formatSearchTitle(searchTitle);
         String searchYear = request.getParameter("searchYear");
         String searchDirector = request.getParameter("searchDirector");
         String searchStar = request.getParameter("searchStar");
@@ -128,6 +129,21 @@ public class MovieListServlet extends HttpServlet {
     }
 
     /**
+     * Reformats searchTitle to surround every word in string with "+word*" operators
+     * @param inputTitle user-entered raw input of searchTitle
+     * @return searchTitle reformatted with "+word*" around every word in String
+     */
+    String formatSearchTitle(String inputTitle){
+        if (inputTitle.equals("")) return "";   // Do not act on blank strings
+        String reformattedString = "";
+        for (String word : inputTitle.split("\\s+")){
+            reformattedString += "+" + word + "* ";
+        }
+        reformattedString.trim();
+        return reformattedString;
+    }
+
+    /**
      * Constructs the base query with criteria and order options
      * @param criteria Column name to sort movies by
      * @param orderFirst Sorting order for first column either ascending or descending
@@ -197,7 +213,7 @@ public class MovieListServlet extends HttpServlet {
                     "AND G.id = GM.genreId ";
 
         if (!searchTitle.equals("")) {
-            query += "AND MATCH(M.title) AGAINST ('+?' IN BOOLEAN MODE) "; //Changed from "LIKE ?" in Proj4: Implement fulltext search
+            query += "AND MATCH(M.title) AGAINST (? IN BOOLEAN MODE) "; //Changed from "LIKE ?" in Proj4: Implement fulltext search
         }
 
         if (!searchYear.equals("")) {
