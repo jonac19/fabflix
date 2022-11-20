@@ -137,6 +137,7 @@ function handleMovieListPaginationResult(resultData) {
     movieListPaginationElement.append(nextHTML);
 }
 
+
 /**
  * Submits form content containing search title
  * @param formSubmitEvent
@@ -267,5 +268,158 @@ jQuery.ajax({
 });
 
 
+/**
+ *
+ * @type {currentQueryTerm : [{"value":movieTitle, "data":movieID}, {"value":movieTitle2, ...}] }
+ */
+var autocompleteCache = {};
+
+/**
+ * This function is called by the library when it needs to lookup a query.
+ *
+ * The parameter query is the query string.
+ * The doneCallback is a callback function provided by the library, after you get the
+ *   suggestion list from AJAX, you need to call this function to let the library know.
+ */
+function handleLookup(query, doneCallback) {
+    console.log("autocomplete initiated with query=" + query)
+
+    // TODO: if you want to check past query results first, you can do it here
+    if (query in autocompleteCache){
+        console.log("Used cache on query: " + query);
+        handleLookupAjaxSuccess(autocompleteCache[query], query, doneCallback)
+        return;
+    }
+
+    console.log("sending AJAX request to backend Java Servlet")
+
+    // sending the HTTP GET request to the Java Servlet endpoint api/movie-list
+    // with the query data
+    jQuery.ajax({
+        "method": "GET",
+        // generate the request url from the query.
+        // escape the query string to avoid errors caused by special characters
+        "url": "api/movie-list?limit=10"
+        + "&criteria=rating"
+        + "&orderFirst=desc"
+        + "&orderSecond=asc"
+        + "&page=1"
+        + "&searchTitle=" + query
+        + "&searchYear="
+        + "&searchDirector="
+        + "&searchStar="
+        + "&browseGenre="
+        + "&browseTitle=",
+        "success": function(data) {
+            // pass the data, query, and doneCallback function into the success handler
+            console.log("lookup ajax successful")
+            handleLookupAjaxSuccess(data, query, doneCallback)
+        },
+        "error": function(errorData) {
+            console.log("lookup ajax error")
+            console.log(errorData)
+        }
+    })
+}
 
 
+/**
+ * This function is used to handle the ajax success callback function.
+ * It is called by our own code upon the success of the AJAX request
+ *
+ * data is the JSON data string you get from your Java Servlet
+ *
+ */
+function handleLookupAjaxSuccess(data, query, doneCallback) {
+
+    let suggestedMovies = "["
+    for (let i = 0; i < data.length; i++) {
+        suggestedMovies += `{"value": "${data[i]["movie_title"]}", "data": "${data[i]["movie_id"]}"}`;
+
+        if (i < data.length - 1) {
+            suggestedMovies += ", ";
+        }
+    }
+    suggestedMovies += "]";
+
+    let jsonData = JSON.parse(suggestedMovies);
+
+    console.log("suggestion: " + JSON.stringify(jsonData));
+
+    // TODO: if you want to cache the result into a global variable you can do it here
+    if (Object.keys(autocompleteCache).length >= 10){
+        console.log("Cache reached max size! Clearing cache...");
+        autocompleteCache = {};
+    }
+    autocompleteCache[query] = jsonData;
+    console.log("current cache: " + JSON.stringify(autocompleteCache));
+
+    // call the callback function provided by the autocomplete library
+    // add "{suggestions: jsonData}" to satisfy the library response format according to
+    //   the "Response Format" section in documentation
+    doneCallback( { suggestions: jsonData} );
+}
+
+
+/**
+ * This function is the select suggestion handler function.
+ * When a suggestion is selected, this function is called by the library.
+ *
+ * You can redirect to the page you want using the suggestion data.
+ */
+function handleSelectSuggestion(suggestion) {
+    window.location.replace("movie.html?id=" + suggestion.data);
+}
+
+
+/**
+ * This statement binds the autocomplete library with the input box element and
+ *   sets necessary parameters of the library.
+ *
+ * The library documentation can be find here:
+ *   https://github.com/devbridge/jQuery-Autocomplete
+ *   https://www.devbridge.com/sourcery/components/jquery-autocomplete/
+ *
+ */
+
+// put 'country' after the 'lookup : ' field in .autocomplete() below and Andorra will show up properly
+    //    in the autocomplete. having trouble getting this to work with function()
+var country = [{ value: 'Andorra', data : 'AD'}]
+// $('#search-input') is to find element by the ID "autocomplete"
+$('#search-input').autocomplete({
+    // documentation of the lookup function can be found under the "Custom lookup function" section
+    lookup:
+        function (query, doneCallback) {
+        handleLookup(query, doneCallback)
+    },
+    onSelect: function(suggestion) {
+        handleSelectSuggestion(suggestion)
+    },
+    // set delay time
+    deferRequestBy: 300,
+    // there are some other parameters that you might want to use to satisfy all the requirements
+    // TODO: add other parameters, such as minimum characters
+    minChars: 3
+});
+
+
+/**
+ * do normal full text search if no suggestion is selected
+ */
+function handleNormalSearch(query) {
+    console.log("doing normal search with query: " + query);
+    // TODO: you should do normal search here
+    //  Note: Technically project 2's implementation of submitSearchForm line 156 already does handles this TODO
+}
+
+// bind pressing enter key to a handler function
+$('#search_form').keypress(function(event) {
+    // keyCode 13 is the enter key
+    if (event.keyCode == 13) {
+        // pass the value of the input box to the handler function
+        handleNormalSearch($('#search-input').val())
+    }
+})
+
+// TODO: if you have a "search" button, you may want to bind the onClick event as well of that button
+//  Note: Technically project 2's implementation of submitSearchForm line 156 already does handles this TODO
