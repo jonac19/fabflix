@@ -268,6 +268,11 @@ jQuery.ajax({
 });
 
 
+/**
+ *
+ * @type {currentQueryTerm : [{"value":movieTitle, "data":movieID}, {"value":movieTitle2, ...}] }
+ */
+var autocompleteCache = {};
 
 /**
  * This function is called by the library when it needs to lookup a query.
@@ -278,9 +283,15 @@ jQuery.ajax({
  */
 function handleLookup(query, doneCallback) {
     console.log("autocomplete initiated with query=" + query)
-    console.log("sending AJAX request to backend Java Servlet")
 
     // TODO: if you want to check past query results first, you can do it here
+    if (query in autocompleteCache){
+        console.log("Used cache on query: " + query);
+        handleLookupAjaxSuccess(autocompleteCache[query], query, doneCallback)
+        return;
+    }
+
+    console.log("sending AJAX request to backend Java Servlet")
 
     // sending the HTTP GET request to the Java Servlet endpoint api/movie-list
     // with the query data
@@ -301,6 +312,7 @@ function handleLookup(query, doneCallback) {
         + "&browseTitle=",
         "success": function(data) {
             // pass the data, query, and doneCallback function into the success handler
+            console.log("lookup ajax successful")
             handleLookupAjaxSuccess(data, query, doneCallback)
         },
         "error": function(errorData) {
@@ -319,7 +331,6 @@ function handleLookup(query, doneCallback) {
  *
  */
 function handleLookupAjaxSuccess(data, query, doneCallback) {
-    console.log("lookup ajax successful")
 
     let suggestedMovies = "["
     for (let i = 0; i < data.length; i++) {
@@ -333,9 +344,16 @@ function handleLookupAjaxSuccess(data, query, doneCallback) {
 
     let jsonData = JSON.parse(suggestedMovies);
 
-    console.log(jsonData);
+    console.log("suggestion: " + JSON.stringify(jsonData));
 
     // TODO: if you want to cache the result into a global variable you can do it here
+    if (Object.keys(autocompleteCache).length >= 10){
+        console.log("Cache reached max size! Clearing cache...");
+        autocompleteCache = {};
+    }
+    autocompleteCache[query] = jsonData;
+    console.log("current cache: " + JSON.stringify(autocompleteCache));
+
     // call the callback function provided by the autocomplete library
     // add "{suggestions: jsonData}" to satisfy the library response format according to
     //   the "Response Format" section in documentation
