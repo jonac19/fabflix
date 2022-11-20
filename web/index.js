@@ -137,27 +137,13 @@ function handleMovieListPaginationResult(resultData) {
     movieListPaginationElement.append(nextHTML);
 }
 
-/**
- * simple waiting function. Useful for debugging
- * @param milliseconds
- */
-function sleep(milliseconds) {
-    const date = Date.now();
-    let currentDate = null;
-    do {
-        currentDate = Date.now();
-    } while (currentDate - date < milliseconds);
-}
 
 /**
  * Submits form content containing search title
  * @param formSubmitEvent
  */
 function submitSearchForm(formSubmitEvent) {
-    console.log("ping");
     console.log("submit search form");
-    sleep(1000);
-    console.log("proceed");
     formSubmitEvent.preventDefault();
     window.location.replace("index.html?" + searchForm.serialize());
 }
@@ -335,16 +321,25 @@ function handleLookup(query, doneCallback) {
 function handleLookupAjaxSuccess(data, query, doneCallback) {
     console.log("lookup ajax successful")
 
-    // parse the string into JSON
-    var jsonData = data[0]["movie_title"];
-    console.log(jsonData)   // test print to prove data was fetched
+    let suggestedMovies = "["
+    for (let i = 0; i < data.length; i++) {
+        suggestedMovies += `{"value": "${data[i]["movie_title"]}", "data": "${data[i]["movie_id"]}"}`;
+
+        if (i < data.length - 1) {
+            suggestedMovies += ", ";
+        }
+    }
+    suggestedMovies += "]";
+
+    let jsonData = JSON.parse(suggestedMovies);
+
+    console.log(jsonData);
 
     // TODO: if you want to cache the result into a global variable you can do it here
-
     // call the callback function provided by the autocomplete library
     // add "{suggestions: jsonData}" to satisfy the library response format according to
     //   the "Response Format" section in documentation
-    doneCallback( { suggestions: jsonData } );
+    doneCallback( { suggestions: jsonData} );
 }
 
 
@@ -355,9 +350,7 @@ function handleLookupAjaxSuccess(data, query, doneCallback) {
  * You can redirect to the page you want using the suggestion data.
  */
 function handleSelectSuggestion(suggestion) {
-    // TODO: jump to the specific result page based on the selected suggestion
-
-    console.log("you select " + suggestion["value"] + " with ID " + suggestion["data"]["heroID"])
+    window.location.replace("movie.html?id=" + suggestion.data);
 }
 
 
@@ -388,7 +381,7 @@ $('#search-input').autocomplete({
     deferRequestBy: 300,
     // there are some other parameters that you might want to use to satisfy all the requirements
     // TODO: add other parameters, such as minimum characters
-    minChars: 1
+    minChars: 3
 });
 
 
