@@ -33,7 +33,7 @@ public class MovieListActivity extends AppCompatActivity {
     private final String host = "34.220.101.108";
     private final String port = "8443";
     private final String domain = "cs122b-fall22-team-46";
-    private final String baseURL = "http://" + host + ":" + port + "/" + domain;
+    private final String baseURL = "https://" + host + ":" + port + "/" + domain;
 
     private Intent intent;
 
