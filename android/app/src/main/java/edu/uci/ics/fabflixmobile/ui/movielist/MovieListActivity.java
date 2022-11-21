@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MovieListActivity extends AppCompatActivity {
-    private final String host = "34.220.101.108";
+    private final String host = "34.209.102.203";
     private final String port = "8443";
     private final String domain = "cs122b-fall22-team-46";
     private final String baseURL = "https://" + host + ":" + port + "/" + domain;
