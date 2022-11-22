@@ -331,27 +331,32 @@ function handleLookup(query, doneCallback) {
  *
  */
 function handleLookupAjaxSuccess(data, query, doneCallback) {
-
-    let suggestedMovies = "["
-    for (let i = 0; i < data.length; i++) {
-        suggestedMovies += `{"value": "${data[i]["movie_title"]}", "data": "${data[i]["movie_id"]}"}`;
-
-        if (i < data.length - 1) {
-            suggestedMovies += ", ";
-        }
-    }
-    suggestedMovies += "]";
-
-    let jsonData = JSON.parse(suggestedMovies);
-
-    console.log("suggestion: " + JSON.stringify(jsonData));
-
     // TODO: if you want to cache the result into a global variable you can do it here
     if (Object.keys(autocompleteCache).length >= 10){
         console.log("Cache reached max size! Clearing cache...");
         autocompleteCache = {};
     }
-    autocompleteCache[query] = jsonData;
+
+    let jsonData;
+    if (!(query in autocompleteCache)) {
+        let suggestedMovies = "["
+        for (let i = 0; i < data.length; i++) {
+            suggestedMovies += `{"value": "${data[i]["movie_title"]}", "data": "${data[i]["movie_id"]}"}`;
+
+            if (i < data.length - 1) {
+                suggestedMovies += ", ";
+            }
+        }
+        suggestedMovies += "]";
+
+        jsonData = JSON.parse(suggestedMovies);
+
+        console.log("suggestion: " + JSON.stringify(jsonData));
+
+        autocompleteCache[query] = jsonData;
+    } else {
+        jsonData = autocompleteCache[query];
+    }
     console.log("current cache: " + JSON.stringify(autocompleteCache));
 
     // call the callback function provided by the autocomplete library
