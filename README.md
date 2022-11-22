@@ -5,7 +5,7 @@ cs122b-fall-team-46 created by GitHub Classroom
 # Fabflix - Team 46
 
 ### Demo Video URL
-[Project 4 Recording](https://youtu.be/ryW8n04WB7g)
+[Project 4 Recording](https://youtu.be/3CF64Xullmk)
 
 ### Deployment Steps
 (Class Project Instructions followed, no aberrant frameworks)
@@ -39,3 +39,4 @@ Jonathan
 
 Sean
 - Autocomplete
+- fast af speedrunner
