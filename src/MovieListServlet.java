@@ -4,13 +4,13 @@ import com.google.gson.JsonObject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.sql.*;
 
 import static java.lang.Integer.parseInt;
@@ -24,9 +24,15 @@ public class MovieListServlet extends HttpServlet {
     // Create a dataSource which registered in web.
     private DataSource dataSource;
 
+    private ServletContext servletContext;
+
+    private long elapsedTS;
+    private long elapsedTJ;
+
     public void init(ServletConfig config) {
         try {
             dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedb");
+            servletContext = config.getServletContext();
         } catch (NamingException e) {
             e.printStackTrace();
         }
@@ -36,6 +42,14 @@ public class MovieListServlet extends HttpServlet {
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        long startTS = System.nanoTime();
+        processRequest(request, response);
+        elapsedTS = System.nanoTime() - startTS;
+
+        logPerformance();
+    }
+
+    void processRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json"); // Response mime type
 
         // Retrieve parameters from url request.
@@ -70,6 +84,8 @@ public class MovieListServlet extends HttpServlet {
 
         // Get a connection from dataSource and let resource manager close the connection after usage.
         try (Connection conn = dataSource.getConnection()) {
+            long startTJ = System.nanoTime();
+
             String query = constructQuery(criteria, orderFirst, orderSecond, searchTitle, searchYear, searchDirector, searchStar, browseGenre, browseTitle);
 
             // Set the additional parameters
@@ -106,6 +122,8 @@ public class MovieListServlet extends HttpServlet {
             rs.close();
             statement.close();
 
+            elapsedTJ = System.nanoTime() - startTJ;
+
             // Log to localhost log
             request.getServletContext().log("getting " + jsonArray.size() + " results");
 
@@ -125,6 +143,17 @@ public class MovieListServlet extends HttpServlet {
             response.setStatus(500);
         } finally {
             out.close();
+        }
+    }
+
+    synchronized void logPerformance() {
+        String contextPath = servletContext.getRealPath("/");
+        String logFilePath = contextPath + "../logs/current_case.txt";
+        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(logFilePath, true)))){
+            out.println(elapsedTS + "," + elapsedTJ);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 
