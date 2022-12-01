@@ -32,7 +32,7 @@ public class MovieListServlet extends HttpServlet {
     public void init(ServletConfig config) {
         try {
             dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedb");
-            servletContext = config.getServletContext();
+//            servletContext = config.getServletContext();
         } catch (NamingException e) {
             e.printStackTrace();
         }
@@ -46,7 +46,7 @@ public class MovieListServlet extends HttpServlet {
         processRequest(request, response);
         elapsedTS = System.nanoTime() - startTS;
 
-        logPerformance(request);
+//        logPerformance(request);
     }
 
     void processRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
