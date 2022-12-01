@@ -46,7 +46,7 @@ public class MovieListServlet extends HttpServlet {
         processRequest(request, response);
         elapsedTS = System.nanoTime() - startTS;
 
-        logPerformance();
+        logPerformance(request);
     }
 
     void processRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -146,8 +146,12 @@ public class MovieListServlet extends HttpServlet {
         }
     }
 
-    synchronized void logPerformance() {
+    synchronized void logPerformance(HttpServletRequest request) {
         String contextPath = servletContext.getRealPath("/");
+        servletContext.log("From ServletContext, Context Path: " + contextPath);
+        request.getServletContext().log("From request, Context Path: " + contextPath);
+
+        System.out.println(contextPath);
         String logFilePath = contextPath + "../logs/current_case.txt";
         try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(logFilePath, true)))){
             out.println(elapsedTS + "," + elapsedTJ);
