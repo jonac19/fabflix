@@ -32,7 +32,7 @@ public class MovieListServlet extends HttpServlet {
     public void init(ServletConfig config) {
         try {
             dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedb");
-//            servletContext = config.getServletContext();
+            servletContext = config.getServletContext();
         } catch (NamingException e) {
             e.printStackTrace();
         }
@@ -46,7 +46,7 @@ public class MovieListServlet extends HttpServlet {
         processRequest(request, response);
         elapsedTS = System.nanoTime() - startTS;
 
-//        logPerformance(request);
+        logPerformance();
     }
 
     void processRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -146,13 +146,14 @@ public class MovieListServlet extends HttpServlet {
         }
     }
 
-    synchronized void logPerformance(HttpServletRequest request) {
-        String contextPath = servletContext.getRealPath("/");
-        servletContext.log("From ServletContext, Context Path: " + contextPath);
-        request.getServletContext().log("From request, Context Path: " + contextPath);
+    synchronized void logPerformance() {
+//        String contextPath = servletContext.getRealPath("/");
+//        String logFilePath = contextPath + "../logs/current_case.txt";
+//        String logFilePath = contextPath + "logs/current_case.txt";
 
-        System.out.println(contextPath);
-        String logFilePath = contextPath + "../logs/current_case.txt";
+        String contextPath = "~/logs/current_case.txt";
+        String logFilePath = "~/logs/current_case.txt";
+        servletContext.log("\n\nFrom ServletContext, Context Path: " + contextPath + "\n\n");
         try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(logFilePath, true)))){
             out.println(elapsedTS + "," + elapsedTJ);
         } catch (Exception e) {
