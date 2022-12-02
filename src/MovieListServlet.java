@@ -25,17 +25,17 @@ public class MovieListServlet extends HttpServlet {
     // Create a dataSource which registered in web.
     private DataSource dataSource;
 
-    private ServletContext servletContext;
+//    private ServletContext servletContext;
 
     private long elapsedTS;
     private long elapsedTJ;
 
     public void init(ServletConfig config) {
         try {
-            super.init(config);
+//            super.init(config);
             dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedb");
-            servletContext = config.getServletContext();
-        } catch (NamingException | ServletException e) {
+//            servletContext = config.getServletContext();
+        } catch (NamingException e) {
             e.printStackTrace();
         }
     }
@@ -155,7 +155,7 @@ public class MovieListServlet extends HttpServlet {
 
         String contextPath = "~/logs/current_case.txt";
         String logFilePath = "~/logs/current_case.txt";
-        servletContext.log("\n\nFrom ServletContext, Context Path: " + contextPath + "\n\n");
+//        servletContext.log("\n\nFrom ServletContext, Context Path: " + contextPath + "\n\n");
         try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(logFilePath, true)))){
             out.println(elapsedTS + "," + elapsedTJ);
         } catch (Exception e) {
