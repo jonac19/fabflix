@@ -130,7 +130,8 @@ public class MovieListServlet extends HttpServlet {
     }
 
     synchronized void logPerformance(HttpServletRequest request) {
-        String logFilePath = "/home/ubuntu/logs/current_case.txt";
+        String contextPath = request.getServletContext().getRealPath("/");
+        String logFilePath = contextPath + "logs/current_case.txt";
         request.getServletContext().log("Logging performance...");
         try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(logFilePath, true)))){
             out.println(elapsedTS + "," + elapsedTJ);
