@@ -5,6 +5,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -31,9 +32,10 @@ public class MovieListServlet extends HttpServlet {
 
     public void init(ServletConfig config) {
         try {
+            super.init(config);
             dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedb");
             servletContext = config.getServletContext();
-        } catch (NamingException e) {
+        } catch (NamingException | ServletException e) {
             e.printStackTrace();
         }
     }
