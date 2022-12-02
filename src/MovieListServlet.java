@@ -42,7 +42,7 @@ public class MovieListServlet extends HttpServlet {
         processRequest(request, response);
         elapsedTS = System.nanoTime() - startTS;
 
-        logPerformance();
+        logPerformance(request);
     }
 
     void processRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -61,19 +61,6 @@ public class MovieListServlet extends HttpServlet {
         String searchStar = request.getParameter("searchStar");
         String browseGenre = request.getParameter("browseGenre");
         String browseTitle = request.getParameter("browseTitle");
-
-        // The log messages can be found in localhost log
-        request.getServletContext().log("getting limit: " + limit);
-        request.getServletContext().log("getting criteria: " + criteria);
-        request.getServletContext().log("getting orderFirst: " + orderFirst);
-        request.getServletContext().log("getting orderSecond: " + orderSecond);
-        request.getServletContext().log("getting page: " + page);
-        request.getServletContext().log("getting searchTitle:" + searchTitle);
-        request.getServletContext().log("getting searchYear:" + searchYear);
-        request.getServletContext().log("getting searchDirector:" + searchDirector);
-        request.getServletContext().log("getting searchStar:" + searchStar);
-        request.getServletContext().log("getting browseGenre:" + browseGenre);
-        request.getServletContext().log("getting browseTitle:" + browseTitle);
 
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
@@ -142,13 +129,15 @@ public class MovieListServlet extends HttpServlet {
         }
     }
 
-    synchronized void logPerformance() {
-        String logFilePath = "~/logs/current_case.txt";
+    synchronized void logPerformance(HttpServletRequest request) {
+        String logFilePath = "/home/ubuntu/logs/current_case.txt";
+        request.getServletContext().log("Logging performance...");
         try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(logFilePath, true)))){
             out.println(elapsedTS + "," + elapsedTJ);
+            request.getServletContext().log("Logging succeeded!");
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println(e.getMessage());
+            request.getServletContext().log(e.getMessage());
         }
     }
 
