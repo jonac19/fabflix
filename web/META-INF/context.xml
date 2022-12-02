@@ -12,6 +12,15 @@
               username="mytestuser"
               password="My6$Password"
               url="jdbc:mysql://localhost:3306/moviedb?autoReconnect=true&amp;sslMode=DISABLED"/>
+<!--
+    <Resource name="jdbc/moviedb"
+              auth="Container"
+              driverClassName="com.mysql.cj.jdbc.Driver"
+              type="javax.sql.DataSource"
+              username="mytestuser"
+              password="My6$Password"
+              url="jdbc:mysql://localhost:3306/moviedb"/>
+-->
 
 <!--    <Resource name="jdbc/moviedb-master"-->
 <!--              auth="Container"-->
