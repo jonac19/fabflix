@@ -15,12 +15,12 @@
         <res-auth>Container</res-auth>
     </resource-ref>
 
-<!--    <resource-ref>-->
-<!--        <description>MySQL DataSource</description>-->
-<!--        <res-ref-name>jdbc/moviedb-movie</res-ref-name>-->
-<!--        <res-type>javax.sql.DataSource</res-type>-->
-<!--        <res-auth>Container</res-auth>-->
-<!--    </resource-ref>-->
+    <resource-ref>
+        <description>MySQL Master DataSource</description>
+        <res-ref-name>jdbc/moviedb_master</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+    </resource-ref>
 
 <!--    Project 3 addition: HTTPS only  -->
 <!--    Must comment out <security-constraint> for local testing    -->
