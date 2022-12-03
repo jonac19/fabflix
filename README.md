@@ -15,15 +15,16 @@
         - AWS (Ubuntu Server 20.04)
         - Apache2
       -  ##### Steps:
-         1. `show master status` in Master Server's MySQL, take note of MASTER_LOG_FILE and MASTER_LOG_POS
-         2. In Slave Server, change MySQL master to Master Server's private IP, using the Master Server's MASTER_LOG_FILE and MASTER_LOG_POS
-         3. Restart Apache2 on Load Balancer Server
-         4. Clone the repository: `git clone https://github.com/uci-jherold2-teaching/cs122b-fall-team-46.git` into every AWS server.
-         5. Create and populate a `moviedb.sql` file on Master Server
-         6. `mvn package` in the repository folder of every server
-         7. `cp ./target/*.war /var/lib/tomcat9/webapps/` the .war into tomcat
-         8. Encrypt existing user and employee password with  `mvn compile`  `mvn exec:java -Dexec.cleanupDaemonThreads=false -Dexec.mainClass="UpdateSecurePassword"`
-         9. Site should now be up. Connect to `[Load Balancer's Public IP]:80` for Scaled server, or `:8080` for Single Instance
+         1. Ensure public IP of Master Server is the same as the one listed in `cs122b-fall-team-46/web/META-INF/context.xml`
+         2. `show master status` in Master Server's MySQL, take note of MASTER_LOG_FILE and MASTER_LOG_POS
+         3. In Slave Server, change MySQL master to Master Server's private IP, using the Master Server's MASTER_LOG_FILE and MASTER_LOG_POS
+         4. Restart Apache2 on Load Balancer Server
+         5. Clone the repository: `git clone https://github.com/uci-jherold2-teaching/cs122b-fall-team-46.git` into every AWS server.
+         6. Create and populate a `moviedb.sql` file on Master Server
+         7. `mvn package` in the repository folder of every server
+         8. `cp ./target/*.war /var/lib/tomcat9/webapps/` the .war into tomcat
+         9. Encrypt existing user and employee password with  `mvn compile`  `mvn exec:java -Dexec.cleanupDaemonThreads=false -Dexec.mainClass="UpdateSecurePassword"`
+         10. Site should now be up. Connect to `[Load Balancer's Public IP]:80` for Scaled server, or `:8080` for Single Instance
 
     - #### Collaborations and Work Distribution:
       - ##### Jonathan:
