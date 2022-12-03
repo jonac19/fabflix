@@ -25,6 +25,6 @@
               type="javax.sql.DataSource"
               username="mytestuser"
               password="My6$Password"
-              url="jdbc:mysql://172.31.10.49:3306/moviedb?autoReconnect=true&amp;cachePrepStmts=true"/>
+              url="jdbc:mysql://34.221.247.107:3306/moviedb?autoReconnect=true&amp;cachePrepStmts=true"/>
 
 </Context>
