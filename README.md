@@ -75,9 +75,10 @@
 
 - # JMeter TS/TJ Time Logs
     - #### Instructions of how to use the `log_processing.*` script to process the JMeter logs.
-        1. Move `log_processing.py` into the same directory as the text file you want to process
-        2. Open the terminal and traverse into the same directory
-        3. Execute `python3 log_processing.py` and follow the prompts (you may omit ".txt" when typing the text file's name)
+        1. The `log_processing.py` file can be found in cs122b-fall-team-46/logs (based on assumption)
+        2. Move `log_processing.py` into the same directory as the text file you want to process
+        3. Open the terminal and traverse into the same directory
+        4. Execute `python3 log_processing.py` and follow the prompts (you may omit ".txt" when typing the text file's name)
 
 - # JMeter TS/TJ Time Measurement Report
 
